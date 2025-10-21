@@ -90,4 +90,4 @@ _(TBD)_
 
 ## Contact
 
-Project maintained by: Michael Nolting
+Project maintained by: Matthew Nolting
