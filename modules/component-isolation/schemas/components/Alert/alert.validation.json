@@ -1,0 +1,319 @@
+{
+  "componentName": "Alert",
+  "rules": {
+    "props": [
+      {
+        "name": "actionClose",
+        "required": false,
+        "type": "React.ReactNode",
+        "category": "advanced",
+        "validation": {
+          "required": false,
+          "type": "React.ReactNode"
+        }
+      },
+      {
+        "name": "actionLinks",
+        "required": false,
+        "type": "React.ReactNode",
+        "category": "advanced",
+        "validation": {
+          "required": false,
+          "type": "React.ReactNode"
+        }
+      },
+      {
+        "name": "children",
+        "required": false,
+        "type": "React.ReactNode",
+        "category": "core",
+        "validation": {
+          "required": false,
+          "type": "React.ReactNode"
+        }
+      },
+      {
+        "name": "className",
+        "required": false,
+        "type": "string",
+        "category": "core",
+        "validation": {
+          "required": false,
+          "type": "string"
+        }
+      },
+      {
+        "name": "customIcon",
+        "required": false,
+        "type": "React.ReactNode",
+        "category": "advanced",
+        "validation": {
+          "required": false,
+          "type": "React.ReactNode"
+        }
+      },
+      {
+        "name": "id",
+        "required": false,
+        "type": "string",
+        "category": "core",
+        "validation": {
+          "required": false,
+          "type": "string"
+        }
+      },
+      {
+        "name": "isExpandable",
+        "required": false,
+        "type": "boolean",
+        "category": "advanced",
+        "validation": {
+          "required": false,
+          "type": "boolean"
+        }
+      },
+      {
+        "name": "isInline",
+        "required": false,
+        "type": "boolean",
+        "category": "advanced",
+        "validation": {
+          "required": false,
+          "type": "boolean"
+        }
+      },
+      {
+        "name": "isLiveRegion",
+        "required": false,
+        "type": "boolean",
+        "category": "advanced",
+        "validation": {
+          "required": false,
+          "type": "boolean"
+        }
+      },
+      {
+        "name": "isPlain",
+        "required": false,
+        "type": "boolean",
+        "category": "advanced",
+        "validation": {
+          "required": false,
+          "type": "boolean"
+        }
+      },
+      {
+        "name": "onTimeout",
+        "required": false,
+        "type": "() => void",
+        "category": "events",
+        "validation": {
+          "required": false,
+          "type": "() => void"
+        }
+      },
+      {
+        "name": "timeout",
+        "required": false,
+        "type": "number | boolean",
+        "category": "core",
+        "validation": {
+          "required": false,
+          "type": "number | boolean"
+        }
+      },
+      {
+        "name": "timeoutAnimation",
+        "required": false,
+        "type": "number",
+        "category": "core",
+        "validation": {
+          "required": false,
+          "type": "number"
+        }
+      },
+      {
+        "name": "title",
+        "required": true,
+        "type": "React.ReactNode",
+        "category": "advanced",
+        "validation": {
+          "required": true,
+          "type": "React.ReactNode"
+        }
+      },
+      {
+        "name": "component",
+        "required": false,
+        "type": "keyof React.JSX.IntrinsicElements",
+        "category": "core",
+        "validation": {
+          "required": false,
+          "type": "keyof React.JSX.IntrinsicElements"
+        }
+      },
+      {
+        "name": "toggleAriaLabel",
+        "required": false,
+        "type": "string",
+        "category": "core",
+        "validation": {
+          "required": false,
+          "type": "string"
+        }
+      },
+      {
+        "name": "tooltipPosition",
+        "required": false,
+        "type": "| TooltipPosition\n    | 'auto'\n    | 'top'\n    | 'bottom'\n    | 'left'\n    | 'right'\n    | 'top-start'\n    | 'top-end'\n    | 'bottom-start'\n    | 'bottom-end'\n    | 'left-start'\n    | 'left-end'\n    | 'right-start'\n    | 'right-end'",
+        "category": "core",
+        "validation": {
+          "required": false,
+          "type": "| TooltipPosition\n    | 'auto'\n    | 'top'\n    | 'bottom'\n    | 'left'\n    | 'right'\n    | 'top-start'\n    | 'top-end'\n    | 'bottom-start'\n    | 'bottom-end'\n    | 'left-start'\n    | 'left-end'\n    | 'right-start'\n    | 'right-end'"
+        }
+      },
+      {
+        "name": "truncateTitle",
+        "required": false,
+        "type": "number",
+        "category": "core",
+        "validation": {
+          "required": false,
+          "type": "number"
+        }
+      },
+      {
+        "name": "variant",
+        "required": false,
+        "type": "'success' | 'danger' | 'warning' | 'info' | 'custom'",
+        "category": "styling",
+        "validation": {
+          "required": false,
+          "type": "'success' | 'danger' | 'warning' | 'info' | 'custom'"
+        }
+      },
+      {
+        "name": "variantLabel",
+        "required": false,
+        "type": "string",
+        "category": "styling",
+        "validation": {
+          "required": false,
+          "type": "string"
+        }
+      },
+      {
+        "name": "ouiaId",
+        "required": false,
+        "type": "number | string",
+        "category": "accessibility",
+        "validation": {
+          "required": false,
+          "type": "number | string"
+        }
+      },
+      {
+        "name": "ouiaSafe",
+        "required": false,
+        "type": "boolean",
+        "category": "accessibility",
+        "validation": {
+          "required": false,
+          "type": "boolean"
+        }
+      }
+    ],
+    "variants": [
+      {
+        "name": "AlertVariant",
+        "values": [
+          "success",
+          "danger",
+          "warning",
+          "info",
+          "custom"
+        ],
+        "type": "enum"
+      }
+    ],
+    "events": [
+      {
+        "name": "onTimeout",
+        "signature": "() => void"
+      },
+      {
+        "name": "onClick",
+        "signature": "(event: React.MouseEvent<HTMLElement>) => void",
+        "inherited": true
+      },
+      {
+        "name": "onKeyDown",
+        "signature": "(event: React.KeyboardEvent<HTMLElement>) => void",
+        "inherited": true
+      },
+      {
+        "name": "onKeyUp",
+        "signature": "(event: React.KeyboardEvent<HTMLElement>) => void",
+        "inherited": true
+      },
+      {
+        "name": "onKeyPress",
+        "signature": "(event: React.KeyboardEvent<HTMLElement>) => void",
+        "inherited": true
+      },
+      {
+        "name": "onMouseEnter",
+        "signature": "(event: React.MouseEvent<HTMLElement>) => void",
+        "inherited": true
+      },
+      {
+        "name": "onMouseLeave",
+        "signature": "(event: React.MouseEvent<HTMLElement>) => void",
+        "inherited": true
+      },
+      {
+        "name": "onFocus",
+        "signature": "(event: React.FocusEvent<HTMLElement>) => void",
+        "inherited": true
+      },
+      {
+        "name": "onBlur",
+        "signature": "(event: React.FocusEvent<HTMLElement>) => void",
+        "inherited": true
+      },
+      {
+        "name": "onChange",
+        "signature": "(event: React.ChangeEvent<HTMLElement>) => void",
+        "inherited": true
+      },
+      {
+        "name": "onSubmit",
+        "signature": "(event: React.FormEvent<HTMLElement>) => void",
+        "inherited": true
+      },
+      {
+        "name": "onLoad",
+        "signature": "(event: React.SyntheticEvent<HTMLElement>) => void",
+        "inherited": true
+      },
+      {
+        "name": "onError",
+        "signature": "(event: React.SyntheticEvent<HTMLElement>) => void",
+        "inherited": true
+      }
+    ]
+  },
+  "patterns": {
+    "ouia": [
+      "ouiaId",
+      "ouiaSafe"
+    ],
+    "aria": [],
+    "boolean": [
+      "isExpandable",
+      "isInline",
+      "isLiveRegion",
+      "isPlain"
+    ]
+  }
+}

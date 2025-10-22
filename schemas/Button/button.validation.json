@@ -1,0 +1,456 @@
+{
+  "componentName": "Button",
+  "rules": {
+    "props": [
+      {
+        "name": "children",
+        "required": false,
+        "type": "React.ReactNode",
+        "category": "core",
+        "validation": {
+          "required": false,
+          "type": "React.ReactNode"
+        }
+      },
+      {
+        "name": "className",
+        "required": false,
+        "type": "string",
+        "category": "core",
+        "validation": {
+          "required": false,
+          "type": "string"
+        }
+      },
+      {
+        "name": "component",
+        "required": false,
+        "type": "React.ElementType<any> | React.ComponentType<any>",
+        "category": "advanced",
+        "validation": {
+          "required": false,
+          "type": "React.ElementType<any> | React.ComponentType<any>"
+        }
+      },
+      {
+        "name": "isClicked",
+        "required": false,
+        "type": "boolean",
+        "category": "advanced",
+        "validation": {
+          "required": false,
+          "type": "boolean"
+        }
+      },
+      {
+        "name": "isBlock",
+        "required": false,
+        "type": "boolean",
+        "category": "advanced",
+        "validation": {
+          "required": false,
+          "type": "boolean"
+        }
+      },
+      {
+        "name": "isDisabled",
+        "required": false,
+        "type": "boolean",
+        "category": "advanced",
+        "validation": {
+          "required": false,
+          "type": "boolean"
+        }
+      },
+      {
+        "name": "isAriaDisabled",
+        "required": false,
+        "type": "boolean",
+        "category": "advanced",
+        "validation": {
+          "required": false,
+          "type": "boolean"
+        }
+      },
+      {
+        "name": "isLoading",
+        "required": false,
+        "type": "boolean",
+        "category": "advanced",
+        "validation": {
+          "required": false,
+          "type": "boolean"
+        }
+      },
+      {
+        "name": "spinnerAriaValueText",
+        "required": false,
+        "type": "string",
+        "category": "core",
+        "validation": {
+          "required": false,
+          "type": "string"
+        }
+      },
+      {
+        "name": "spinnerAriaLabel",
+        "required": false,
+        "type": "string",
+        "category": "core",
+        "validation": {
+          "required": false,
+          "type": "string"
+        }
+      },
+      {
+        "name": "spinnerAriaLabelledBy",
+        "required": false,
+        "type": "string",
+        "category": "core",
+        "validation": {
+          "required": false,
+          "type": "string"
+        }
+      },
+      {
+        "name": "inoperableEvents",
+        "required": false,
+        "type": "string[]",
+        "category": "core",
+        "validation": {
+          "required": false,
+          "type": "string[]"
+        }
+      },
+      {
+        "name": "isInline",
+        "required": false,
+        "type": "boolean",
+        "category": "advanced",
+        "validation": {
+          "required": false,
+          "type": "boolean"
+        }
+      },
+      {
+        "name": "isFavorite",
+        "required": false,
+        "type": "boolean",
+        "category": "advanced",
+        "validation": {
+          "required": false,
+          "type": "boolean"
+        }
+      },
+      {
+        "name": "isFavorited",
+        "required": false,
+        "type": "boolean",
+        "category": "advanced",
+        "validation": {
+          "required": false,
+          "type": "boolean"
+        }
+      },
+      {
+        "name": "size",
+        "required": false,
+        "type": "'default' | 'sm' | 'lg'",
+        "category": "styling",
+        "validation": {
+          "required": false,
+          "type": "'default' | 'sm' | 'lg'"
+        }
+      },
+      {
+        "name": "type",
+        "required": false,
+        "type": "'button' | 'submit' | 'reset'",
+        "category": "core",
+        "validation": {
+          "required": false,
+          "type": "'button' | 'submit' | 'reset'"
+        }
+      },
+      {
+        "name": "variant",
+        "required": false,
+        "type": "'primary' | 'secondary' | 'tertiary' | 'danger' | 'warning' | 'link' | 'plain' | 'control' | 'stateful'",
+        "category": "styling",
+        "validation": {
+          "required": false,
+          "type": "'primary' | 'secondary' | 'tertiary' | 'danger' | 'warning' | 'link' | 'plain' | 'control' | 'stateful'"
+        }
+      },
+      {
+        "name": "state",
+        "required": false,
+        "type": "'read' | 'unread' | 'attention'",
+        "category": "core",
+        "validation": {
+          "required": false,
+          "type": "'read' | 'unread' | 'attention'"
+        }
+      },
+      {
+        "name": "hasNoPadding",
+        "required": false,
+        "type": "boolean",
+        "category": "advanced",
+        "validation": {
+          "required": false,
+          "type": "boolean"
+        }
+      },
+      {
+        "name": "iconPosition",
+        "required": false,
+        "type": "'start' | 'end' | 'left' | 'right'",
+        "category": "core",
+        "validation": {
+          "required": false,
+          "type": "'start' | 'end' | 'left' | 'right'"
+        }
+      },
+      {
+        "name": "'aria-label'",
+        "required": false,
+        "type": "string",
+        "category": "accessibility",
+        "validation": {
+          "required": false,
+          "type": "string"
+        }
+      },
+      {
+        "name": "icon",
+        "required": false,
+        "type": "React.ReactNode | null",
+        "category": "advanced",
+        "validation": {
+          "required": false,
+          "type": "React.ReactNode | null"
+        }
+      },
+      {
+        "name": "tabIndex",
+        "required": false,
+        "type": "number",
+        "category": "accessibility",
+        "validation": {
+          "required": false,
+          "type": "number"
+        }
+      },
+      {
+        "name": "isDanger",
+        "required": false,
+        "type": "boolean",
+        "category": "advanced",
+        "validation": {
+          "required": false,
+          "type": "boolean"
+        }
+      },
+      {
+        "name": "isExpanded",
+        "required": false,
+        "type": "boolean",
+        "category": "advanced",
+        "validation": {
+          "required": false,
+          "type": "boolean"
+        }
+      },
+      {
+        "name": "isSettings",
+        "required": false,
+        "type": "boolean",
+        "category": "advanced",
+        "validation": {
+          "required": false,
+          "type": "boolean"
+        }
+      },
+      {
+        "name": "isHamburger",
+        "required": false,
+        "type": "boolean",
+        "category": "advanced",
+        "validation": {
+          "required": false,
+          "type": "boolean"
+        }
+      },
+      {
+        "name": "hamburgerVariant",
+        "required": false,
+        "type": "'expand' | 'collapse'",
+        "category": "core",
+        "validation": {
+          "required": false,
+          "type": "'expand' | 'collapse'"
+        }
+      },
+      {
+        "name": "innerRef",
+        "required": false,
+        "type": "React.Ref<any>",
+        "category": "core",
+        "validation": {
+          "required": false,
+          "type": "React.Ref<any>"
+        }
+      },
+      {
+        "name": "countOptions",
+        "required": false,
+        "type": "BadgeCountObject",
+        "category": "advanced",
+        "validation": {
+          "required": false,
+          "type": "BadgeCountObject"
+        }
+      },
+      {
+        "name": "ouiaId",
+        "required": false,
+        "type": "number | string",
+        "category": "accessibility",
+        "validation": {
+          "required": false,
+          "type": "number | string"
+        }
+      },
+      {
+        "name": "ouiaSafe",
+        "required": false,
+        "type": "boolean",
+        "category": "accessibility",
+        "validation": {
+          "required": false,
+          "type": "boolean"
+        }
+      }
+    ],
+    "variants": [
+      {
+        "name": "ButtonVariant",
+        "values": [
+          "primary",
+          "secondary",
+          "tertiary",
+          "danger",
+          "warning",
+          "link",
+          "plain",
+          "control",
+          "stateful"
+        ],
+        "type": "enum"
+      },
+      {
+        "name": "ButtonType",
+        "values": [
+          "button",
+          "submit",
+          "reset"
+        ],
+        "type": "enum"
+      },
+      {
+        "name": "ButtonSize",
+        "values": [
+          "default",
+          "sm",
+          "lg"
+        ],
+        "type": "enum"
+      }
+    ],
+    "events": [
+      {
+        "name": "onClick",
+        "signature": "(event: React.MouseEvent<HTMLElement>) => void",
+        "inherited": true
+      },
+      {
+        "name": "onKeyDown",
+        "signature": "(event: React.KeyboardEvent<HTMLElement>) => void",
+        "inherited": true
+      },
+      {
+        "name": "onKeyUp",
+        "signature": "(event: React.KeyboardEvent<HTMLElement>) => void",
+        "inherited": true
+      },
+      {
+        "name": "onKeyPress",
+        "signature": "(event: React.KeyboardEvent<HTMLElement>) => void",
+        "inherited": true
+      },
+      {
+        "name": "onMouseEnter",
+        "signature": "(event: React.MouseEvent<HTMLElement>) => void",
+        "inherited": true
+      },
+      {
+        "name": "onMouseLeave",
+        "signature": "(event: React.MouseEvent<HTMLElement>) => void",
+        "inherited": true
+      },
+      {
+        "name": "onFocus",
+        "signature": "(event: React.FocusEvent<HTMLElement>) => void",
+        "inherited": true
+      },
+      {
+        "name": "onBlur",
+        "signature": "(event: React.FocusEvent<HTMLElement>) => void",
+        "inherited": true
+      },
+      {
+        "name": "onChange",
+        "signature": "(event: React.ChangeEvent<HTMLElement>) => void",
+        "inherited": true
+      },
+      {
+        "name": "onSubmit",
+        "signature": "(event: React.FormEvent<HTMLElement>) => void",
+        "inherited": true
+      },
+      {
+        "name": "onLoad",
+        "signature": "(event: React.SyntheticEvent<HTMLElement>) => void",
+        "inherited": true
+      },
+      {
+        "name": "onError",
+        "signature": "(event: React.SyntheticEvent<HTMLElement>) => void",
+        "inherited": true
+      }
+    ]
+  },
+  "patterns": {
+    "ouia": [
+      "ouiaId",
+      "ouiaSafe"
+    ],
+    "aria": [],
+    "boolean": [
+      "isClicked",
+      "isBlock",
+      "isDisabled",
+      "isAriaDisabled",
+      "isLoading",
+      "isInline",
+      "isFavorite",
+      "isFavorited",
+      "hasNoPadding",
+      "isDanger",
+      "isExpanded",
+      "isSettings",
+      "isHamburger"
+    ]
+  }
+}

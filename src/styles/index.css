@@ -1,0 +1,7 @@
+// PatternFly CSS imports
+import '@patternfly/react-core/dist/styles/base.css';
+import '@patternfly/react-core/dist/styles/components.css';
+import '@patternfly/react-core/dist/styles/utilities.css';
+
+// Global styles
+import './globals.css';

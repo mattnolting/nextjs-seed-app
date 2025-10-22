@@ -1,0 +1,542 @@
+{
+  "componentName": "Alert",
+  "schema": {
+    "schemaObject": {
+      "componentName": "Alert",
+      "props": [
+        {
+          "name": "actionClose",
+          "type": "React.ReactNode",
+          "required": false,
+          "category": "advanced"
+        },
+        {
+          "name": "actionLinks",
+          "type": "React.ReactNode",
+          "required": false,
+          "category": "advanced"
+        },
+        {
+          "name": "children",
+          "type": "React.ReactNode",
+          "required": false,
+          "category": "core"
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "category": "core"
+        },
+        {
+          "name": "customIcon",
+          "type": "React.ReactNode",
+          "required": false,
+          "category": "advanced"
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "required": false,
+          "category": "core"
+        },
+        {
+          "name": "isExpandable",
+          "type": "boolean",
+          "required": false,
+          "category": "advanced"
+        },
+        {
+          "name": "isInline",
+          "type": "boolean",
+          "required": false,
+          "category": "advanced"
+        },
+        {
+          "name": "isLiveRegion",
+          "type": "boolean",
+          "required": false,
+          "category": "advanced"
+        },
+        {
+          "name": "isPlain",
+          "type": "boolean",
+          "required": false,
+          "category": "advanced"
+        },
+        {
+          "name": "onTimeout",
+          "type": "() => void",
+          "required": false,
+          "category": "events"
+        },
+        {
+          "name": "timeout",
+          "type": "number | boolean",
+          "required": false,
+          "category": "core"
+        },
+        {
+          "name": "timeoutAnimation",
+          "type": "number",
+          "required": false,
+          "category": "core"
+        },
+        {
+          "name": "title",
+          "type": "React.ReactNode",
+          "required": true,
+          "category": "advanced"
+        },
+        {
+          "name": "component",
+          "type": "keyof React.JSX.IntrinsicElements",
+          "required": false,
+          "category": "core"
+        },
+        {
+          "name": "toggleAriaLabel",
+          "type": "string",
+          "required": false,
+          "category": "core"
+        },
+        {
+          "name": "tooltipPosition",
+          "type": "| TooltipPosition\n    | 'auto'\n    | 'top'\n    | 'bottom'\n    | 'left'\n    | 'right'\n    | 'top-start'\n    | 'top-end'\n    | 'bottom-start'\n    | 'bottom-end'\n    | 'left-start'\n    | 'left-end'\n    | 'right-start'\n    | 'right-end'",
+          "required": false,
+          "category": "core"
+        },
+        {
+          "name": "truncateTitle",
+          "type": "number",
+          "required": false,
+          "category": "core"
+        },
+        {
+          "name": "variant",
+          "type": "'success' | 'danger' | 'warning' | 'info' | 'custom'",
+          "required": false,
+          "category": "styling"
+        },
+        {
+          "name": "variantLabel",
+          "type": "string",
+          "required": false,
+          "category": "styling"
+        },
+        {
+          "name": "ouiaId",
+          "type": "number | string",
+          "required": false,
+          "category": "accessibility"
+        },
+        {
+          "name": "ouiaSafe",
+          "type": "boolean",
+          "required": false,
+          "category": "accessibility"
+        }
+      ],
+      "events": [
+        {
+          "name": "onTimeout",
+          "signature": "() => void"
+        },
+        {
+          "name": "onClick",
+          "signature": "(event: React.MouseEvent<HTMLElement>) => void",
+          "description": "Inherited from React.HTMLProps",
+          "inherited": true
+        },
+        {
+          "name": "onKeyDown",
+          "signature": "(event: React.KeyboardEvent<HTMLElement>) => void",
+          "description": "Inherited from React.HTMLProps",
+          "inherited": true
+        },
+        {
+          "name": "onKeyUp",
+          "signature": "(event: React.KeyboardEvent<HTMLElement>) => void",
+          "description": "Inherited from React.HTMLProps",
+          "inherited": true
+        },
+        {
+          "name": "onKeyPress",
+          "signature": "(event: React.KeyboardEvent<HTMLElement>) => void",
+          "description": "Inherited from React.HTMLProps",
+          "inherited": true
+        },
+        {
+          "name": "onMouseEnter",
+          "signature": "(event: React.MouseEvent<HTMLElement>) => void",
+          "description": "Inherited from React.HTMLProps",
+          "inherited": true
+        },
+        {
+          "name": "onMouseLeave",
+          "signature": "(event: React.MouseEvent<HTMLElement>) => void",
+          "description": "Inherited from React.HTMLProps",
+          "inherited": true
+        },
+        {
+          "name": "onFocus",
+          "signature": "(event: React.FocusEvent<HTMLElement>) => void",
+          "description": "Inherited from React.HTMLProps",
+          "inherited": true
+        },
+        {
+          "name": "onBlur",
+          "signature": "(event: React.FocusEvent<HTMLElement>) => void",
+          "description": "Inherited from React.HTMLProps",
+          "inherited": true
+        },
+        {
+          "name": "onChange",
+          "signature": "(event: React.ChangeEvent<HTMLElement>) => void",
+          "description": "Inherited from React.HTMLProps",
+          "inherited": true
+        },
+        {
+          "name": "onSubmit",
+          "signature": "(event: React.FormEvent<HTMLElement>) => void",
+          "description": "Inherited from React.HTMLProps",
+          "inherited": true
+        },
+        {
+          "name": "onLoad",
+          "signature": "(event: React.SyntheticEvent<HTMLElement>) => void",
+          "description": "Inherited from React.HTMLProps",
+          "inherited": true
+        },
+        {
+          "name": "onError",
+          "signature": "(event: React.SyntheticEvent<HTMLElement>) => void",
+          "description": "Inherited from React.HTMLProps",
+          "inherited": true
+        }
+      ],
+      "variants": [
+        {
+          "name": "AlertVariant",
+          "values": [
+            "success",
+            "danger",
+            "warning",
+            "info",
+            "custom"
+          ],
+          "type": "enum"
+        }
+      ],
+      "slots": [],
+      "accessibility": {}
+    },
+    "componentModel": {
+      "type": "functional",
+      "forwardRef": false,
+      "hooks": [
+        {
+          "name": "useOUIAProps",
+          "dependencies": []
+        },
+        {
+          "name": "useRef",
+          "dependencies": []
+        },
+        {
+          "name": "useRef",
+          "dependencies": []
+        },
+        {
+          "name": "useState",
+          "dependencies": []
+        },
+        {
+          "name": "useEffect",
+          "dependencies": [
+            "titleRef",
+            "truncateTitle",
+            "isTooltipVisible"
+          ]
+        },
+        {
+          "name": "useState",
+          "dependencies": []
+        },
+        {
+          "name": "useState",
+          "dependencies": []
+        },
+        {
+          "name": "useState",
+          "dependencies": []
+        },
+        {
+          "name": "useState",
+          "dependencies": []
+        },
+        {
+          "name": "useState",
+          "dependencies": []
+        },
+        {
+          "name": "useContext",
+          "dependencies": []
+        },
+        {
+          "name": "useEffect",
+          "dependencies": [
+            "shouldDismiss",
+            "isDismissed"
+          ]
+        },
+        {
+          "name": "useEffect",
+          "dependencies": [
+            "timeout"
+          ]
+        },
+        {
+          "name": "useEffect",
+          "dependencies": [
+            "containsFocus"
+          ]
+        },
+        {
+          "name": "useEffect",
+          "dependencies": [
+            "containsFocus",
+            "isMouseOver",
+            "timeoutAnimation"
+          ]
+        },
+        {
+          "name": "useEffect",
+          "dependencies": [
+            "isDismissed",
+            "onTimeout"
+          ]
+        },
+        {
+          "name": "useEffect",
+          "dependencies": []
+        },
+        {
+          "name": "useState",
+          "dependencies": []
+        }
+      ],
+      "refs": [
+        {
+          "name": "ref",
+          "type": "React.RefObject<any>"
+        },
+        {
+          "name": "ref",
+          "type": "React.RefObject<any>"
+        }
+      ],
+      "context": [
+        {
+          "name": "AlertContext",
+          "provider": "AlertContext"
+        },
+        {
+          "name": "AlertContext",
+          "provider": "AlertContext"
+        },
+        {
+          "name": "AlertContext",
+          "provider": "AlertContext"
+        },
+        {
+          "name": "AlertContext",
+          "provider": "AlertContext"
+        }
+      ],
+      "imports": [
+        {
+          "source": "react",
+          "names": [
+            "Fragment",
+            "useEffect",
+            "useRef",
+            "useState",
+            "useContext"
+          ],
+          "isDefault": false
+        },
+        {
+          "source": "@patternfly/react-styles",
+          "names": [
+            "css"
+          ],
+          "isDefault": false
+        },
+        {
+          "source": "@patternfly/react-styles/css/components/Alert/alert",
+          "names": [
+            "styles"
+          ],
+          "isDefault": true
+        },
+        {
+          "source": "@patternfly/react-styles/css/components/Alert/alert-group",
+          "names": [
+            "alertGroupStyles"
+          ],
+          "isDefault": true
+        },
+        {
+          "source": "./AlertIcon",
+          "names": [
+            "AlertIcon"
+          ],
+          "isDefault": false
+        },
+        {
+          "source": "../../helpers",
+          "names": [
+            "capitalize",
+            "useOUIAProps",
+            "OUIAProps"
+          ],
+          "isDefault": false
+        },
+        {
+          "source": "./AlertContext",
+          "names": [
+            "AlertContext"
+          ],
+          "isDefault": false
+        },
+        {
+          "source": "./AlertGroupContext",
+          "names": [
+            "AlertGroupContext"
+          ],
+          "isDefault": false
+        },
+        {
+          "source": "@patternfly/react-tokens/dist/esm/c_alert__title_max_lines",
+          "names": [
+            "maxLines"
+          ],
+          "isDefault": true
+        },
+        {
+          "source": "../Tooltip",
+          "names": [
+            "Tooltip",
+            "TooltipPosition"
+          ],
+          "isDefault": false
+        },
+        {
+          "source": "./AlertToggleExpandButton",
+          "names": [
+            "AlertToggleExpandButton"
+          ],
+          "isDefault": false
+        }
+      ]
+    },
+    "stateManagement": {
+      "localState": [
+        {
+          "name": "state",
+          "type": "any"
+        },
+        {
+          "name": "state",
+          "type": "any"
+        },
+        {
+          "name": "state",
+          "type": "any"
+        },
+        {
+          "name": "state",
+          "type": "any"
+        },
+        {
+          "name": "state",
+          "type": "any"
+        },
+        {
+          "name": "state",
+          "type": "any"
+        },
+        {
+          "name": "state",
+          "type": "any"
+        }
+      ],
+      "contextState": [],
+      "effects": [
+        {
+          "name": "useEffect",
+          "dependencies": [
+            "titleRef",
+            "truncateTitle",
+            "isTooltipVisible"
+          ]
+        },
+        {
+          "name": "useEffect",
+          "dependencies": [
+            "shouldDismiss",
+            "isDismissed"
+          ]
+        },
+        {
+          "name": "useEffect",
+          "dependencies": [
+            "timeout"
+          ]
+        },
+        {
+          "name": "useEffect",
+          "dependencies": [
+            "containsFocus"
+          ]
+        },
+        {
+          "name": "useEffect",
+          "dependencies": [
+            "containsFocus",
+            "isMouseOver",
+            "timeoutAnimation"
+          ]
+        },
+        {
+          "name": "useEffect",
+          "dependencies": [
+            "isDismissed",
+            "onTimeout"
+          ]
+        },
+        {
+          "name": "useEffect",
+          "dependencies": []
+        }
+      ],
+      "derivedState": []
+    },
+    "metadata": {
+      "sourceFile": "/Users/mnolting/Web/patternfly-react/packages/react-core/src/components/Alert/Alert.tsx",
+      "extractedAt": "2025-10-22T15:44:42.454Z",
+      "version": "1.0.0",
+      "validation": {
+        "isValid": true,
+        "errors": [],
+        "warnings": []
+      }
+    }
+  },
+  "metadata": {
+    "extractedAt": "2025-10-22T15:44:42.454Z",
+    "sourceFile": "/Users/mnolting/Web/patternfly-react/packages/react-core/src/components/Alert/Alert.tsx",
+    "version": "1.0.0"
+  }
+}

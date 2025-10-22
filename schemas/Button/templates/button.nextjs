@@ -1,0 +1,99 @@
+"use client";
+
+import { forwardRef } from "react";
+import { css } from "@patternfly/react-styles";
+import styles from "@patternfly/react-styles/css/components/Button/button";
+import { useOUIAProps } from "../../helpers";
+
+export interface ButtonProps {
+  children?: React.ReactNode;
+  className?: string;
+  component?: React.ElementType<any> | React.ComponentType<any>;
+  isClicked?: boolean;
+  isBlock?: boolean;
+  isDisabled?: boolean;
+  isAriaDisabled?: boolean;
+  isLoading?: boolean;
+  spinnerAriaValueText?: string;
+  spinnerAriaLabel?: string;
+  spinnerAriaLabelledBy?: string;
+  inoperableEvents?: string[];
+  isInline?: boolean;
+  isFavorite?: boolean;
+  isFavorited?: boolean;
+  size?: 'default' | 'sm' | 'lg';
+  type?: 'button' | 'submit' | 'reset';
+  variant?: 'primary' | 'secondary' | 'tertiary' | 'danger' | 'warning' | 'link' | 'plain' | 'control' | 'stateful';
+  state?: 'read' | 'unread' | 'attention';
+  hasNoPadding?: boolean;
+  iconPosition?: 'start' | 'end' | 'left' | 'right';
+  'aria-label'?: string;
+  icon?: React.ReactNode | null;
+  tabIndex?: number;
+  isDanger?: boolean;
+  isExpanded?: boolean;
+  isSettings?: boolean;
+  isHamburger?: boolean;
+  hamburgerVariant?: 'expand' | 'collapse';
+  /** Forwarded ref */
+  innerRef?: React.Ref<any>;
+  countOptions?: BadgeCountObject;
+  ouiaId?: number | string;
+  ouiaSafe?: boolean;
+}
+
+export const Button = forwardRef<HTMLDivElement, ButtonProps>(({
+  children,
+  className,
+  component,
+  isClicked,
+  isBlock,
+  isDisabled,
+  isAriaDisabled,
+  isLoading,
+  spinnerAriaValueText,
+  spinnerAriaLabel,
+  spinnerAriaLabelledBy,
+  inoperableEvents,
+  isInline,
+  isFavorite,
+  isFavorited,
+  size,
+  type,
+  variant,
+  state,
+  hasNoPadding,
+  iconPosition,
+  'aria-label',
+  icon,
+  tabIndex,
+  isDanger,
+  isExpanded,
+  isSettings,
+  isHamburger,
+  hamburgerVariant,
+  innerRef,
+  countOptions,
+  ouiaId,
+  ouiaSafe,
+  ...props
+}, ref) => {
+
+  // Hooks
+  const useOUIAProps = useOUIAProps();
+
+  return (
+    <div
+      ref={ref}
+      className={css(
+        styles.button,
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+});
+
+Button.displayName = "Button";
