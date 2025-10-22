@@ -195,13 +195,13 @@ This project directly supports PatternFly's modernization initiative by providin
 
 ## Contributing
 
-Follow the workflow defined in [WORKFLOW.md](./WORKFLOW.md)
+Follow the workflow defined in [WORKFLOW.md](./docs/WORKFLOW.md)
 
 ## Documentation
 
-- [WORKFLOW.md](./WORKFLOW.md) - Development process and standards
-- [HANDOFF.md](./HANDOFF.md) - Session-to-session knowledge retention
-- Module-specific guides in `/modules/{module-name}/MODULE.GUIDE.md`
+- [WORKFLOW.md](./docs/WORKFLOW.md) - Development process and standards
+- [HANDOFF.md](./docs/HANDOFF.md) - Session-to-session knowledge retention
+- Module-specific guides in `/docs/modules/{module-name}/`
 
 ## License
 
