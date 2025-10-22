@@ -52,9 +52,9 @@ PatternFly React → Schema Extraction → Component Isolation → Enhanced Temp
 
 ## Development Status
 
-🟢 **Production Ready** - Core functionality implemented
+🟡 **Foundation Complete** - Core architecture implemented, Next.js app pending
 
-### Completed
+### Completed Foundation
 
 - [x] Schema extraction from PatternFly React components
 - [x] Component isolation architecture
@@ -65,20 +65,40 @@ PatternFly React → Schema Extraction → Component Isolation → Enhanced Temp
 - [x] Storybook integration
 - [x] Component categorization and validation
 
-### Features
+### Next Steps (In Progress)
 
-- **Schema Extraction**: Parse PatternFly React components into structured metadata
-- **Component Isolation**: Self-contained component schemas with templates
-- **Enhanced Templates**: Production-ready Next.js components with:
-  - Organized prop interfaces (Core, Styling, Accessibility, Advanced)
-  - Comprehensive unit tests
-  - Interactive Storybook stories
-  - Complete documentation
-  - TypeScript type definitions
-- **Interactive CLI**: User-friendly component selection and generation
-- **Framework Agnostic**: Extensible architecture for future framework support
+- [ ] **Functional Next.js App**: Complete Next.js application with App Router
+- [ ] **Layout Scaffolding**: Component injection system and layout templates
+- [ ] **Component Integration**: Seamless integration of generated components
+- [ ] **Build System**: Production build configuration and optimization
+- [ ] **Deployment Ready**: Production deployment configuration
+
+### Roadmap to Production
+
+#### Phase 1: Next.js Application Foundation
+
+- [ ] **Next.js App Setup**: App Router configuration and basic structure
+- [ ] **PatternFly Integration**: CSS and styling system integration
+- [ ] **Component Library**: Generated components as importable library
+- [ ] **Basic Routing**: Page structure and navigation
+
+#### Phase 2: Layout Scaffolding System
+
+- [ ] **Layout Templates**: Page layout templates with component injection points
+- [ ] **Component Injection**: Dynamic component loading and rendering
+- [ ] **Layout Variants**: Different layout patterns (dashboard, content, etc.)
+- [ ] **Responsive Design**: Mobile-first responsive layout system
+
+#### Phase 3: Production Features
+
+- [ ] **Build Optimization**: Production build configuration
+- [ ] **Performance**: Code splitting and optimization
+- [ ] **Deployment**: Vercel/Netlify deployment configuration
+- [ ] **Documentation**: Complete user documentation and examples
 
 ## Getting Started
+
+> **Note**: This project is currently in the foundation phase. The component generation system is complete, but the Next.js application and layout scaffolding are still in development.
 
 ### Prerequisites
 
@@ -100,7 +120,7 @@ npm install
 npm test
 ```
 
-### Usage
+### Current Usage (Component Generation Only)
 
 #### Interactive CLI
 
@@ -155,6 +175,13 @@ Each component generates a complete file structure:
 ├── button.module.css      # CSS module
 └── next.config.js         # Next.js configuration
 ```
+
+### Coming Soon
+
+- **Next.js Application**: Complete Next.js app with App Router
+- **Layout Scaffolding**: Component injection system
+- **Production Build**: Optimized build configuration
+- **Deployment**: Production deployment setup
 
 ## PatternFly Modernization Initiative
 
