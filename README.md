@@ -35,7 +35,7 @@ patternfly-nextjs-clean/
 
 ## Development
 
-This project uses Next.js with the App Router pattern. The component extraction engine in `modules/` can analyze PatternFly components and generate framework-agnostic schemas for use in multiple frameworks.
+This project uses Next.js with the App Router pattern. The component extraction engine in `modules/` can analyze PatternFly components and generate layouts/components for Next.js.
 
 ## License
 
