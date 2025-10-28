@@ -1,0 +1,18 @@
+/* PatternFly CSS imports */
+@import "@patternfly/react-core/dist/styles/base.css";
+
+/* Global styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font-family: "Red Hat Display", "RedHatDisplay", "Overpass", "overpass", Helvetica, Arial, sans-serif;
+}
