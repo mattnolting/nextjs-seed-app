@@ -8,7 +8,8 @@ const LAYOUT_TYPES = [
   {
     name: "Dashboard (Header + Sidebar + Content)",
     value: "dashboard",
-    description: "A dashboard layout with header, sidebar navigation, and main content area",
+    description:
+      "A dashboard layout with header, sidebar navigation, and main content area",
   },
   {
     name: "Gallery (Grid of Cards)",
@@ -54,7 +55,11 @@ export async function generateLayout(options: any) {
         message: "Component name:",
         default: (answers: any) => {
           const type = answers.layoutType || "";
-          return type.charAt(0).toUpperCase() + type.slice(1).replace(/-./g, (x: string) => x[1].toUpperCase()) + "Layout";
+          return (
+            type.charAt(0).toUpperCase() +
+            type.slice(1).replace(/-./g, (x: string) => x[1].toUpperCase()) +
+            "Layout"
+          );
         },
         validate: (input: string) => {
           if (!input.trim()) {
@@ -62,6 +67,23 @@ export async function generateLayout(options: any) {
           }
           if (!/^[A-Z][a-zA-Z0-9]*$/.test(input)) {
             return "Component name must be PascalCase";
+          }
+          // Prevent conflicts with PatternFly components
+          const reservedNames = [
+            "Button",
+            "Card",
+            "Input",
+            "Select",
+            "Text",
+            "Title",
+            "Page",
+            "Nav",
+            "MenuItem",
+            "Modal",
+            "Dropdown",
+          ];
+          if (reservedNames.includes(input)) {
+            return `${input} conflicts with a PatternFly component. Please use a different name.`;
           }
           return true;
         },
@@ -107,8 +129,11 @@ export async function generateLayout(options: any) {
     const projectRoot = path.resolve(process.cwd(), "..");
     const layoutsDir = path.join(projectRoot, "src", "app", "layouts");
     await fs.mkdir(layoutsDir, { recursive: true });
-    
-    const componentFilePath = path.join(layoutsDir, `${answers.componentName}.tsx`);
+
+    const componentFilePath = path.join(
+      layoutsDir,
+      `${answers.componentName}.tsx`
+    );
 
     // Check if file exists
     try {
@@ -117,7 +142,9 @@ export async function generateLayout(options: any) {
         {
           type: "confirm",
           name: "overwrite",
-          message: chalk.yellow(`File ${componentFilePath} already exists. Overwrite?`),
+          message: chalk.yellow(
+            `File ${componentFilePath} already exists. Overwrite?`
+          ),
           default: false,
         },
       ]);
@@ -136,21 +163,27 @@ export async function generateLayout(options: any) {
 
     // Generate page if requested
     if (answers.generatePage && answers.routePath) {
-      const pageCode = generatePageCode(answers.componentName, answers.layoutType, answers.includeExample);
+      const pageCode = generatePageCode(
+        answers.componentName,
+        answers.layoutType,
+        answers.includeExample
+      );
       const appDir = path.join(projectRoot, "src", "app", answers.routePath);
       await fs.mkdir(appDir, { recursive: true });
-      
+
       const pageFilePath = path.join(appDir, "page.tsx");
       await fs.writeFile(pageFilePath, pageCode);
       console.log(chalk.green(`✓ Generated: ${pageFilePath}`));
     }
 
     console.log(chalk.green.bold("\n✓ All files created successfully!\n"));
-    
+
     if (answers.generatePage) {
       console.log("Next steps:");
       console.log(`  1. Run: ${chalk.cyan("npm run dev")}`);
-      console.log(`  2. Visit: ${chalk.cyan(`http://localhost:3000${answers.routePath}`)}`);
+      console.log(
+        `  2. Visit: ${chalk.cyan(`http://localhost:3000${answers.routePath}`)}`
+      );
     }
   } catch (error: any) {
     console.error(chalk.red(`✗ Error: ${error.message}`));
@@ -158,8 +191,14 @@ export async function generateLayout(options: any) {
   }
 }
 
-function generatePageCode(componentName: string, layoutType: string, includeExample: boolean): string {
-  const exampleContent = includeExample ? getExampleContent(layoutType) : `<p>Your content here</p>`;
+function generatePageCode(
+  componentName: string,
+  layoutType: string,
+  includeExample: boolean
+): string {
+  const exampleContent = includeExample
+    ? getExampleContent(layoutType)
+    : `<p>Your content here</p>`;
 
   return `import { ${componentName} } from "../layouts/${componentName}";
 
@@ -190,4 +229,3 @@ function getExampleContent(layoutType: string): string {
       return `<p>Example content</p>`;
   }
 }
-
