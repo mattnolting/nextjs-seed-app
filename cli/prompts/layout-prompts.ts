@@ -127,7 +127,7 @@ export async function generateLayout(options: any) {
 
     // Determine file paths (from project root, not cli directory)
     const projectRoot = path.resolve(process.cwd(), "..");
-    const layoutsDir = path.join(projectRoot, "src", "app", "layouts");
+    const layoutsDir = path.join(projectRoot, "src", "components", "layouts");
     await fs.mkdir(layoutsDir, { recursive: true });
 
     const componentFilePath = path.join(
@@ -200,7 +200,7 @@ function generatePageCode(
     ? getExampleContent(layoutType)
     : `<p>Your content here</p>`;
 
-  return `import { ${componentName} } from "../layouts/${componentName}";
+  return `import { ${componentName} } from "@/components/layouts/${componentName}";
 
 export default function Page() {
   return (

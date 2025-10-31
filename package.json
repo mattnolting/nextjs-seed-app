@@ -3,16 +3,44 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "cd src && npm run dev",
-    "build": "cd src && npm run build",
-    "cli": "cd src && npm run cli"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "quick-start": "tsx cli/commands/quick-start.ts",
+    "generate": "tsx cli/index.ts generate",
+    "sync": "tsx cli/index.ts sync",
+    "config": "tsx cli/index.ts config",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@patternfly/patternfly": "^6.4.0",
+    "@patternfly/react-core": "^6.4.0",
+    "@patternfly/react-charts": "^6.4.0",
+    "@patternfly/react-icons": "^6.4.0",
+    "@patternfly/react-styles": "^6.4.0",
+    "@patternfly/react-table": "^6.4.0",
+    "next": "16.0.0",
+    "react": "19.2.0",
+    "react-dom": "19.2.0"
   },
   "devDependencies": {
-    "commander": "^14.0.2",
-    "inquirer": "^12.10.0",
+    "@types/inquirer": "^9.0.9",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
     "chalk": "^5.6.2",
+    "commander": "^14.0.2",
+    "eslint": "^9",
+    "@testing-library/jest-dom": "^6.4.0",
+    "@testing-library/react": "^16.0.0",
+    "@types/testing-library__jest-dom": "^6.0.0",
+    "happy-dom": "^14.12.3",
+    "vitest": "^2.1.4",
+    "eslint-config-next": "16.0.0",
+    "inquirer": "^12.10.0",
     "tsx": "^4.20.6",
-    "@types/inquirer": "^9.0.9"
+    "typescript": "^5"
   }
 }
-

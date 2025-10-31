@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { AppShell } from "@/components/ui/AppShell";
 
 export const metadata: Metadata = {
   title: "PatternFly Next.js Starter",
-  description: "A modern Next.js starter application with PatternFly React components",
+  description:
+    "A modern Next.js starter application with PatternFly React components",
 };
 
 export default function RootLayout({
@@ -13,7 +15,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <AppShell
+          config={{
+            masthead: {
+              logo: "/PF-HorizontalLogo-Color.svg",
+              toolbarItems: ["notifications", "settings", "theme"],
+            },
+          }}
+        >
+          {children}
+        </AppShell>
+      </body>
     </html>
   );
 }

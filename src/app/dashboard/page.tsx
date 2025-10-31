@@ -1,12 +1,7 @@
-import { DashboardLayout } from "../layouts/DashboardLayout";
+"use client";
 
-export default function Page() {
-  return (
-    <DashboardLayout>
-      <div>
-        <h1>Dashboard</h1>
-        <p>Welcome to your dashboard</p>
-      </div>
-    </DashboardLayout>
-  );
+import { DashboardDemoView } from "@/components/content-patterns/DashboardDemoView";
+
+export default function Dashboard() {
+  return <DashboardDemoView />;
 }
