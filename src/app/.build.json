@@ -1,0 +1,53 @@
+{
+  // if this directory doesn't exist, offere to help build it
+  // does you app have a sidebar/navigation? No? Let's build it
+  // Header/masthead? No? Let's build it
+  // Main content area? No? Let's build it
+  // Now, after the inital npm run build call, you have a well for application scoffolding in place, theat we then build upon
+  "scaffold": undefined,
+  // entry then becomes, if this exists, skip the build scaffolding proccess and build pages/interfaces that use it
+  "scaffold": app/myApp",
+  // npm run generate layouts
+  // builds layouts within the scaffolding <- insertion point "main_content"
+  // now you have a well for application scoffolding in place, that we then build upon
+  "layouts": [
+    // if --verbase is called, build the layouts with the verbose flag, define the props, build a layout
+    // if not, build the layouts with the generic layout
+    "dashboard",
+    "gallery",
+    "table",
+    "split-view"
+  ],
+  // npm run generate components
+  // builds components within the scaffolding <- insertion point "main_content"
+  // now you have a well for application scoffolding in place, that we then build upon
+  // choose a destination or create one
+  // what you end up with is this
+  "pages": [
+    "analytics": [
+      components: [
+        "chart",
+        "table",
+        "form"
+      ]
+    ],
+    "register": [
+      components: [
+        "form",
+        "table"
+      ]
+    ],
+    "systems-management": [
+      components: [
+        "table",
+        "form"
+      ]
+    ],
+    "settings": [
+      components: [
+        "form",
+        "table"
+      ]
+    ]
+  ]
+}

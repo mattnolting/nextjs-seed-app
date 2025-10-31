@@ -1,0 +1,64 @@
+{
+  "version": "1.0.0",
+  "lastModified": "2025-10-29T13:44:40.024Z",
+  "scaffold": {
+    "path": "app",
+    "layouts": {
+      "masthead": {
+        "enabled": true
+      },
+      "sidebar": {
+        "enabled": true
+      },
+      "main": {
+        "enabled": true
+      }
+    }
+  },
+  "layouts": [],
+  "components": [],
+  "routes": [
+    {
+      "path": "/",
+      "layout": "DashboardLayout",
+      "title": "Home",
+      "priority": 1,
+      "slots": {}
+    },
+    {
+      "path": "/dashboard",
+      "layout": "DashboardLayout",
+      "title": "Dashboard",
+      "priority": 2,
+      "slots": {}
+    },
+    {
+      "path": "/analytics",
+      "layout": "DashboardLayout",
+      "title": "Analytics",
+      "priority": 3,
+      "slots": {}
+    },
+    {
+      "path": "/users",
+      "layout": "DashboardLayout",
+      "title": "Users",
+      "priority": 4,
+      "slots": {}
+    },
+    {
+      "path": "/settings",
+      "layout": "DashboardLayout",
+      "title": "Settings",
+      "priority": 5,
+      "slots": {}
+    },
+    {
+      "path": "/gallery",
+      "layout": "DashboardLayout",
+      "title": "Gallery",
+      "priority": 6,
+      "slots": {}
+    }
+  ]
+}
