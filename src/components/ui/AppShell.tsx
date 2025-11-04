@@ -22,27 +22,33 @@ export function AppShell({
   };
 }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [mounted, setMounted] = useState(false);
+  // Always start with "light" to ensure SSR/client hydration match
   const [themeMode, setThemeMode] = useState<"light" | "dark" | "system">(
-    "light"
+    config.theme ?? "light"
   );
   const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">("light");
 
-  useEffect(() => setMounted(true), []);
-
-  // Initialize theme from config/localStorage or prefers-color-scheme
+  // Initialize theme from config/localStorage or prefers-color-scheme after mount
+  // This ensures SSR/client render match on first render
   useEffect(() => {
-    const saved = (typeof window !== "undefined" &&
-      localStorage.getItem("theme")) as "light" | "dark" | "system" | null;
-    const prefersDark =
-      typeof window !== "undefined" &&
-      window.matchMedia &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const initial = (config.theme ??
-      saved ??
-      (prefersDark ? "dark" : "light")) as "light" | "dark" | "system";
-    setThemeMode(initial);
-  }, [config.theme]);
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("theme") as
+        | "light"
+        | "dark"
+        | "system"
+        | null;
+      const prefersDark =
+        window.matchMedia &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches;
+      const initial = (config.theme ??
+        saved ??
+        (prefersDark ? "dark" : "light")) as "light" | "dark" | "system";
+      if (initial !== themeMode) {
+        setThemeMode(initial);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Resolve system theme and listen for changes when in system mode
   useEffect(() => {
@@ -61,13 +67,17 @@ export function AppShell({
     compute();
     if (mql && themeMode === "system") {
       const handler = () => compute();
-      mql.addEventListener
-        ? mql.addEventListener("change", handler)
-        : mql.addListener(handler as any);
+      if (mql.addEventListener) {
+        mql.addEventListener("change", handler);
+      } else if (mql.addListener) {
+        mql.addListener(handler);
+      }
       return () => {
-        mql.removeEventListener
-          ? mql.removeEventListener("change", handler)
-          : mql.removeListener(handler as any);
+        if (mql.removeEventListener) {
+          mql.removeEventListener("change", handler);
+        } else if (mql.removeListener) {
+          mql.removeListener(handler);
+        }
       };
     }
   }, [themeMode]);

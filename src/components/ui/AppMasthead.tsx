@@ -48,6 +48,7 @@ export function AppMasthead({
   const pathname = usePathname();
   const router = useRouter();
   const routes = useRoutes();
+
   const headerToolbar = (
     <Toolbar id="vertical-toolbar">
       <ToolbarContent>
@@ -70,6 +71,7 @@ export function AppMasthead({
                   variant="plain"
                   aria-label="Settings"
                   icon={<CogIcon />}
+                  onClick={() => router.push("/settings")}
                 />
               </ToolbarItem>
             )}

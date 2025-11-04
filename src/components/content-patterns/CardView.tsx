@@ -450,12 +450,12 @@ export function CardView({
           <h1 id="card-view-title">{title}</h1>
           <p>{description}</p>
         </Content>
-        <Toolbar id="toolbar-group-types" clearAllFilters={onDelete}>
-          <ToolbarContent>{toolbarItems}</ToolbarContent>
-        </Toolbar>
       </PageSection>
 
       <PageSection isFilled aria-label="Selectable card gallery">
+        <Toolbar id="toolbar-group-types" clearAllFilters={onDelete}>
+          <ToolbarContent>{toolbarItems}</ToolbarContent>
+        </Toolbar>
         <Gallery hasGutter aria-label="Selectable card container">
           {showEmptyState && (
             <Card isCompact>
@@ -535,13 +535,19 @@ export function CardView({
                 }}
               >
                 {product.image && (
-                  <img
-                    src={product.image}
-                    alt={`${product.title} icon`}
-                    style={{ maxWidth: "60px" }}
-                  />
+                  <div style={{ maxWidth: "60px", display: "inline-block" }}>
+                    <img
+                      src={product.image}
+                      alt={`${product.title} icon`}
+                      style={{
+                        maxWidth: "60px",
+                        height: "auto",
+                        display: "block",
+                      }}
+                    />
+                  </div>
                 )}
-                {product.icon && <span>{product.icon}</span>}
+                {product.icon && !product.image && <span>{product.icon}</span>}
               </CardHeader>
               <CardTitle>{product.title}</CardTitle>
               <CardBody>{product.description || product.content}</CardBody>

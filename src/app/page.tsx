@@ -7,10 +7,7 @@ export default function Home() {
   return (
     <DashboardView title="Home">
       <Card>
-        <CardBody>Welcome to the PatternFly Next.js Starter</CardBody>
-      </Card>
-      <Card>
-        <CardBody>Use content-patterns to build pages quickly</CardBody>
+        <CardBody>Welcome to Home</CardBody>
       </Card>
     </DashboardView>
   );

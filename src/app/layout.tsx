@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { AppShell } from "@/components/ui/AppShell";
+import { AppWrapper } from "@/components/AppWrapper";
 
 export const metadata: Metadata = {
   title: "PatternFly Next.js Starter",
@@ -16,16 +16,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <AppShell
-          config={{
-            masthead: {
-              logo: "/PF-HorizontalLogo-Color.svg",
-              toolbarItems: ["notifications", "settings", "theme"],
-            },
-          }}
-        >
-          {children}
-        </AppShell>
+        <AppWrapper>{children}</AppWrapper>
       </body>
     </html>
   );

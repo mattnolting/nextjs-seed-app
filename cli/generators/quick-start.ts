@@ -3,6 +3,8 @@ import path from "path";
 import chalk from "chalk";
 import { scanRoutes } from "../utils/routes.js";
 
+import type { BootstrapConfig } from "../utils/bootstrap-setup.js";
+
 /**
  * Quick Start Generator
  *
@@ -17,8 +19,12 @@ import { scanRoutes } from "../utils/routes.js";
  * 1. If AppShell exists → Use it, generate pages with content patterns
  * 2. If AppShell missing → Generate AppShell first, then pages
  * 3. If pages exist → Prompt before overwriting
+ * 4. If config provided → Use it to generate AppShell with user preferences
  */
-export async function runQuickStart(projectRoot: string) {
+export async function runQuickStart(
+  projectRoot: string,
+  config?: BootstrapConfig | null
+) {
   console.log(chalk.blue.bold("\n🚀 PatternFly Quick Start\n"));
 
   try {
@@ -32,31 +38,47 @@ export async function runQuickStart(projectRoot: string) {
 
     // 2. Handle existing scaffold
     if (hasAppShell && existingPages.length > 0) {
-      const inquirer = await import("inquirer");
-      const { overwrite } = await inquirer.default.prompt([
-        {
-          type: "confirm",
-          name: "overwrite",
-          message:
-            "I see you have a configured project. Would you like to rebuild the application? This will overwrite existing pages.",
-          default: false,
-        },
-      ]);
+      try {
+        const inquirer = await import("inquirer");
+        const { overwrite } = await inquirer.default.prompt([
+          {
+            type: "confirm",
+            name: "overwrite",
+            message:
+              "I see you have a configured project. Would you like to rebuild the application? This will overwrite existing pages.",
+            default: false,
+          },
+        ]);
 
-      if (!overwrite) {
-        console.log(
-          chalk.yellow(
-            "\nQuick-start cancelled. Your project remains unchanged.\n"
-          )
-        );
-        return;
+        if (!overwrite) {
+          console.log(
+            chalk.yellow(
+              "\nQuick-start cancelled. Your project remains unchanged.\n"
+            )
+          );
+          return;
+        }
+      } catch (error) {
+        // Handle user cancellation (Ctrl+C)
+        if (
+          error &&
+          typeof error === "object" &&
+          "name" in error &&
+          (error.name === "ExitPromptError" ||
+            error.name === "SIGINT" ||
+            String(error).includes("SIGINT"))
+        ) {
+          console.log(chalk.yellow("\n\nOperation cancelled by user."));
+          return;
+        }
+        throw error;
       }
     }
 
-    // 3. Ensure AppShell exists (THE OUTER WRAPPER - rebuilds if missing)
-    if (!hasAppShell) {
+    // 3. Ensure AppShell exists (THE OUTER WRAPPER - rebuilds if missing or config provided)
+    if (!hasAppShell || config) {
       console.log(chalk.cyan("Building application scaffold (AppShell)..."));
-      await ensureAppShell(layoutPath, projectRoot);
+      await ensureAppShell(layoutPath, projectRoot, config);
       console.log(chalk.green("✓ Application scaffold built\n"));
     } else {
       console.log(
@@ -147,12 +169,12 @@ export async function runQuickStart(projectRoot: string) {
 }
 
 /**
- * Check if AppShell exists in layout.tsx
+ * Check if AppShell or AppWrapper exists in layout.tsx
  */
 async function checkAppShell(layoutPath: string): Promise<boolean> {
   try {
     const content = await fs.readFile(layoutPath, "utf-8");
-    return content.includes("AppShell");
+    return content.includes("AppShell") || content.includes("AppWrapper");
   } catch {
     return false;
   }
@@ -194,7 +216,8 @@ async function checkExistingPages(appDir: string): Promise<string[]> {
  */
 async function ensureAppShell(
   layoutPath: string,
-  projectRoot: string
+  projectRoot: string,
+  config?: BootstrapConfig | null
 ): Promise<void> {
   const uiDir = path.join(projectRoot, "src", "components", "ui");
   await fs.mkdir(uiDir, { recursive: true });
@@ -208,11 +231,29 @@ async function ensureAppShell(
     // layout.tsx doesn't exist
   }
 
-  if (!layoutExists) {
-    // Create layout.tsx with AppShell (THE OUTER WRAPPER)
+  // Determine nav mode based on config
+  const navMode =
+    config?.horizontalNav?.enabled && !config?.sidebar?.enabled
+      ? "masthead"
+      : config?.sidebar?.enabled
+      ? "sidebar"
+      : "sidebar"; // default
+
+  // Build toolbar items from config
+  const toolbarItems = config?.masthead?.toolbarItems || [
+    "notifications",
+    "settings",
+    "theme",
+  ];
+
+  // Use config logo or default
+  const logoPath = config?.masthead?.logo || "/PF-HorizontalLogo-Color.svg";
+
+  if (!layoutExists || config) {
+    // Create or regenerate layout.tsx with AppShell (THE OUTER WRAPPER)
     const layoutCode = `import type { Metadata } from "next";
 import "./globals.css";
-import { AppShell } from "@/components/ui/AppShell";
+import { AppWrapper } from "@/components/AppWrapper";
 
 export const metadata: Metadata = {
   title: "PatternFly Next.js Starter",
@@ -228,31 +269,60 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <AppShell
-          config={{
-            masthead: {
-              logo: "/PF-HorizontalLogo-Color.svg",
-              toolbarItems: ["notifications", "settings", "theme"],
-            },
-          }}
-        >
-          {children}
-        </AppShell>
+        <AppWrapper>{children}</AppWrapper>
       </body>
     </html>
   );
 }
 `;
     await fs.writeFile(layoutPath, layoutCode, "utf-8");
+
+    // Update AppWrapper with config
+    const appWrapperPath = path.join(
+      projectRoot,
+      "src",
+      "components",
+      "AppWrapper.tsx"
+    );
+    const appWrapperDir = path.dirname(appWrapperPath);
+    await fs.mkdir(appWrapperDir, { recursive: true });
+
+    const appWrapperCode = `"use client";
+
+import { AppShell } from "@/components/ui/AppShell";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+
+export function AppWrapper({ children }: { children: React.ReactNode }) {
+  return (
+    <ErrorBoundary>
+      <AppShell
+        config={{
+          masthead: {
+            logo: "${logoPath}",
+            toolbarItems: ${JSON.stringify(toolbarItems)},
+          },
+          navMode: "${navMode}",
+        }}
+      >
+        {children}
+      </AppShell>
+    </ErrorBoundary>
+  );
+}
+`;
+    await fs.writeFile(appWrapperPath, appWrapperCode, "utf-8");
+    console.log(chalk.green("✓ AppShell configured with your settings"));
   } else {
-    // Verify existing layout.tsx has AppShell
+    // Verify existing layout.tsx has AppShell or AppWrapper
     const content = await fs.readFile(layoutPath, "utf-8");
-    if (!content.includes("AppShell")) {
+    if (!content.includes("AppShell") && !content.includes("AppWrapper")) {
       throw new Error(
-        "layout.tsx exists but AppShell is not configured. " +
-          "Quick-start rebuilds the application scaffold - please configure AppShell first."
+        "layout.tsx exists but AppShell/AppWrapper is not configured. " +
+          "Quick-start rebuilds the application scaffold - please configure AppShell or AppWrapper first."
       );
     }
+    // If AppWrapper exists, that's fine - we don't need to regenerate
+    console.log(chalk.green("✓ AppShell/AppWrapper already configured"));
   }
 }
 

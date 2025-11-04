@@ -119,6 +119,10 @@ export function AppSidebar({
                     preventDefault
                     itemId={itemIndex}
                     isActive={activeItem === itemIndex}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      router.push(item.path);
+                    }}
                   >
                     {item.title}
                   </NavItem>

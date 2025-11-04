@@ -18,46 +18,63 @@ async function main() {
   try {
     // Check if layout is configured
     const isConfigured = await isLayoutConfigured(projectRoot);
+    let config: Awaited<ReturnType<typeof runBootstrapSetup>> | null = null;
 
+    // Always offer configuration walkthrough
     if (!isConfigured) {
       console.log(chalk.yellow("🔍 Checking app configuration...\n"));
       console.log(
         chalk.yellow("I see you don't have your app layout configured.\n")
       );
-
-      const { configureNow } = await import("inquirer").then((m) =>
-        m.default.prompt([
-          {
-            type: "confirm",
-            name: "configureNow",
-            message: "Would you like to configure it now?",
-            default: true,
-          },
-        ])
-      );
-
-      if (!configureNow) {
-        console.log(
-          chalk.yellow("\nConfiguration skipped. Run again when ready.")
-        );
-        process.exit(0);
-      }
-
-      // Run bootstrap setup
-      const config = await runBootstrapSetup();
-
-      // TODO: Generate DefaultLayout.tsx with config
-      // TODO: Update src/app/layout.tsx
+    } else {
+      console.log(chalk.cyan("🔍 App layout detected.\n"));
       console.log(
-        chalk.cyan(
-          "\n📝 Bootstrap configuration captured. Generating layout..."
-        )
+        chalk.yellow("You can reconfigure your app layout or continue with current settings.\n")
       );
-      // For now, we'll integrate this with the existing generator
     }
 
-    // Generate quick start app
-    await generateQuickStart(projectRoot);
+    try {
+      const inquirer = await import("inquirer");
+      const { configureNow } = await inquirer.default.prompt([
+        {
+          type: "confirm",
+          name: "configureNow",
+          message: isConfigured
+            ? "Would you like to reconfigure your app layout?"
+            : "Would you like to configure it now?",
+          default: !isConfigured, // Default to true if not configured, false if already configured
+        },
+      ]);
+
+      if (configureNow) {
+        // Run bootstrap setup
+        config = await runBootstrapSetup();
+        console.log(
+          chalk.cyan(
+            "\n📝 Bootstrap configuration captured. Generating layout..."
+          )
+        );
+      } else {
+        console.log(chalk.yellow("\nUsing existing configuration..."));
+      }
+    } catch (error) {
+      // Handle user cancellation (Ctrl+C)
+      if (
+        error &&
+        typeof error === "object" &&
+        "name" in error &&
+        (error.name === "ExitPromptError" ||
+          error.name === "SIGINT" ||
+          String(error).includes("SIGINT"))
+      ) {
+        console.log(chalk.yellow("\n\nOperation cancelled by user."));
+        process.exit(0);
+      }
+      throw error;
+    }
+
+    // Generate quick start app (pass config if available)
+    await generateQuickStart(projectRoot, config);
 
     console.log(chalk.green.bold("\n✅ Quick Start Complete!\n"));
     console.log(chalk.cyan("Next steps:"));

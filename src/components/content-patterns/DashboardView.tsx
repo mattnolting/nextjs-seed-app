@@ -20,45 +20,49 @@ export function DashboardView({
   children,
 }: DashboardViewProps) {
   return (
-    <PageSection>
+    <>
       {title && (
-        <Title
-          headingLevel="h1"
-          size="2xl"
-          style={{ marginBottom: "var(--pf-v5-global--spacer--lg)" }}
-        >
-          {title}
-        </Title>
+        <PageSection>
+          <Title
+            headingLevel="h1"
+            size="2xl"
+            style={{ marginBottom: "var(--pf-v5-global--spacer--lg)" }}
+          >
+            {title}
+          </Title>
+        </PageSection>
       )}
-      <Gallery hasGutter>
-        {children ? (
-          Array.isArray(children) ? (
-            children.map((child, idx) => (
-              <GalleryItem key={idx}>{child}</GalleryItem>
-            ))
+      <PageSection>
+        <Gallery hasGutter>
+          {children ? (
+            Array.isArray(children) ? (
+              children.map((child, idx) => (
+                <GalleryItem key={idx}>{child}</GalleryItem>
+              ))
+            ) : (
+              <GalleryItem>{children}</GalleryItem>
+            )
           ) : (
-            <GalleryItem>{children}</GalleryItem>
-          )
-        ) : (
-          <>
-            <GalleryItem>
-              <Card>
-                <CardBody>Metric 1</CardBody>
-              </Card>
-            </GalleryItem>
-            <GalleryItem>
-              <Card>
-                <CardBody>Metric 2</CardBody>
-              </Card>
-            </GalleryItem>
-            <GalleryItem>
-              <Card>
-                <CardBody>Metric 3</CardBody>
-              </Card>
-            </GalleryItem>
-          </>
-        )}
-      </Gallery>
-    </PageSection>
+            <>
+              <GalleryItem>
+                <Card>
+                  <CardBody>Metric 1</CardBody>
+                </Card>
+              </GalleryItem>
+              <GalleryItem>
+                <Card>
+                  <CardBody>Metric 2</CardBody>
+                </Card>
+              </GalleryItem>
+              <GalleryItem>
+                <Card>
+                  <CardBody>Metric 3</CardBody>
+                </Card>
+              </GalleryItem>
+            </>
+          )}
+        </Gallery>
+      </PageSection>
+    </>
   );
 }

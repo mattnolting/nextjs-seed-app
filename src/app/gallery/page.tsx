@@ -1,15 +1,15 @@
 "use client";
 
-import { CardView } from "@/components/content-patterns/CardView";
+import { CardView, type CardItem } from "@/components/content-patterns/CardView";
+
+const demoItems: CardItem[] = [
+  { id: "1", title: "Card 1", description: "Card description 1" },
+  { id: "2", title: "Card 2", description: "Card description 2" },
+  { id: "3", title: "Card 3", description: "Card description 3" },
+  { id: "4", title: "Card 4", description: "Card description 4" },
+  { id: "5", title: "Card 5", description: "Card description 5" },
+];
 
 export default function Gallery() {
-  return (
-    <CardView
-      items={[
-        { id: "1", title: "Gallery Item 1", content: <div>Item 1</div> },
-        { id: "2", title: "Gallery Item 2", content: <div>Item 2</div> },
-        { id: "3", title: "Gallery Item 3", content: <div>Item 3</div> },
-      ]}
-    />
-  );
+  return <CardView items={demoItems} />;
 }
