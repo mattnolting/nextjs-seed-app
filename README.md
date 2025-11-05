@@ -4,20 +4,31 @@ A modern Next.js application with PatternFly components. Generate production-rea
 
 ## Quick Start
 
-Generate a complete application instantly:
+The application is **ready to use out of the box** with sensible defaults:
 
 ```bash
-# Install dependencies (from project root)
+# Install dependencies
 npm install
-
-# Generate application
-npm run quick-start
 
 # Start development server
 npm run dev
 ```
 
 Visit [http://localhost:3000](http://localhost:3000) to see your app.
+
+### Reconfigure Your App
+
+To customize your application layout (sidebar, navigation, masthead):
+
+```bash
+npm run quick-start
+```
+
+This interactive tool lets you reconfigure:
+
+- Sidebar navigation (enabled/disabled, type, default state)
+- Horizontal navigation (masthead navigation)
+- Masthead (logo, toolbar items)
 
 ## Features
 

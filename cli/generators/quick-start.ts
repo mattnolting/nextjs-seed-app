@@ -232,11 +232,12 @@ async function ensureAppShell(
   }
 
   // Determine nav mode based on config
+  // Default: sidebar enabled, horizontal nav disabled
   const navMode =
     config?.horizontalNav?.enabled && !config?.sidebar?.enabled
       ? "masthead"
-      : config?.sidebar?.enabled
-      ? "sidebar"
+      : config?.sidebar?.enabled === false
+      ? "masthead"
       : "sidebar"; // default
 
   // Build toolbar items from config

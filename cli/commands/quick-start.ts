@@ -20,18 +20,13 @@ async function main() {
     const isConfigured = await isLayoutConfigured(projectRoot);
     let config: Awaited<ReturnType<typeof runBootstrapSetup>> | null = null;
 
-    // Always offer configuration walkthrough
-    if (!isConfigured) {
-      console.log(chalk.yellow("🔍 Checking app configuration...\n"));
-      console.log(
-        chalk.yellow("I see you don't have your app layout configured.\n")
-      );
-    } else {
-      console.log(chalk.cyan("🔍 App layout detected.\n"));
-      console.log(
-        chalk.yellow("You can reconfigure your app layout or continue with current settings.\n")
-      );
-    }
+    // Always offer configuration walkthrough for reconfiguration
+    console.log(chalk.blue.bold("\n🔧 PatternFly Quick Start - Reconfiguration\n"));
+    console.log(
+      chalk.yellow(
+        "This will reconfigure your application based on your preferences.\n"
+      )
+    );
 
     try {
       const inquirer = await import("inquirer");
