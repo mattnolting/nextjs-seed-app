@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastModified": "2025-10-31T19:37:12.702Z",
+  "lastModified": "2025-01-04T00:00:00.000Z",
   "scaffold": {
     "path": "src/app",
     "layouts": {
@@ -21,44 +21,77 @@
     {
       "path": "/",
       "layout": "DashboardLayout",
-      "title": "Home",
-      "priority": 1,
-      "slots": {}
-    },
-    {
-      "path": "/dashboard",
-      "layout": "DashboardLayout",
       "title": "Dashboard",
-      "priority": 2,
-      "slots": {}
+      "priority": 1,
+      "slots": {
+        "main": {
+          "component": "DashboardView",
+          "props": {
+            "dataSource": "app-data.json",
+            "section": "dashboard"
+          }
+        }
+      }
     },
     {
       "path": "/analytics",
       "layout": "DashboardLayout",
       "title": "Analytics",
+      "priority": 2,
+      "slots": {
+        "main": {
+          "component": "PrimaryDetailView",
+          "props": {
+            "dataSource": "app-data.json",
+            "section": "primaryDetail"
+          }
+        }
+      }
+    },
+    {
+      "path": "/gallery",
+      "layout": "DashboardLayout",
+      "title": "Gallery",
       "priority": 3,
-      "slots": {}
+      "slots": {
+        "main": {
+          "component": "CardView",
+          "props": {
+            "dataSource": "app-data.json",
+            "section": "cardView"
+          }
+        }
+      }
     },
     {
       "path": "/users",
       "layout": "DashboardLayout",
       "title": "Users",
       "priority": 4,
-      "slots": {}
+      "slots": {
+        "main": {
+          "component": "TableView",
+          "props": {
+            "dataSource": "app-data.json",
+            "section": "tableView"
+          }
+        }
+      }
     },
     {
       "path": "/settings",
       "layout": "DashboardLayout",
       "title": "Settings",
       "priority": 5,
-      "slots": {}
-    },
-    {
-      "path": "/gallery",
-      "layout": "DashboardLayout",
-      "title": "Gallery",
-      "priority": 6,
-      "slots": {}
+      "slots": {
+        "main": {
+          "component": "FormView",
+          "props": {
+            "dataSource": "app-data.json",
+            "section": "formView"
+          }
+        }
+      }
     }
   ]
 }

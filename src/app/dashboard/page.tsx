@@ -1,7 +1,18 @@
 "use client";
 
-import { DashboardDemoView } from "@/components/content-patterns/DashboardDemoView";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-export default function Dashboard() {
-  return <DashboardDemoView />;
+/**
+ * Redirect /dashboard to / (home)
+ * Dashboard is now the home page
+ */
+export default function DashboardRedirect() {
+  const router = useRouter();
+
+  useEffect(() => {
+    router.replace("/");
+  }, [router]);
+
+  return null;
 }

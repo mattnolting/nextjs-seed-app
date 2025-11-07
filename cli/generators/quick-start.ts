@@ -99,20 +99,20 @@ export async function runQuickStart(
         path: "/dashboard",
         title: "Dashboard",
         order: 2,
-        pattern: "DashboardDemoView",
+        pattern: "DashboardView",
       },
       {
         path: "/analytics",
         title: "Analytics",
         order: 3,
-        pattern: "DashboardView",
+        pattern: "PrimaryDetailView",
       },
       { path: "/users", title: "Users", order: 4, pattern: "TableView" },
       {
         path: "/settings",
         title: "Settings",
         order: 5,
-        pattern: "DashboardView",
+        pattern: "FormView",
       },
       { path: "/gallery", title: "Gallery", order: 6, pattern: "CardView" },
     ];
@@ -340,20 +340,40 @@ function generatePageCode(route: {
     return `"use client";
 
 import { TableView } from "@/components/content-patterns/TableView";
-
-// Mock data for demo
-const mockUsers = Array.from({ length: 25 }, (_, i) => ({
-  id: i + 1,
-  cells: [
-    \`User \${i + 1}\`,
-    \`user\${i + 1}@example.com\`,
-    \`Role \${i % 3 === 0 ? "Admin" : i % 3 === 1 ? "User" : "Guest"}\`,
-  ],
-}));
+import { useAppData } from "@/lib/data/useAppData";
 
 export default function ${route.title}() {
+  const { data, loading, error } = useAppData();
+
+  // Toggle hooks for content pattern selection
+  const useTableView = true;
+
+  if (loading) {
+    return <TableView columns={[]} rows={[]} title="${route.title}" />;
+  }
+
+  if (error) {
+    return (
+      <TableView
+        columns={[]}
+        rows={[]}
+        title="${route.title}"
+      />
+    );
+  }
+
+  if (useTableView && data?.tableView) {
+    return (
+      <TableView
+        columns={data.tableView.columns || []}
+        rows={data.tableView.rows || []}
+        title="${route.title}"
+      />
+    );
+  }
+
   return (
-    <TableView columns={["Name", "Email", "Role"]} rows={mockUsers} />
+    <TableView columns={[]} rows={[]} title="${route.title}" />
   );
 }
 `;
@@ -362,29 +382,213 @@ export default function ${route.title}() {
   if (route.pattern === "CardView") {
     return `"use client";
 
-import { CardView, type CardItem } from "@/components/content-patterns/CardView";
-
-const demoItems: CardItem[] = [
-  { id: "1", title: "Card 1", description: "Card description 1" },
-  { id: "2", title: "Card 2", description: "Card description 2" },
-  { id: "3", title: "Card 3", description: "Card description 3" },
-  { id: "4", title: "Card 4", description: "Card description 4" },
-  { id: "5", title: "Card 5", description: "Card description 5" },
-];
+import { CardView } from "@/components/content-patterns/CardView";
+import { useAppData } from "@/lib/data/useAppData";
 
 export default function ${route.title}() {
-  return <CardView items={demoItems} />;
+  const { data, loading, error } = useAppData();
+
+  // Toggle hooks for content pattern selection
+  const useCardView = true;
+
+  if (loading) {
+    return <CardView items={[]} title="${route.title}" showEmptyState={false} />;
+  }
+
+  if (error) {
+    return (
+      <CardView
+        items={[]}
+        title="${route.title}"
+        description={\`Error loading data: \${error.message}\`}
+        showEmptyState={false}
+      />
+    );
+  }
+
+  if (useCardView && data?.cardView) {
+    return (
+      <CardView
+        items={data.cardView.items || []}
+        title="${route.title}"
+        description="Browse available projects and items"
+        filterCategories={data.cardView.filters?.categories}
+      />
+    );
+  }
+
+  return (
+    <CardView
+      items={[]}
+      title="${route.title}"
+      description="No data available"
+      showEmptyState={false}
+    />
+  );
 }
 `;
   }
 
-  if (route.pattern === "DashboardDemoView") {
+  if (route.pattern === "DashboardView") {
     return `"use client";
 
-import { DashboardDemoView } from "@/components/content-patterns/DashboardDemoView";
+import { DashboardView } from "@/components/content-patterns/DashboardView";
+export default function ${route.title}() {
+  return <DashboardView title="${route.title}" />;
+}
+`;
+  }
+
+  if (route.pattern === "PrimaryDetailView") {
+    return `"use client";
+
+import { PrimaryDetailView } from "@/components/content-patterns/PrimaryDetailView";
+import {
+  DescriptionList,
+  DescriptionListGroup,
+  DescriptionListTerm,
+  DescriptionListDescription,
+} from "@patternfly/react-core";
+import { useAppData } from "@/lib/data/useAppData";
 
 export default function ${route.title}() {
-  return <DashboardDemoView />;
+  const { data, loading, error } = useAppData();
+
+  // Toggle hooks for content pattern selection
+  const usePrimaryDetailView = true;
+
+  if (loading) {
+    return (
+      <PrimaryDetailView
+        masterItems={[]}
+        renderDetail={() => <div>Loading...</div>}
+        title="${route.title}"
+      />
+    );
+  }
+
+  if (error) {
+    return (
+      <PrimaryDetailView
+        masterItems={[]}
+        renderDetail={() => <div>Error loading data: {error.message}</div>}
+        title="${route.title}"
+      />
+    );
+  }
+
+  if (usePrimaryDetailView && data?.primaryDetail) {
+    return (
+      <PrimaryDetailView
+        masterItems={data.primaryDetail.primaryItems || []}
+        renderDetail={(item) => {
+          return (
+            <DescriptionList>
+              <DescriptionListGroup>
+                <DescriptionListTerm>Title</DescriptionListTerm>
+                <DescriptionListDescription>{item.title}</DescriptionListDescription>
+              </DescriptionListGroup>
+              {item.description && (
+                <DescriptionListGroup>
+                  <DescriptionListTerm>Description</DescriptionListTerm>
+                  <DescriptionListDescription>
+                    {item.description}
+                  </DescriptionListDescription>
+                </DescriptionListGroup>
+              )}
+              {item.meta &&
+                Object.entries(item.meta).map(([key, value]) => (
+                  <DescriptionListGroup key={key}>
+                    <DescriptionListTerm>
+                      {key.charAt(0).toUpperCase() + key.slice(1)}
+                    </DescriptionListTerm>
+                    <DescriptionListDescription>
+                      {String(value)}
+                    </DescriptionListDescription>
+                  </DescriptionListGroup>
+                ))}
+            </DescriptionList>
+          );
+        }}
+        title="${route.title}"
+      />
+    );
+  }
+
+  return (
+    <PrimaryDetailView
+      masterItems={[]}
+      renderDetail={() => <div>No data available</div>}
+      title="${route.title}"
+    />
+  );
+}
+`;
+  }
+
+  if (route.pattern === "FormView") {
+    return `"use client";
+
+import { FormView } from "@/components/content-patterns/FormView";
+import { useAppData } from "@/lib/data/useAppData";
+
+export default function ${route.title}() {
+  const { data, loading, error } = useAppData();
+
+  // Toggle hooks for content pattern selection
+  const useFormView = true;
+
+  if (loading) {
+    return (
+      <FormView
+        formSchema={[]}
+        initialData={{}}
+        onSubmit={() => {}}
+        title="${route.title}"
+        description="Loading..."
+      />
+    );
+  }
+
+  if (error) {
+    return (
+      <FormView
+        formSchema={[]}
+        initialData={{}}
+        onSubmit={() => {}}
+        title="${route.title}"
+        description={\`Error loading data: \${error.message}\`}
+      />
+    );
+  }
+
+  if (useFormView && data?.formView) {
+    const handleSubmit = (formData: Record<string, any>) => {
+      if (typeof window !== "undefined") {
+        localStorage.setItem("userSettings", JSON.stringify(formData));
+      }
+    };
+
+    return (
+      <FormView
+        formSchema={data.formView.fields}
+        initialData={{}}
+        onSubmit={handleSubmit}
+        title="${route.title}"
+        description="Manage your settings"
+      />
+    );
+  }
+
+  return (
+    <FormView
+      formSchema={[]}
+      initialData={{}}
+      onSubmit={() => {}}
+      title="${route.title}"
+      description="No data available"
+    />
+  );
 }
 `;
   }

@@ -16,17 +16,19 @@ import { Table, Thead, Tbody, Tr, Th, Td } from "@patternfly/react-table";
 
 export interface TableRow {
   id: string | number;
-  cells: (string | number)[];
+  cells: (string | number | React.ReactNode)[];
 }
 
 export function TableView({
   columns,
   rows,
+  title,
   isLoading = false,
   onSelectionChange,
 }: {
   columns: string[];
   rows: TableRow[];
+  title?: string;
   isLoading?: boolean;
   onSelectionChange?: (selected: (string | number)[]) => void;
 }) {
@@ -66,8 +68,16 @@ export function TableView({
   };
 
   return (
-    <PageSection>
-      <Toolbar>
+    <>
+      {title && (
+        <PageSection>
+          <Title headingLevel="h1" size="2xl">
+            {title}
+          </Title>
+        </PageSection>
+      )}
+      <PageSection>
+        <Toolbar>
         <ToolbarContent>
           <ToolbarItem>
             <SearchInput
@@ -150,6 +160,7 @@ export function TableView({
           </Tbody>
         </Table>
       )}
-    </PageSection>
+      </PageSection>
+    </>
   );
 }

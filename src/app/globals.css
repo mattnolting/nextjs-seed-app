@@ -1,3 +1,7 @@
 /* PatternFly CSS imports */
 @import "@patternfly/react-core/dist/styles/base.css";
 @import "@patternfly/patternfly/patternfly-charts.css";
+
+/* Ensure charts respond to dark theme */
+/* PatternFly charts automatically respond to pf-v6-theme-dark class on html element */
+/* The patternfly-charts.css file contains all necessary theme variables */

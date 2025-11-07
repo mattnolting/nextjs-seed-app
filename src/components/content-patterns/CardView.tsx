@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import {
   Badge,
   Bullseye,
@@ -38,6 +38,39 @@ import {
 import TrashIcon from "@patternfly/react-icons/dist/esm/icons/trash-icon";
 import PlusCircleIcon from "@patternfly/react-icons/dist/esm/icons/plus-circle-icon";
 import EllipsisVIcon from "@patternfly/react-icons/dist/esm/icons/ellipsis-v-icon";
+import CodeBranchIcon from "@patternfly/react-icons/dist/esm/icons/code-branch-icon";
+import DollarSignIcon from "@patternfly/react-icons/dist/esm/icons/dollar-sign-icon";
+import ChartLineIcon from "@patternfly/react-icons/dist/esm/icons/chart-line-icon";
+import BullhornIcon from "@patternfly/react-icons/dist/esm/icons/bullhorn-icon";
+import WarehouseIcon from "@patternfly/react-icons/dist/esm/icons/warehouse-icon";
+import UsersIcon from "@patternfly/react-icons/dist/esm/icons/users-icon";
+import CalculatorIcon from "@patternfly/react-icons/dist/esm/icons/calculator-icon";
+import ServerIcon from "@patternfly/react-icons/dist/esm/icons/server-icon";
+import CheckCircleIcon from "@patternfly/react-icons/dist/esm/icons/check-circle-icon";
+import ShieldAltIcon from "@patternfly/react-icons/dist/esm/icons/shield-alt-icon";
+import ShoppingCartIcon from "@patternfly/react-icons/dist/esm/icons/shopping-cart-icon";
+import DatabaseIcon from "@patternfly/react-icons/dist/esm/icons/database-icon";
+import EnvelopeIcon from "@patternfly/react-icons/dist/esm/icons/envelope-icon";
+import TruckIcon from "@patternfly/react-icons/dist/esm/icons/truck-icon";
+import { Icon } from "@patternfly/react-core";
+
+// Icon mapping object
+const icons: Record<string, React.ComponentType<any>> = {
+  "code-branch": CodeBranchIcon,
+  "dollar-sign": DollarSignIcon,
+  "chart-line": ChartLineIcon,
+  bullhorn: BullhornIcon,
+  warehouse: WarehouseIcon,
+  users: UsersIcon,
+  calculator: CalculatorIcon,
+  server: ServerIcon,
+  "check-circle": CheckCircleIcon,
+  "shield-alt": ShieldAltIcon,
+  "shopping-cart": ShoppingCartIcon,
+  database: DatabaseIcon,
+  envelope: EnvelopeIcon,
+  truck: TruckIcon,
+};
 
 export interface CardItem {
   id: string | number;
@@ -80,6 +113,11 @@ export function CardView({
   const [cardData, setCardData] = useState(items);
   const [selectedItems, setSelectedItems] = useState<(string | number)[]>([]);
   const [areAllSelected, setAreAllSelected] = useState<boolean>(false);
+
+  // Sync cardData when items prop changes
+  useEffect(() => {
+    setCardData(items);
+  }, [items]);
   const [splitButtonDropdownIsOpen, setSplitButtonDropdownIsOpen] =
     useState(false);
   const [isLowerToolbarDropdownOpen, setIsLowerToolbarDropdownOpen] =
@@ -430,8 +468,12 @@ export function CardView({
     Object.entries(filters).forEach(([category, selected]) => {
       if (selected.length > 0) {
         filtered = filtered.filter((card) => {
-          const value = card.meta?.[category] || card.title;
-          return selected.includes(value);
+          // Check meta field (case-insensitive key matching)
+          const metaKey = Object.keys(card.meta || {}).find(
+            (key) => key.toLowerCase() === category.toLowerCase()
+          );
+          const value = metaKey ? card.meta?.[metaKey] : card.title;
+          return value && selected.includes(value);
         });
       }
     });
@@ -457,102 +499,113 @@ export function CardView({
           <ToolbarContent>{toolbarItems}</ToolbarContent>
         </Toolbar>
         <Gallery hasGutter aria-label="Selectable card container">
-          {showEmptyState && (
+          {paginated.length === 0 && showEmptyState ? (
             <Card isCompact>
               <Bullseye>
                 <EmptyState
                   headingLevel="h2"
-                  titleText="Add a new card to your page"
+                  titleText="No cards found"
                   icon={PlusCircleIcon}
                   variant={EmptyStateVariant.xs}
                 >
                   <EmptyStateFooter>
                     <EmptyStateActions>
-                      <Button variant="link" onClick={emptyStateAction}>
-                        Add card
-                      </Button>
+                      {emptyStateAction && (
+                        <Button variant="link" onClick={emptyStateAction}>
+                          Add card
+                        </Button>
+                      )}
                     </EmptyStateActions>
                   </EmptyStateFooter>
                 </EmptyState>
               </Bullseye>
             </Card>
-          )}
-          {paginated.map((product, key) => (
-            <Card
-              isCompact
-              isClickable
-              isSelectable={enableSelection}
-              key={product.id}
-              id={String(product.id)}
-            >
-              <CardHeader
-                selectableActions={
-                  enableSelection
-                    ? {
-                        isChecked: selectedItems.includes(product.id),
-                        selectableActionId: `selectable-actions-item-${product.id}`,
-                        selectableActionAriaLabelledby: String(product.id),
-                        name: `check-${product.id}`,
-                        onChange,
-                      }
-                    : undefined
-                }
-                actions={{
-                  actions: (
-                    <Dropdown
-                      isOpen={!!cardActionsState[key]}
-                      onOpenChange={(isOpen) =>
-                        setCardActionsState({ [key]: isOpen })
-                      }
-                      toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-                        <MenuToggle
-                          ref={toggleRef}
-                          aria-label={`${product.title} actions`}
-                          variant="plain"
-                          onClick={(e) => {
-                            onCardKebabDropdownToggle(e, key.toString());
-                          }}
-                          isExpanded={!!cardActionsState[key]}
-                          icon={<EllipsisVIcon />}
-                        />
-                      )}
-                      popperProps={{ position: "right" }}
-                    >
-                      <DropdownList>
-                        {onCardDelete && (
-                          <DropdownItem
-                            key="trash"
-                            onClick={() => {
-                              deleteItem(product);
-                            }}
-                          >
-                            <TrashIcon /> Delete
-                          </DropdownItem>
-                        )}
-                      </DropdownList>
-                    </Dropdown>
-                  ),
-                }}
+          ) : (
+            paginated.map((product, key) => (
+              <Card
+                isCompact
+                isClickable
+                isSelectable={enableSelection}
+                key={product.id}
+                id={String(product.id)}
               >
-                {product.image && (
-                  <div style={{ maxWidth: "60px", display: "inline-block" }}>
+                <CardHeader
+                  selectableActions={
+                    enableSelection
+                      ? {
+                          isChecked: selectedItems.includes(product.id),
+                          selectableActionId: `selectable-actions-item-${product.id}`,
+                          selectableActionAriaLabelledby: product.title.replace(
+                            / /g,
+                            "-"
+                          ),
+                          name: `check-${product.id}`,
+                          onChange,
+                        }
+                      : undefined
+                  }
+                  actions={{
+                    actions: (
+                      <>
+                        <Dropdown
+                          isOpen={!!cardActionsState[key]}
+                          onOpenChange={(isOpen) =>
+                            setCardActionsState({ [key]: isOpen })
+                          }
+                          toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+                            <MenuToggle
+                              ref={toggleRef}
+                              aria-label={`${product.title} actions`}
+                              variant="plain"
+                              onClick={(e) => {
+                                onCardKebabDropdownToggle(e, key.toString());
+                              }}
+                              isExpanded={!!cardActionsState[key]}
+                              icon={<EllipsisVIcon />}
+                            />
+                          )}
+                          popperProps={{ position: "right" }}
+                        >
+                          <DropdownList>
+                            {onCardDelete && (
+                              <DropdownItem
+                                key="trash"
+                                onClick={() => {
+                                  deleteItem(product);
+                                }}
+                              >
+                                <TrashIcon /> Delete
+                              </DropdownItem>
+                            )}
+                          </DropdownList>
+                        </Dropdown>
+                      </>
+                    ),
+                  }}
+                >
+                  {product.icon && icons[product.icon] && (
+                    <div
+                      style={{
+                        fontSize: "2.5rem",
+                        color: "var(--pf-v5-global--primary-color--100)",
+                      }}
+                    >
+                      <Icon>{React.createElement(icons[product.icon])}</Icon>
+                    </div>
+                  )}
+                  {!product.icon && product.image && (
                     <img
                       src={product.image}
                       alt={`${product.title} icon`}
-                      style={{
-                        maxWidth: "60px",
-                        height: "auto",
-                        display: "block",
-                      }}
+                      style={{ maxWidth: "60px" }}
                     />
-                  </div>
-                )}
-                {product.icon && !product.image && <span>{product.icon}</span>}
-              </CardHeader>
-              <CardTitle>{product.title}</CardTitle>
-              <CardBody>{product.description || product.content}</CardBody>
-            </Card>
-          ))}
+                  )}
+                </CardHeader>
+                <CardTitle>{product.title}</CardTitle>
+                <CardBody>{product.description || product.content}</CardBody>
+              </Card>
+            ))
+          )}
         </Gallery>
       </PageSection>
 

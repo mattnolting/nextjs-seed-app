@@ -16,31 +16,36 @@
   },
   "dependencies": {
     "@patternfly/patternfly": "^6.4.0",
-    "@patternfly/react-core": "^6.4.0",
     "@patternfly/react-charts": "^6.4.0",
+    "@patternfly/react-core": "^6.4.0",
     "@patternfly/react-icons": "^6.4.0",
     "@patternfly/react-styles": "^6.4.0",
     "@patternfly/react-table": "^6.4.0",
     "next": "16.0.0",
     "react": "19.2.0",
-    "react-dom": "19.2.0"
+    "react-dom": "19.2.0",
+    "victory": "36.6.7",
+    "victory-area": "36.6.7",
+    "victory-bar": "36.6.7",
+    "victory-core": "36.6.7",
+    "victory-pie": "36.6.7"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.4.0",
+    "@testing-library/react": "^16.0.0",
     "@types/inquirer": "^9.0.9",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/testing-library__jest-dom": "^6.0.0",
     "chalk": "^5.6.2",
     "commander": "^14.0.2",
     "eslint": "^9",
-    "@testing-library/jest-dom": "^6.4.0",
-    "@testing-library/react": "^16.0.0",
-    "@types/testing-library__jest-dom": "^6.0.0",
-    "happy-dom": "^14.12.3",
-    "vitest": "^2.1.4",
     "eslint-config-next": "16.0.0",
+    "happy-dom": "^14.12.3",
     "inquirer": "^12.10.0",
     "tsx": "^4.20.6",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^2.1.4"
   }
 }

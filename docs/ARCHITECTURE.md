@@ -45,8 +45,9 @@ Create a simple, elegant, fast starter that composes PatternFly primitives into 
 │   src/components/ui/                │
 │   - AppShell (PF Page + chrome)     │
 │   src/components/content-patterns/  │
-│   - [Concern]View (DashboardView,   │
-│     CardView, TableView, SplitView) │
+│   - [Concern]View (DashboardView,  │
+│     CardView, TableView,            │
+│     PrimaryDetailView, FormView)    │
 └─────────────────────────────────────┘
 ```
 
@@ -70,11 +71,10 @@ src/
 │   │   └── AppSidebar.tsx
 │   └── content-patterns/         # Pre-built page content
 │       ├── DashboardView.tsx
-│       ├── DashboardDemoView.tsx
 │       ├── CardView.tsx
 │       ├── TableView.tsx
-│       ├── SplitViewView.tsx
-│       └── GalleryView.tsx
+│       ├── PrimaryDetailView.tsx
+│       └── FormView.tsx
 └── lib/
     └── navigation/
         └── useRoutes.ts         # Loads public/routes.json on client
@@ -184,10 +184,11 @@ interface RouteMetadata {
 
 ## 3. Demo Pages (Quick Start Output)
 
-- DashboardView: gallery of cards
+- DashboardView: dashboard with KPI cards and charts
 - TableView: data table with toolbar, search, pagination
-- CardView: card gallery
-- SplitViewView: two-panel split view
+- CardView: card gallery with filtering and selection
+- PrimaryDetailView: primary-detail pattern with DataList and Drawer
+- FormView: data-driven forms
 
 ---
 
@@ -205,12 +206,11 @@ Wraps entire app (PF Page with masthead + sidebar). Receives a config prop for:
 
 Reusable, composable page content layouts under `src/components/content-patterns/`:
 
-- **DashboardView** - Simple gallery-based dashboard layout
-- **DashboardDemoView** - Full-featured dashboard with PatternFly charts (Area, Bar, Donut) using `@patternfly/react-charts`
-- **CardView** - Card gallery layout
+- **DashboardView** - Full-featured dashboard with KPI cards and PatternFly charts (Area, Bar, Donut) using `@patternfly/react-charts`
+- **CardView** - Card gallery layout with filtering, pagination, and selection
 - **TableView** - Data table with toolbar, search, pagination, and bulk actions (uses `@patternfly/react-table`)
-- **SplitViewView** - Two-panel split layout
-- **GalleryView** - Responsive gallery layout
+- **PrimaryDetailView** - Primary-detail pattern using DataList and Drawer components
+- **FormView** - Data-driven forms with validation
 
 ---
 
@@ -251,7 +251,7 @@ src/
 │       ├── DashboardView.tsx
 │       ├── CardView.tsx
 │       ├── TableView.tsx
-│       └── SplitViewView.tsx
+│       └── PrimaryDetailView.tsx
 ├── lib/
 │   └── navigation/
 │       └── useRoutes.ts

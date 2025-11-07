@@ -16,9 +16,9 @@ npm run dev
 
 Visit [http://localhost:3000](http://localhost:3000) to see your app.
 
-### Reconfigure Your App
+### Optional: Reconfigure Your App
 
-To customize your application layout (sidebar, navigation, masthead):
+The application works perfectly with default settings. If you want to customize your application layout (sidebar, navigation, masthead), you can optionally run:
 
 ```bash
 npm run quick-start
@@ -30,15 +30,18 @@ This interactive tool lets you reconfigure:
 - Horizontal navigation (masthead navigation)
 - Masthead (logo, toolbar items)
 
+**Note:** This is completely optional. The app is fully functional without running `quick-start`.
+
 ## Features
 
-- ⚡ **Generate in 3 seconds** - Quick Start mode creates a complete app
 - 🎨 **PatternFly v6** - Modern design system components
 - ⚛️ **Next.js 16** - App Router, React Server Components
 - 📝 **TypeScript** - Type-safe by default
 - 🧭 **Dynamic Navigation** - Automatically built from your pages
-- 📐 **Multiple Layouts** - Dashboard, Gallery, Table, Split View
+- 📐 **Content Patterns** - Dashboard, Card View, Table View, Primary Detail, Form View
+- 📊 **Data-Driven** - Single JSON file (`app-data.json`) for all component data
 - 🎯 **Zero Config** - Sensible defaults, ready to customize
+- ⚡ **Optional Quick Start** - Reconfigure app layout when needed
 
 ## Project Structure
 
@@ -65,11 +68,11 @@ nextjs-seed-app/
 
 ### Pre-built Content Patterns
 
-- **DashboardView** - Gallery-based dashboard layout
-- **DashboardDemoView** - Full-featured dashboard with charts (Area, Bar, Donut)
-- **CardView** - Responsive card gallery
+- **DashboardView** - Full-featured dashboard with KPI cards and charts (Area, Bar, Donut)
+- **CardView** - Responsive card gallery with filtering and pagination
 - **TableView** - Data table with search, pagination, and bulk actions
-- **SplitViewView** - Two-panel split layout
+- **PrimaryDetailView** - Primary-detail pattern with DataList and Drawer
+- **FormView** - Data-driven forms with validation
 
 ### Dynamic Navigation
 
@@ -96,21 +99,21 @@ Navigation automatically discovers routes from your file structure and updates a
 # Install dependencies
 npm install
 
-# Quick Start (generate app instantly)
+# Development server (start here!)
+npm run dev
+
+# Optional: Reconfigure app layout
 npm run quick-start
 
-# Generate components/pages
+# Optional: Generate components/pages
 npm run generate page <path>
 npm run generate component <name>
 
-# Sync routes from filesystem
+# Optional: Sync routes from filesystem
 npm run sync routes
 
-# Configure navigation
+# Optional: Configure navigation
 npm run config navigation
-
-# Development server
-npm run dev
 
 # Production build
 npm run build

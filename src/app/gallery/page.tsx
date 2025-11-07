@@ -1,15 +1,46 @@
 "use client";
 
-import { CardView, type CardItem } from "@/components/content-patterns/CardView";
-
-const demoItems: CardItem[] = [
-  { id: "1", title: "Card 1", description: "Card description 1" },
-  { id: "2", title: "Card 2", description: "Card description 2" },
-  { id: "3", title: "Card 3", description: "Card description 3" },
-  { id: "4", title: "Card 4", description: "Card description 4" },
-  { id: "5", title: "Card 5", description: "Card description 5" },
-];
+import { CardView } from "@/components/content-patterns/CardView";
+import { useAppData } from "@/lib/data/useAppData";
 
 export default function Gallery() {
-  return <CardView items={demoItems} />;
+  const { data, loading, error } = useAppData();
+
+  // Toggle hooks for content pattern selection
+  const useCardView = true;
+
+  if (loading) {
+    return <CardView items={[]} title="Gallery" showEmptyState={false} />;
+  }
+
+  if (error) {
+    return (
+      <CardView
+        items={[]}
+        title="Gallery"
+        description={`Error loading data: ${error.message}`}
+        showEmptyState={false}
+      />
+    );
+  }
+
+  if (useCardView && data?.cardView) {
+    return (
+      <CardView
+        items={data.cardView.items || []}
+        title="Gallery"
+        description="Browse available projects and items"
+        filterCategories={data.cardView.filters?.categories}
+      />
+    );
+  }
+
+  return (
+    <CardView
+      items={[]}
+      title="Gallery"
+      description="No data available"
+      showEmptyState={false}
+    />
+  );
 }
