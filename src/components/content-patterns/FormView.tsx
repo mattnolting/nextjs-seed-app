@@ -1,0 +1,291 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import {
+  PageSection,
+  Title,
+  Form,
+  FormGroup,
+  TextInput,
+  FormSelect,
+  FormSelectOption,
+  TextArea,
+  Checkbox,
+  Radio,
+  ActionGroup,
+  Button,
+  Alert,
+} from "@patternfly/react-core";
+import type { FormField, FormViewData } from "@/lib/data/types";
+
+export interface FormViewProps {
+  formSchema: FormField[];
+  initialData?: Record<string, any>;
+  onSubmit: (data: Record<string, any>) => void;
+  onCancel?: () => void;
+  title?: string;
+  description?: string;
+}
+
+export function FormView({
+  formSchema,
+  initialData = {},
+  onSubmit,
+  onCancel,
+  title = "Form",
+  description,
+}: FormViewProps) {
+  const [formData, setFormData] = useState<Record<string, any>>(initialData);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  // Initialize form data from schema defaults
+  useEffect(() => {
+    const defaults: Record<string, any> = {};
+    formSchema.forEach((field) => {
+      if (field.type === "checkbox" || field.type === "radio") {
+        defaults[field.name] = [];
+      } else if (field.type === "select" && field.options?.[0]?.value) {
+        defaults[field.name] = field.options[0].value;
+      } else {
+        defaults[field.name] = "";
+      }
+    });
+    setFormData({ ...defaults, ...initialData });
+  }, [formSchema, initialData]);
+
+  const validateField = (field: FormField, value: any): string | null => {
+    if (!field.validation) return null;
+
+    const { required, minLength, maxLength, pattern } = field.validation;
+
+    if (required && (value === "" || value === null || value === undefined)) {
+      return `${field.label} is required`;
+    }
+
+    if (typeof value === "string") {
+      if (minLength && value.length < minLength) {
+        return `${field.label} must be at least ${minLength} characters`;
+      }
+      if (maxLength && value.length > maxLength) {
+        return `${field.label} must be no more than ${maxLength} characters`;
+      }
+      if (pattern) {
+        const regex = new RegExp(pattern);
+        if (!regex.test(value)) {
+          return `${field.label} format is invalid`;
+        }
+      }
+    }
+
+    return null;
+  };
+
+  const validateForm = (): boolean => {
+    const newErrors: Record<string, string> = {};
+    let isValid = true;
+
+    formSchema.forEach((field) => {
+      const value = formData[field.name];
+      const error = validateField(field, value);
+      if (error) {
+        newErrors[field.name] = error;
+        isValid = false;
+      }
+    });
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
+  const handleChange = (name: string, value: any) => {
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next[name];
+        return next;
+      });
+    }
+  };
+
+  const handleCheckboxChange = (name: string, value: string, checked: boolean) => {
+    setFormData((prev) => {
+      const current = prev[name] || [];
+      if (checked) {
+        return { ...prev, [name]: [...current, value] };
+      } else {
+        return { ...prev, [name]: current.filter((v: string) => v !== value) };
+      }
+    });
+  };
+
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    if (validateForm()) {
+      onSubmit(formData);
+      setIsSubmitted(true);
+      setTimeout(() => setIsSubmitted(false), 3000);
+    }
+  };
+
+  const handleCancel = () => {
+    if (onCancel) {
+      onCancel();
+    } else {
+      // Reset to initial data
+      setFormData(initialData);
+      setErrors({});
+    }
+  };
+
+  const renderField = (field: FormField) => {
+    const value = formData[field.name] || "";
+    const error = errors[field.name];
+    const isValid = !error;
+
+    switch (field.type) {
+      case "text":
+      case "email":
+      case "number":
+        return (
+          <TextInput
+            id={field.name}
+            type={field.type}
+            value={value}
+            onChange={(_event, val) => handleChange(field.name, val)}
+            placeholder={field.placeholder}
+            validated={error ? "error" : "default"}
+            aria-describedby={error ? `${field.name}-helper` : undefined}
+          />
+        );
+
+      case "textarea":
+        return (
+          <TextArea
+            id={field.name}
+            value={value}
+            onChange={(_event, val) => handleChange(field.name, val)}
+            placeholder={field.placeholder}
+            validated={error ? "error" : "default"}
+            aria-describedby={error ? `${field.name}-helper` : undefined}
+          />
+        );
+
+      case "select":
+        return (
+          <FormSelect
+            id={field.name}
+            value={value}
+            onChange={(_event, val) => handleChange(field.name, val)}
+          >
+            {field.options?.map((option) => (
+              <FormSelectOption
+                key={option.value}
+                value={option.value}
+                label={option.label}
+              />
+            ))}
+          </FormSelect>
+        );
+
+      case "checkbox":
+        return (
+          <div>
+            {field.options?.map((option) => (
+              <Checkbox
+                key={option.value}
+                id={`${field.name}-${option.value}`}
+                label={option.label}
+                isChecked={(formData[field.name] || []).includes(option.value)}
+                onChange={(_event, checked) =>
+                  handleCheckboxChange(field.name, option.value, checked)
+                }
+              />
+            ))}
+          </div>
+        );
+
+      case "radio":
+        return (
+          <div>
+            {field.options?.map((option) => (
+              <Radio
+                key={option.value}
+                id={`${field.name}-${option.value}`}
+                name={field.name}
+                label={option.label}
+                isChecked={formData[field.name] === option.value}
+                onChange={(_event, checked) => {
+                  if (checked) {
+                    handleChange(field.name, option.value);
+                  }
+                }}
+              />
+            ))}
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <>
+      <PageSection>
+        <Title headingLevel="h1" size="2xl">
+          {title}
+        </Title>
+        {description && <p>{description}</p>}
+      </PageSection>
+      <PageSection>
+        {isSubmitted && (
+          <Alert
+            variant="success"
+            title="Form submitted successfully"
+            isInline
+            style={{ marginBottom: "var(--pf-v5-global--spacer--md)" }}
+          />
+        )}
+        <Form isHorizontal isWidthLimited maxWidth="600px" onSubmit={handleSubmit}>
+          {formSchema.map((field) => {
+            const error = errors[field.name];
+            return (
+              <FormGroup
+                key={field.name}
+                label={field.label}
+                fieldId={field.name}
+                isRequired={field.required || field.validation?.required}
+              >
+                {renderField(field)}
+                {error && (
+                  <div
+                    style={{
+                      color: "var(--pf-v5-global--danger-color--100)",
+                      fontSize: "var(--pf-v5-global--FontSize--sm)",
+                      marginTop: "var(--pf-v5-global--spacer--xs)",
+                    }}
+                  >
+                    {error}
+                  </div>
+                )}
+              </FormGroup>
+            );
+          })}
+
+          <ActionGroup>
+            <Button type="submit" variant="primary">
+              Submit
+            </Button>
+            <Button type="button" variant="link" onClick={handleCancel}>
+              Cancel
+            </Button>
+          </ActionGroup>
+        </Form>
+      </PageSection>
+    </>
+  );
+}
+
