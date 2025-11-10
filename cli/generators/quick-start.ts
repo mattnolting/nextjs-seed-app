@@ -35,6 +35,7 @@ export async function runQuickStart(
     // 1. Check current state
     const hasAppShell = await checkAppShell(layoutPath);
     const existingPages = await checkExistingPages(appDir);
+    let shouldRegeneratePages = true;
 
     // 2. Handle existing scaffold
     if (hasAppShell && existingPages.length > 0) {
@@ -53,10 +54,10 @@ export async function runQuickStart(
         if (!overwrite) {
           console.log(
             chalk.yellow(
-              "\nQuick-start cancelled. Your project remains unchanged.\n"
+              "\nKeeping existing pages. Quick-start will only refresh the AppShell configuration.\n"
             )
           );
-          return;
+          shouldRegeneratePages = false;
         }
       } catch (error) {
         // Handle user cancellation (Ctrl+C)
@@ -87,72 +88,74 @@ export async function runQuickStart(
     }
 
     // 4. Generate pages with content patterns (NO DashboardLayout!)
-    // These render INSIDE AppShell's main content area
-    console.log(
-      chalk.cyan("Generating pages (content only, no nested layouts)...")
-    );
-    await fs.mkdir(publicDir, { recursive: true });
+    if (shouldRegeneratePages) {
+      // These render INSIDE AppShell's main content area
+      console.log(
+        chalk.cyan("Generating pages (content only, no nested layouts)...")
+      );
+      await fs.mkdir(publicDir, { recursive: true });
 
-    const routes = [
-      { path: "/", title: "Home", order: 1, pattern: "DashboardView" },
-      {
-        path: "/dashboard",
-        title: "Dashboard",
-        order: 2,
-        pattern: "DashboardView",
-      },
-      {
-        path: "/analytics",
-        title: "Analytics",
-        order: 3,
-        pattern: "PrimaryDetailView",
-      },
-      { path: "/users", title: "Users", order: 4, pattern: "TableView" },
-      {
-        path: "/settings",
-        title: "Settings",
-        order: 5,
-        pattern: "FormView",
-      },
-      { path: "/gallery", title: "Gallery", order: 6, pattern: "CardView" },
-    ];
+      const routes = [
+        { path: "/", title: "Home", order: 1, pattern: "DashboardView" },
+        {
+          path: "/analytics",
+          title: "Analytics",
+          order: 2,
+          pattern: "PrimaryDetailView",
+        },
+        { path: "/users", title: "Users", order: 3, pattern: "TableView" },
+        {
+          path: "/settings",
+          title: "Settings",
+          order: 4,
+          pattern: "FormView",
+        },
+        { path: "/gallery", title: "Gallery", order: 5, pattern: "CardView" },
+      ];
 
-    for (const route of routes) {
-      const pageDir = path.join(appDir, route.path === "/" ? "" : route.path);
-      await fs.mkdir(pageDir, { recursive: true });
+      for (const route of routes) {
+        const pageDir = path.join(appDir, route.path === "/" ? "" : route.path);
+        await fs.mkdir(pageDir, { recursive: true });
 
-      const pageCode = generatePageCode(route);
-      await fs.writeFile(path.join(pageDir, "page.tsx"), pageCode, "utf-8");
-      console.log(chalk.green(`  ✓ ${route.path}/page.tsx`));
+        const pageCode = generatePageCode(route);
+        await fs.writeFile(path.join(pageDir, "page.tsx"), pageCode, "utf-8");
+        console.log(chalk.green(`  ✓ ${route.path}/page.tsx`));
+      }
+      console.log(chalk.green("\n✓ All pages created\n"));
+
+      // 5. Create routes.json for navigation
+      console.log(chalk.cyan("Creating navigation..."));
+      const scannedRoutes = await scanRoutes(appDir);
+      const routesData = {
+        routes: routes.map((route) => {
+          const scanned = scannedRoutes.find((r) => r.path === route.path);
+          return {
+            path: route.path,
+            title: route.title,
+            order: route.order,
+            ...(scanned || {}),
+          };
+        }),
+        lastSynced: new Date().toISOString(),
+      };
+
+      await fs.writeFile(
+        path.join(publicDir, "routes.json"),
+        JSON.stringify(routesData, null, 2),
+        "utf-8"
+      );
+      console.log(
+        chalk.green(
+          `✓ routes.json created with ${routesData.routes.length} routes\n`
+        )
+      );
+    } else {
+      console.log(
+        chalk.yellow(
+          "Skipped page regeneration and routes.json update (existing content preserved).\n"
+        )
+      );
     }
-    console.log(chalk.green("\n✓ All pages created\n"));
-
-    // 5. Create routes.json for navigation
-    console.log(chalk.cyan("Creating navigation..."));
-    const scannedRoutes = await scanRoutes(appDir);
-    const routesData = {
-      routes: routes.map((route) => {
-        const scanned = scannedRoutes.find((r) => r.path === route.path);
-        return {
-          path: route.path,
-          title: route.title,
-          order: route.order,
-          ...(scanned || {}),
-        };
-      }),
-      lastSynced: new Date().toISOString(),
-    };
-
-    await fs.writeFile(
-      path.join(publicDir, "routes.json"),
-      JSON.stringify(routesData, null, 2),
-      "utf-8"
-    );
-    console.log(
-      chalk.green(
-        `✓ routes.json created with ${routesData.routes.length} routes\n`
-      )
-    );
 
     // Success!
     console.log(chalk.green.bold("✅ Quick Start Complete!\n"));
@@ -233,19 +236,19 @@ async function ensureAppShell(
 
   // Determine nav mode based on config
   // Default: sidebar enabled, horizontal nav disabled
-  const navMode =
-    config?.horizontalNav?.enabled && !config?.sidebar?.enabled
-      ? "masthead"
-      : config?.sidebar?.enabled === false
-      ? "masthead"
-      : "sidebar"; // default
+  const sidebarEnabled = config?.sidebar?.enabled ?? true;
+  const sidebarDefaultOpen = config?.sidebar?.defaultOpen ?? true;
+  const horizontalNavEnabled = config?.horizontalNav?.enabled ?? false;
+  const navMode = sidebarEnabled ? "sidebar" : "masthead";
 
   // Build toolbar items from config
-  const toolbarItems = config?.masthead?.toolbarItems || [
-    "notifications",
-    "settings",
-    "theme",
-  ];
+  const showToolbar = config?.masthead?.showToolbar ?? true;
+  const toolbarItems =
+    showToolbar && config?.masthead?.toolbarItems?.length
+      ? config.masthead.toolbarItems
+      : showToolbar
+      ? ["notifications", "settings", "theme"]
+      : [];
 
   // Use config logo or default
   const logoPath = config?.masthead?.logo || "/PF-HorizontalLogo-Color.svg";
@@ -300,9 +303,17 @@ export function AppWrapper({ children }: { children: React.ReactNode }) {
         config={{
           masthead: {
             logo: "${logoPath}",
+            showToolbar: ${showToolbar ? "true" : "false"},
             toolbarItems: ${JSON.stringify(toolbarItems)},
           },
           navMode: "${navMode}",
+          sidebar: {
+            enabled: ${sidebarEnabled ? "true" : "false"},
+            defaultOpen: ${sidebarDefaultOpen ? "true" : "false"},
+          },
+          horizontalNav: {
+            enabled: ${horizontalNavEnabled ? "true" : "false"},
+          },
         }}
       >
         {children}

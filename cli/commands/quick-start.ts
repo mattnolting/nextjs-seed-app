@@ -41,17 +41,23 @@ async function main() {
         },
       ]);
 
-      if (configureNow) {
-        // Run bootstrap setup
-        config = await runBootstrapSetup();
+      if (!configureNow) {
+        console.log(chalk.yellow("\nUsing existing configuration..."));
         console.log(
-          chalk.cyan(
-            "\n📝 Bootstrap configuration captured. Generating layout..."
+          chalk.green.bold(
+            "\n✅ Quick Start skipped – no changes were applied.\n"
           )
         );
-      } else {
-        console.log(chalk.yellow("\nUsing existing configuration..."));
+        return;
       }
+
+      // Run bootstrap setup
+      config = await runBootstrapSetup();
+      console.log(
+        chalk.cyan(
+          "\n📝 Bootstrap configuration captured. Generating layout..."
+        )
+      );
     } catch (error) {
       // Handle user cancellation (Ctrl+C)
       if (
@@ -71,10 +77,6 @@ async function main() {
     // Generate quick start app (pass config if available)
     await generateQuickStart(projectRoot, config);
 
-    console.log(chalk.green.bold("\n✅ Quick Start Complete!\n"));
-    console.log(chalk.cyan("Next steps:"));
-    console.log(chalk.cyan("  1. npm run dev"));
-    console.log(chalk.cyan("  2. Visit http://localhost:3000\n"));
   } catch (error) {
     console.error(chalk.red("\n❌ Error:"), error);
     process.exit(1);

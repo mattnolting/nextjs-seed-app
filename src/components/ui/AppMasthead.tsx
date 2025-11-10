@@ -36,6 +36,8 @@ export function AppMasthead({
   theme,
   onThemeToggle,
   navMode = "sidebar",
+  showToolbar = true,
+  showHorizontalNav = false,
 }: {
   isSidebarOpen: boolean;
   onSidebarToggle: () => void;
@@ -44,19 +46,58 @@ export function AppMasthead({
   theme?: "light" | "dark" | "system";
   onThemeToggle?: () => void;
   navMode?: "sidebar" | "masthead";
+  showToolbar?: boolean;
+  showHorizontalNav?: boolean;
 }) {
   const pathname = usePathname();
   const router = useRouter();
   const routes = useRoutes();
 
-  const headerToolbar = (
-    <Toolbar id="vertical-toolbar">
+  const effectiveToolbarItems = toolbarItems ?? [];
+  const shouldRenderToolbar = showToolbar && effectiveToolbarItems.length > 0;
+
+  const shouldRenderHorizontalNav = showHorizontalNav || navMode === "masthead";
+  const hasToolbarContent = shouldRenderHorizontalNav || shouldRenderToolbar;
+
+  const mastheadToolbar = hasToolbarContent && (
+    <Toolbar
+      id="vertical-toolbar"
+      className={shouldRenderHorizontalNav ? "pf-m-static" : undefined}
+    >
       <ToolbarContent>
-        {(toolbarItems.includes("notifications") ||
-          toolbarItems.includes("settings") ||
-          toolbarItems.includes("theme")) && (
-          <ToolbarGroup align={{ default: "alignEnd" }}>
-            {toolbarItems.includes("notifications") && (
+        {shouldRenderHorizontalNav && (
+          <ToolbarItem isOverflowContainer>
+            <Nav aria-label="Global" variant="horizontal">
+              <NavList>
+                {routes
+                  .filter((r) => !r.hidden)
+                  .map((item) => (
+                    <NavItem
+                      key={item.path}
+                      isActive={
+                        pathname === item.path ||
+                        pathname.startsWith(item.path + "/")
+                      }
+                      preventDefault
+                      onClick={(e) => {
+                        e.preventDefault();
+                        router.push(item.path);
+                      }}
+                    >
+                      {item.title}
+                    </NavItem>
+                  ))}
+              </NavList>
+            </Nav>
+          </ToolbarItem>
+        )}
+
+        {shouldRenderToolbar && (
+          <ToolbarGroup
+            align={{ default: "alignEnd" }}
+            className="pf-m-action-group-plain pf-m-gap-none pf-m-gap-md-on-md"
+          >
+            {effectiveToolbarItems.includes("notifications") && (
               <ToolbarItem>
                 <Button
                   variant="plain"
@@ -65,7 +106,7 @@ export function AppMasthead({
                 />
               </ToolbarItem>
             )}
-            {toolbarItems.includes("settings") && (
+            {effectiveToolbarItems.includes("settings") && (
               <ToolbarItem>
                 <Button
                   variant="plain"
@@ -75,7 +116,7 @@ export function AppMasthead({
                 />
               </ToolbarItem>
             )}
-            {toolbarItems.includes("theme") && (
+            {effectiveToolbarItems.includes("theme") && (
               <ToolbarItem>
                 <Button
                   variant="plain"
@@ -131,37 +172,7 @@ export function AppMasthead({
           </MastheadLogo>
         </MastheadBrand>
       </MastheadMain>
-      <MastheadContent>
-        {navMode === "masthead" && (
-          <Nav
-            aria-label="Global"
-            variant="horizontal"
-            style={{ marginRight: 16 }}
-          >
-            <NavList>
-              {routes
-                .filter((r) => !r.hidden)
-                .map((item) => (
-                  <NavItem
-                    key={item.path}
-                    isActive={
-                      pathname === item.path ||
-                      pathname.startsWith(item.path + "/")
-                    }
-                    preventDefault
-                    onClick={(e) => {
-                      e.preventDefault();
-                      router.push(item.path);
-                    }}
-                  >
-                    {item.title}
-                  </NavItem>
-                ))}
-            </NavList>
-          </Nav>
-        )}
-        {headerToolbar}
-      </MastheadContent>
+      <MastheadContent>{mastheadToolbar}</MastheadContent>
     </Masthead>
   );
 }

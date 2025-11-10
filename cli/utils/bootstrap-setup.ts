@@ -88,7 +88,7 @@ export async function runBootstrapSetup(): Promise<BootstrapConfig> {
       type: "input",
       name: "logoPath",
       message: "Logo path:",
-      default: "/logo.svg",
+      default: "/PF-HorizontalLogo-Color.svg",
       validate: (input: string) => {
         if (!input.trim()) {
           return "Logo path cannot be empty";

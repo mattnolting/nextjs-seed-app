@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import "./globals.css";
 import { AppWrapper } from "@/components/AppWrapper";
+import "./globals.css";
+import "@patternfly/patternfly/patternfly-charts.css";
 
 export const metadata: Metadata = {
   title: "PatternFly Next.js Starter",

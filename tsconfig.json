@@ -29,7 +29,8 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
-    "**/*.mts"
+    "**/*.mts",
+    ".temporal/manifest.ts"
   ],
-  "exclude": ["node_modules", "src/__tests__/**", "src/test/**"]
+  "exclude": ["node_modules", "src/__tests__/**", "src/test/**", ".temporal/**"]
 }

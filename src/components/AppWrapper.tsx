@@ -10,9 +10,17 @@ export function AppWrapper({ children }: { children: React.ReactNode }) {
         config={{
           masthead: {
             logo: "/PF-HorizontalLogo-Color.svg",
-            toolbarItems: ["notifications", "settings", "theme"],
+            showToolbar: true,
+            toolbarItems: ["notifications","settings","user-menu"],
           },
           navMode: "sidebar",
+          sidebar: {
+            enabled: true,
+            defaultOpen: true,
+          },
+          horizontalNav: {
+            enabled: true,
+          },
         }}
       >
         {children}

@@ -10,18 +10,52 @@ export function AppShell({
   config = {
     masthead: {
       toolbarItems: ["notifications", "settings", "theme"],
+      showToolbar: true,
+    },
+    sidebar: {
+      enabled: true,
+      defaultOpen: true,
+    },
+    horizontalNav: {
+      enabled: true,
     },
     navMode: "sidebar",
   },
 }: {
   children: React.ReactNode;
   config?: {
-    masthead?: { logo?: string; toolbarItems?: string[] };
+    masthead?: {
+      logo?: string;
+      toolbarItems?: string[];
+      showToolbar?: boolean;
+    };
     theme?: "light" | "dark" | "system";
     navMode?: "sidebar" | "masthead";
+    sidebar?: {
+      enabled?: boolean;
+      defaultOpen?: boolean;
+    };
+    horizontalNav?: {
+      enabled?: boolean;
+    };
   };
 }) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const navMode =
+    config.navMode ??
+    (config.sidebar?.enabled === false ? "masthead" : "sidebar");
+
+  const sidebarEnabled = config.sidebar?.enabled ?? navMode === "sidebar";
+  const sidebarDefaultOpen = config.sidebar?.defaultOpen ?? true;
+  const hasSidebar = sidebarEnabled && navMode === "sidebar";
+
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(() =>
+    hasSidebar ? sidebarDefaultOpen : false
+  );
+
+  useEffect(() => {
+    setIsSidebarOpen(hasSidebar ? sidebarDefaultOpen : false);
+  }, [hasSidebar, sidebarDefaultOpen]);
+
   // Always start with "light" to ensure SSR/client hydration match
   const [themeMode, setThemeMode] = useState<"light" | "dark" | "system">(
     config.theme ?? "light"
@@ -104,8 +138,19 @@ export function AppShell({
       t === "light" ? "dark" : t === "dark" ? "system" : "light"
     );
 
-  const navMode = config.navMode ?? "sidebar";
-  const hasSidebar = navMode === "sidebar";
+  const showToolbar = config.masthead?.showToolbar ?? true;
+  let toolbarItems =
+    showToolbar && config.masthead?.toolbarItems?.length
+      ? [...config.masthead.toolbarItems]
+      : showToolbar
+      ? ["notifications", "settings", "theme"]
+      : [];
+  if (showToolbar && !toolbarItems.includes("theme")) {
+    toolbarItems = [...toolbarItems, "theme"];
+  }
+
+  const showHorizontalNav =
+    config.horizontalNav?.enabled ?? navMode === "masthead";
 
   return (
     <Page
@@ -114,10 +159,12 @@ export function AppShell({
           isSidebarOpen={isSidebarOpen}
           onSidebarToggle={onSidebarToggle}
           logo={config.masthead?.logo}
-          toolbarItems={config.masthead?.toolbarItems}
+          toolbarItems={toolbarItems}
           theme={themeMode}
           onThemeToggle={onThemeToggle}
           navMode={navMode}
+          showToolbar={showToolbar}
+          showHorizontalNav={showHorizontalNav}
         />
       }
       sidebar={hasSidebar ? <AppSidebar isOpen={isSidebarOpen} /> : undefined}

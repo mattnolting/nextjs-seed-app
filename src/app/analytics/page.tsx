@@ -40,14 +40,11 @@ export default function Analytics() {
       <PrimaryDetailView
         masterItems={data.primaryDetail.primaryItems || []}
         renderDetail={(item) => {
-          // Custom render function for detail view using PatternFly DescriptionList
           return (
             <DescriptionList>
               <DescriptionListGroup>
                 <DescriptionListTerm>Title</DescriptionListTerm>
-                <DescriptionListDescription>
-                  {item.title}
-                </DescriptionListDescription>
+                <DescriptionListDescription>{item.title}</DescriptionListDescription>
               </DescriptionListGroup>
               {item.description && (
                 <DescriptionListGroup>
@@ -72,9 +69,6 @@ export default function Analytics() {
           );
         }}
         title="Analytics"
-        masterTitle="Analytics Items"
-        detailTitle="Analytics Details"
-        emptyStateMessage="Select an analytics item to view details"
       />
     );
   }
