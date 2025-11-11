@@ -22,7 +22,7 @@ Create a simple, elegant, fast starter that composes PatternFly primitives into 
 ┌─────────────────────────────────────┐
 │   CLI (Action-First)                │
 │   - Quick Start scaffolding         │
-│   - Generate / Sync / Config        │
+│   - Future: targeted generators     │
 └──────────────┬──────────────────────┘
                │
 ┌──────────────▼──────────────────────┐
@@ -214,22 +214,22 @@ Reusable, composable page content layouts under `src/components/content-patterns
 
 ---
 
-## 5. CLI Overview (Hybrid Action-First)
+## 5. CLI Overview (Phase 1)
 
 ```
 npm run quick-start
-npm run generate page
-npm run generate component
-npm run sync routes
-npm run config navigation
 ```
+
+> The generate, sync, and config subcommands are paused while the new generator
+> architecture is being designed. Quick-start is the supported way to rebuild
+> the demo experience during this phase.
 
 ### After Quick Start
 
 - Generate `AppShell`, `AppMasthead`, `AppSidebar`
 - Update `src/app/layout.tsx` to wrap with `AppShell`
 - Generate content patterns and demo pages
-- Generate and/or sync `public/routes.json`
+- Update `public/routes.json` to match new navigation
 
 ---
 

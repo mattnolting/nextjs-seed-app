@@ -3,34 +3,37 @@
 ## Getting Started
 
 1. Install dependencies: `npm install`
-2. Start dev server: `npm run dev`
-3. Build for production: `npm run build`
+2. (Optional) Rebuild demo content: `npm run quick-start`
+3. Start the dev server: `npm run dev`
+4. Build for production: `npm run build`
 
-## Component Extraction
+## Project Layout Highlights
 
-This project includes a component extraction engine in `modules/` that can:
+- `src/app/` contains all routes and the root `layout.tsx`
+- `src/components/ui/` holds the PatternFly AppShell chrome
+- `src/components/content-patterns/` provides reusable demo pages
+- `src/lib/data/useAppData.ts` loads sample data from `public/app-data.json`
 
-- Analyze PatternFly React components
-- Extract schema metadata
-- Generate framework-agnostic templates
+## Working with Components
 
-## Adding New Components
+- Component files that use hooks should start with `"use client"`
+- Follow PatternFly prop patterns and export typed interfaces
+- Keep shared UI in `components/ui/` and page-level views in
+  `components/content-patterns/`
 
-1. Use the CLI: `npm run cli`
-2. Select components to extract
-3. Generate isolated components
-4. Integrate into the app directory
+## CLI Workflow
+
+- `npm run quick-start` is the only Phase 1 CLI entry point
+- It re-runs layout configuration, regenerates demo routes, and refreshes
+  `public/routes.json`
 
 ## Testing
 
-- Unit tests in `__tests__/unit/`
-- Integration tests in `__tests__/integration/`
-- E2E tests in `__tests__/e2e/`
+- Smoke tests live under `src/__tests__/smoke/`
+- Run the suite with `npm test` (single run) or `npm run test:watch`
 
 ## Deployment
 
-This project can be deployed to:
-
-- Vercel (recommended for Next.js)
-- Any Node.js hosting platform
-- Static export for static sites
+- Optimized for Vercel/Next.js hosting
+- Works on any Node runtime capable of running `next start`
+- Supports static asset hosting via `next export` if needed

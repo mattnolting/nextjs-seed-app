@@ -5,47 +5,53 @@ import { Page } from "@patternfly/react-core";
 import { AppMasthead } from "@/components/ui/AppMasthead";
 import { AppSidebar } from "@/components/ui/AppSidebar";
 
-export function AppShell({
-  children,
-  config = {
-    masthead: {
-      toolbarItems: ["notifications", "settings", "theme"],
-      showToolbar: true,
-    },
-    sidebar: {
-      enabled: true,
-      defaultOpen: true,
-    },
-    horizontalNav: {
-      enabled: true,
-    },
-    navMode: "sidebar",
-  },
-}: {
-  children: React.ReactNode;
-  config?: {
-    masthead?: {
-      logo?: string;
-      toolbarItems?: string[];
-      showToolbar?: boolean;
-    };
-    theme?: "light" | "dark" | "system";
-    navMode?: "sidebar" | "masthead";
-    sidebar?: {
-      enabled?: boolean;
-      defaultOpen?: boolean;
-    };
-    horizontalNav?: {
-      enabled?: boolean;
-    };
+export interface AppShellConfig {
+  masthead?: {
+    logo?: string;
+    toolbarItems?: string[];
+    showToolbar?: boolean;
   };
-}) {
-  const navMode =
-    config.navMode ??
-    (config.sidebar?.enabled === false ? "masthead" : "sidebar");
+  theme?: "light" | "dark" | "system";
+  navMode?: "sidebar" | "masthead";
+  sidebar?: {
+    enabled?: boolean;
+    defaultOpen?: boolean;
+  };
+  horizontalNav?: {
+    enabled?: boolean;
+  };
+}
 
-  const sidebarEnabled = config.sidebar?.enabled ?? navMode === "sidebar";
-  const sidebarDefaultOpen = config.sidebar?.defaultOpen ?? true;
+export interface AppShellProps {
+  children: React.ReactNode;
+  config?: AppShellConfig;
+}
+
+const defaultConfig: AppShellConfig = {
+  masthead: {
+    toolbarItems: ["notifications", "settings", "theme"],
+    showToolbar: true,
+  },
+  sidebar: {
+    enabled: true,
+    defaultOpen: true,
+  },
+  horizontalNav: {
+    enabled: true,
+  },
+  navMode: "sidebar",
+};
+
+export function AppShell({ children, config }: AppShellProps) {
+  const resolvedConfig = config ?? defaultConfig;
+
+  const navMode =
+    resolvedConfig.navMode ??
+    (resolvedConfig.sidebar?.enabled === false ? "masthead" : "sidebar");
+
+  const sidebarEnabled =
+    resolvedConfig.sidebar?.enabled ?? navMode === "sidebar";
+  const sidebarDefaultOpen = resolvedConfig.sidebar?.defaultOpen ?? true;
   const hasSidebar = sidebarEnabled && navMode === "sidebar";
 
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(() =>
@@ -58,7 +64,7 @@ export function AppShell({
 
   // Always start with "light" to ensure SSR/client hydration match
   const [themeMode, setThemeMode] = useState<"light" | "dark" | "system">(
-    config.theme ?? "light"
+    resolvedConfig.theme ?? "light"
   );
   const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">("light");
 
@@ -74,7 +80,7 @@ export function AppShell({
       const prefersDark =
         window.matchMedia &&
         window.matchMedia("(prefers-color-scheme: dark)").matches;
-      const initial = (config.theme ??
+      const initial = (resolvedConfig.theme ??
         saved ??
         (prefersDark ? "dark" : "light")) as "light" | "dark" | "system";
       if (initial !== themeMode) {
@@ -138,10 +144,10 @@ export function AppShell({
       t === "light" ? "dark" : t === "dark" ? "system" : "light"
     );
 
-  const showToolbar = config.masthead?.showToolbar ?? true;
+  const showToolbar = resolvedConfig.masthead?.showToolbar ?? true;
   let toolbarItems =
-    showToolbar && config.masthead?.toolbarItems?.length
-      ? [...config.masthead.toolbarItems]
+    showToolbar && resolvedConfig.masthead?.toolbarItems?.length
+      ? [...resolvedConfig.masthead.toolbarItems]
       : showToolbar
       ? ["notifications", "settings", "theme"]
       : [];
@@ -150,7 +156,7 @@ export function AppShell({
   }
 
   const showHorizontalNav =
-    config.horizontalNav?.enabled ?? navMode === "masthead";
+    resolvedConfig.horizontalNav?.enabled ?? navMode === "masthead";
 
   return (
     <Page
@@ -158,7 +164,7 @@ export function AppShell({
         <AppMasthead
           isSidebarOpen={isSidebarOpen}
           onSidebarToggle={onSidebarToggle}
-          logo={config.masthead?.logo}
+          logo={resolvedConfig.masthead?.logo}
           toolbarItems={toolbarItems}
           theme={themeMode}
           onThemeToggle={onThemeToggle}

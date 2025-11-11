@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { AppWrapper } from "@/components/AppWrapper";
 import "./globals.css";
+import "@patternfly/patternfly/patternfly-base.css";
 import "@patternfly/patternfly/patternfly-charts.css";
 
 export const metadata: Metadata = {

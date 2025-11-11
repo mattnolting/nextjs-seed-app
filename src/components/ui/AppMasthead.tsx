@@ -25,6 +25,7 @@ import CogIcon from "@patternfly/react-icons/dist/esm/icons/cog-icon";
 import MoonIcon from "@patternfly/react-icons/dist/esm/icons/moon-icon";
 import SunIcon from "@patternfly/react-icons/dist/esm/icons/sun-icon";
 import DesktopIcon from "@patternfly/react-icons/dist/esm/icons/desktop-icon";
+import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useRoutes } from "@/lib/navigation/useRoutes";
 
@@ -52,17 +53,24 @@ export function AppMasthead({
   const pathname = usePathname();
   const router = useRouter();
   const routes = useRoutes();
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
 
   const effectiveToolbarItems = toolbarItems ?? [];
   const shouldRenderToolbar = showToolbar && effectiveToolbarItems.length > 0;
 
-  const shouldRenderHorizontalNav = showHorizontalNav || navMode === "masthead";
+  const shouldRenderHorizontalNav =
+    isHydrated && (showHorizontalNav || navMode === "masthead");
   const hasToolbarContent = shouldRenderHorizontalNav || shouldRenderToolbar;
 
   const mastheadToolbar = hasToolbarContent && (
     <Toolbar
       id="vertical-toolbar"
       className={shouldRenderHorizontalNav ? "pf-m-static" : undefined}
+      ouiaId="app-masthead-toolbar"
     >
       <ToolbarContent>
         {shouldRenderHorizontalNav && (

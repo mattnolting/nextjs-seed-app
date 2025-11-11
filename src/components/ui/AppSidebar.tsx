@@ -22,6 +22,11 @@ export function AppSidebar({
   const router = useRouter();
   const routes = useRoutes();
   const navItems = items ?? routes;
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
 
   // Find the index of the current active route
   const getActiveItemId = () => {
@@ -55,15 +60,15 @@ export function AppSidebar({
     }
   };
 
-  // Debug: ensure we have routes to render
-  if (navItems.length === 0) {
+  // Until hydration completes (server render) show a stable placeholder so SSR and client match
+  if (!isHydrated || navItems.length === 0) {
     return (
       <PageSidebar isSidebarOpen={isOpen} id="vertical-sidebar">
         <PageSidebarBody>
           <Nav
             onSelect={onSelect}
             aria-label="Default global"
-            suppressHydrationWarning
+            ouiaId="app-sidebar-nav"
           >
             <NavList>
               <NavItem
@@ -101,7 +106,7 @@ export function AppSidebar({
         <Nav
           onSelect={onSelect}
           aria-label="Default global"
-          suppressHydrationWarning
+          ouiaId="app-sidebar-nav"
         >
           {Object.entries(grouped).map(([groupName, groupItems]) => (
             <NavList

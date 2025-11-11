@@ -4,134 +4,91 @@
 
 ```
 nextjs-seed-app/
-├── 📁 src/                           # Application source code
-│   ├── 📁 app/                       # Next.js App Router routes
-│   │   ├── 📁 analytics/
-│   │   │   └── page.tsx
-│   │   ├── 📁 dashboard/
-│   │   │   └── page.tsx
-│   │   ├── 📁 gallery/
-│   │   │   └── page.tsx
-│   │   ├── 📁 settings/
-│   │   │   └── page.tsx
-│   │   ├── 📁 users/
-│   │   │   └── page.tsx
-│   │   ├── layout.tsx                # Root layout
-│   │   ├── page.tsx                  # Home page (/)
-│   │   ├── globals.css               # Global styles
+├── src/                               # Application source
+│   ├── app/                           # Next.js App Router entrypoints
+│   │   ├── analytics/page.tsx
+│   │   ├── dashboard/page.tsx
+│   │   ├── gallery/page.tsx
+│   │   ├── settings/page.tsx
+│   │   ├── users/page.tsx
+│   │   ├── layout.tsx                 # Root layout (wraps AppShell)
+│   │   ├── page.tsx                   # Home route
+│   │   ├── globals.css                # Global styles
 │   │   └── favicon.ico
-│   ├── 📁 components/
-│   │   ├── 📁 ui/                    # App chrome
-│   │   │   ├── AppShell.tsx
+│   ├── components/
+│   │   ├── AppWrapper.tsx             # Error boundary + AppShell wrapper
+│   │   ├── ErrorBoundary.tsx
+│   │   ├── ui/
+│   │   │   ├── AppShell.tsx           # PatternFly Page scaffold
 │   │   │   ├── AppMasthead.tsx
 │   │   │   └── AppSidebar.tsx
-│   │   └── 📁 content-patterns/      # Pre-built page content (optional)
-│   │       ├── DashboardView.tsx
-│   │       ├── DashboardDemoView.tsx  # Full dashboard with charts
+│   │   └── content-patterns/          # Reusable page-level content views
 │   │       ├── CardView.tsx
-│   │       ├── TableView.tsx
-│   │       ├── SplitViewView.tsx
-│   │       └── GalleryView.tsx
-│   └── 📁 lib/
-│       └── 📁 navigation/            # Navigation utilities
-│           └── useRoutes.ts          # Client hook for public/routes.json
+│   │       ├── DashboardView.tsx
+│   │       ├── FormView.tsx
+│   │       ├── PrimaryDetailView.tsx
+│   │       └── TableView.tsx
+│   └── lib/
+│       ├── data/
+│       │   ├── useAppData.ts
+│       │   └── types.ts
+│       └── navigation/
+│           └── useRoutes.ts
 │
-├── 📁 cli/                            # CLI tooling
-│   ├── 📁 commands/                   # Command handlers
-│   │   ├── 📁 config/                 # Configuration commands
-│   │   │   ├── layout.ts
-│   │   │   └── navigation.ts
-│   │   ├── 📁 generate/               # Generation commands
-│   │   │   ├── component.ts
-│   │   │   ├── layout.ts
-│   │   │   └── page.ts
-│   │   ├── 📁 sync/                   # Sync commands
-│   │   │   └── routes.ts
-│   │   └── quick-start.ts             # Quick start command
-│   ├── 📁 generators/                 # Code generators (legacy)
-│   │   ├── layout-generator.ts
-│   │   └── quick-start.ts
-│   ├── 📁 prompts/                    # Interactive prompts
-│   │   └── layout-prompts.ts
-│   ├── 📁 templates/                  # Code templates
-│   │   └── page.ts
-│   ├── 📁 types/                       # TypeScript types
-│   │   └── manifest.ts
-│   ├── 📁 utils/                       # Shared utilities
-│   │   ├── bootstrap-check.ts         # Check bootstrap state
-│   │   ├── bootstrap-setup.ts         # Bootstrap prompts
-│   │   └── routes.ts                  # Route scanning
-│   ├── index.ts                       # Main CLI router
+├── cli/                               # CLI tooling (Phase 1)
+│   ├── commands/
+│   │   └── quick-start.ts             # Standalone bootstrap command
+│   ├── generators/
+│   │   └── quick-start.ts             # Implements scaffold + demo creation
+│   ├── utils/
+│   │   ├── bootstrap-check.ts
+│   │   ├── bootstrap-setup.ts
+│   │   └── routes.ts
 │   └── tsconfig.json
 │
-├── 📁 docs/                           # Project documentation
-│   ├── ARCHITECTURE.md                # Complete architecture doc
-│   ├── CLI_ARCHITECTURE.md            # CLI command patterns
-│   ├── PROJECT_PLAN.md                # Project roadmap
-│   ├── QUICK_START_MODE.md            # Quick start guide
-│   ├── ROUTES.md                      # Routes schema & ordering
-│   └── README.md                      # Docs index
-│
-├── 📁 ai-documentation/                # AI development guidelines
-│   ├── COMPONENT_RULES.md
-│   ├── DEVELOPMENT_GUIDE.md
-│   ├── LAYOUT_PATTERNS.md
-│   └── PROBLEM_STATEMENT.md
-│
-├── 📁 public/                         # Static assets
-│   ├── PF-HorizontalLogo-Color.svg
-│   ├── routes.json                    # Generated navigation
-│   └── [other assets]
-│
-├── package.json                       # Dependencies & scripts
-├── tsconfig.json                      # TypeScript config
-├── next.config.ts                     # Next.js config
-└── README.md                          # Project README
+├── docs/                              # Human-authored documentation
+├── ai-documentation/                  # AI-oriented guidance
+├── public/
+│   ├── app-data.json                  # Demo content
+│   ├── routes.json                    # Navigation manifest
+│   └── static assets (logos, etc.)
+├── package.json
+├── tsconfig.json
+├── next.config.ts
+└── README.md
 ```
 
 ## Key Directories
 
 ### `src/app/`
 
-Next.js App Router routes. Each subdirectory with a `page.tsx` becomes a route.
+Next.js App Router routes and layout. Each folder with a `page.tsx` maps to a
+route. `layout.tsx` wraps all content with `AppWrapper`, which in turn renders
+the PatternFly-powered `AppShell`.
 
-### `src/components/ui/`
+### `src/components/`
 
-App chrome and structural UI:
+- `AppWrapper.tsx` and `ErrorBoundary.tsx` own global providers and error
+  handling around the shell.
+- `components/ui/` contains the chrome elements (`AppShell`, `AppMasthead`,
+  `AppSidebar`) that assemble the PatternFly layout.
+- `components/content-patterns/` packages reusable page-level views used by the
+  demo routes (Card, Dashboard, Form, Primary/Detail, Table).
 
-- `AppShell.tsx` - PF Page + masthead + sidebar wrapper
-- `AppMasthead.tsx`, `AppSidebar.tsx`
+### `src/lib/`
 
-### `src/components/content-patterns/`
+- `lib/data/` centralizes data loading for demo pages via `useAppData`.
+- `lib/navigation/useRoutes.ts` reads `public/routes.json` at runtime to drive
+  sidebar navigation.
 
-Pre-built content views used within pages (optional):
+### `cli/`
 
-- `DashboardView.tsx` - Simple gallery-based dashboard
-- `DashboardDemoView.tsx` - Full-featured dashboard with PatternFly charts
-- `CardView.tsx` - Card gallery layout
-- `TableView.tsx` - Data table with toolbar, search, pagination, bulk actions
-- `SplitViewView.tsx` - Two-panel split layout
-- `GalleryView.tsx` - Responsive gallery layout
+Phase 1 ships a single `quick-start` workflow. The command prompts for layout
+choices, ensures the AppShell scaffold exists, rebuilds demo pages, and updates
+`public/routes.json`. Shared helpers live under `cli/utils/`, and the generator
+logic sits in `cli/generators/quick-start.ts`.
 
-### `src/lib/navigation/`
+### `public/`
 
-Navigation hook and metadata source:
-
-- `useRoutes.ts` - loads `public/routes.json` on the client
-
-### `cli/commands/`
-
-CLI command handlers organized by action:
-
-- `quick-start.ts` - Bootstrap entire app
-- `generate/` - Generate components, layouts, pages
-- `sync/` - Sync routes from filesystem
-- `config/` - Configure layout and navigation
-
-### `cli/utils/`
-
-Shared utilities:
-
-- `bootstrap-check.ts` - Check bootstrap state
-- `bootstrap-setup.ts` - Bootstrap prompts
-- `routes.ts` - Filesystem route scanning
+Static assets served by Next.js. The quick-start routine maintains
+`routes.json`, and `app-data.json` seeds the demo content patterns.

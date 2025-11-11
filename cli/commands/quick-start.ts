@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-import path from "path";
 import chalk from "chalk";
 import { isLayoutConfigured } from "../utils/bootstrap-check.js";
 import { runBootstrapSetup } from "../utils/bootstrap-setup.js";
@@ -21,7 +20,9 @@ async function main() {
     let config: Awaited<ReturnType<typeof runBootstrapSetup>> | null = null;
 
     // Always offer configuration walkthrough for reconfiguration
-    console.log(chalk.blue.bold("\n🔧 PatternFly Quick Start - Reconfiguration\n"));
+    console.log(
+      chalk.blue.bold("\n🔧 PatternFly Quick Start - Reconfiguration\n")
+    );
     console.log(
       chalk.yellow(
         "This will reconfigure your application based on your preferences.\n"
@@ -76,7 +77,6 @@ async function main() {
 
     // Generate quick start app (pass config if available)
     await generateQuickStart(projectRoot, config);
-
   } catch (error) {
     console.error(chalk.red("\n❌ Error:"), error);
     process.exit(1);

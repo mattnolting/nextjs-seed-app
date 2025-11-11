@@ -1,17 +1,17 @@
 "use client";
 
-import { AppShell } from "@/components/ui/AppShell";
+import { ClientAppShell } from "@/components/ui/ClientAppShell";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 export function AppWrapper({ children }: { children: React.ReactNode }) {
   return (
     <ErrorBoundary>
-      <AppShell
+      <ClientAppShell
         config={{
           masthead: {
             logo: "/PF-HorizontalLogo-Color.svg",
             showToolbar: true,
-            toolbarItems: ["notifications","settings","user-menu"],
+            toolbarItems: ["notifications", "settings", "user-menu"],
           },
           navMode: "sidebar",
           sidebar: {
@@ -24,7 +24,7 @@ export function AppWrapper({ children }: { children: React.ReactNode }) {
         }}
       >
         {children}
-      </AppShell>
+      </ClientAppShell>
     </ErrorBoundary>
   );
 }

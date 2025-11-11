@@ -35,7 +35,7 @@ Fields:
 - `group` (optional): enables grouped navigation (future)
 - `hidden` (optional): exclude route from navigation
 - `description` (optional): tooltip/aria helper text
-- `lastSynced` (optional): informational; updated by sync command
+- `lastSynced` (optional): informational timestamp recorded by automation
 
 ## Ordering Rules
 
@@ -43,19 +43,15 @@ Fields:
 - If any route specifies `order` or `priority`, a stable sort is applied by `(order || priority)`, with original index as tiebreaker
 - Hidden routes are omitted from the sidebar
 
-## Sync Command
+## Managing Routes
 
-```
-npm run sync routes
-```
+- **Quick Start:** `npm run quick-start` rebuilds demo pages and refreshes
+  `public/routes.json` to match the scaffolded content.
+- **Manual edits:** You can edit `routes.json` directly for custom ordering,
+  titles, or advanced metadata. Keep paths aligned with `src/app/` routes.
 
-Behavior:
-
-- Scans `src/app/` for `page.tsx`
-- Preserves existing `routes.json` order and metadata
-- Appends newly discovered routes at the end
-- Removes entries for deleted routes
-- Writes to `public/routes.json`
+> The legacy `sync routes` command has been removed while the CLI is being
+> redesigned. Future phases will reintroduce targeted sync tooling.
 
 ## Error Handling
 

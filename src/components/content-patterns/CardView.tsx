@@ -1,8 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import React, { Fragment, useState, useEffect } from "react";
 import {
-  Badge,
   Bullseye,
   Button,
   Card,
@@ -20,24 +20,15 @@ import {
   Gallery,
   MenuToggle,
   MenuToggleCheckbox,
-  OverflowMenu,
-  OverflowMenuControl,
-  OverflowMenuDropdownItem,
-  OverflowMenuItem,
   PageSection,
   Pagination,
   Toolbar,
   ToolbarItem,
-  ToolbarFilter,
   ToolbarContent,
-  Select,
-  SelectList,
-  SelectOption,
-  MenuToggleElement,
 } from "@patternfly/react-core";
+import type { SVGIconProps } from "@patternfly/react-icons/dist/esm/createIcon";
 import TrashIcon from "@patternfly/react-icons/dist/esm/icons/trash-icon";
 import PlusCircleIcon from "@patternfly/react-icons/dist/esm/icons/plus-circle-icon";
-import EllipsisVIcon from "@patternfly/react-icons/dist/esm/icons/ellipsis-v-icon";
 import CodeBranchIcon from "@patternfly/react-icons/dist/esm/icons/code-branch-icon";
 import DollarSignIcon from "@patternfly/react-icons/dist/esm/icons/dollar-sign-icon";
 import ChartLineIcon from "@patternfly/react-icons/dist/esm/icons/chart-line-icon";
@@ -55,7 +46,7 @@ import TruckIcon from "@patternfly/react-icons/dist/esm/icons/truck-icon";
 import { Icon } from "@patternfly/react-core";
 
 // Icon mapping object
-const icons: Record<string, React.ComponentType<any>> = {
+const icons: Record<string, React.ComponentType<SVGIconProps>> = {
   "code-branch": CodeBranchIcon,
   "dollar-sign": DollarSignIcon,
   "chart-line": ChartLineIcon,
@@ -90,10 +81,116 @@ export interface CardViewProps {
   emptyStateAction?: () => void;
   onCardSelect?: (selectedIds: (string | number)[]) => void;
   onCardDelete?: (item: CardItem) => void;
-  filterCategories?: Record<string, string[]>;
   enableSelection?: boolean;
   enablePagination?: boolean;
   defaultPerPage?: number;
+}
+
+function CardViewToolbar({
+  selectedCount,
+  areAllSelected,
+  enableSelection,
+  enablePagination,
+  perPage,
+  totalItemCount,
+  isSelectDropdownOpen,
+  onToggleSelectDropdown,
+  onSelectDropdownOpenChange,
+  onSelectToggle,
+  onSelectNone,
+  onSelectPage,
+  onSelectAll,
+  onDeleteSelected,
+  renderPagination,
+}: {
+  selectedCount: number;
+  areAllSelected: boolean;
+  enableSelection: boolean;
+  enablePagination: boolean;
+  perPage: number;
+  totalItemCount: number;
+  isSelectDropdownOpen: boolean;
+  onToggleSelectDropdown: () => void;
+  onSelectDropdownOpenChange: (isOpen: boolean) => void;
+  onSelectToggle: () => void;
+  onSelectNone: () => void;
+  onSelectPage: () => void;
+  onSelectAll: () => void;
+  onDeleteSelected: () => void;
+  renderPagination: () => React.ReactNode;
+}) {
+  const anySelected = selectedCount > 0;
+
+  return (
+    <Toolbar id="card-view-toolbar">
+      <ToolbarContent>
+        {enableSelection && (
+          <ToolbarItem>
+            <Dropdown
+              onSelect={onSelectNone}
+              isOpen={isSelectDropdownOpen}
+              onOpenChange={onSelectDropdownOpenChange}
+              toggle={(toggleRef) => (
+                <MenuToggle
+                  ref={toggleRef}
+                  isExpanded={isSelectDropdownOpen}
+                  onClick={onToggleSelectDropdown}
+                  aria-label="Select cards"
+                  splitButtonItems={[
+                    <MenuToggleCheckbox
+                      id="card-view-select-all"
+                      key="card-view-select-all"
+                      aria-label={
+                        anySelected ? "Deselect all cards" : "Select all cards"
+                      }
+                      isChecked={areAllSelected}
+                      onClick={(event) => {
+                        event.preventDefault();
+                        onSelectToggle();
+                      }}
+                    >
+                      {selectedCount !== 0 && `${selectedCount} selected`}
+                    </MenuToggleCheckbox>,
+                  ]}
+                ></MenuToggle>
+              )}
+            >
+              <DropdownList>
+                <DropdownItem key="select-none" onClick={onSelectNone}>
+                  Select none (0 items)
+                </DropdownItem>
+                <DropdownItem key="select-page" onClick={onSelectPage}>
+                  Select page ({Math.min(perPage, totalItemCount)} items)
+                </DropdownItem>
+                <DropdownItem key="select-all" onClick={onSelectAll}>
+                  Select all ({totalItemCount} items)
+                </DropdownItem>
+              </DropdownList>
+            </Dropdown>
+          </ToolbarItem>
+        )}
+
+        {enableSelection && (
+          <ToolbarItem>
+            <Button
+              variant="danger"
+              icon={<TrashIcon />}
+              isDisabled={!anySelected}
+              onClick={onDeleteSelected}
+            >
+              Delete selected{anySelected ? ` (${selectedCount})` : ""}
+            </Button>
+          </ToolbarItem>
+        )}
+
+        {enablePagination && (
+          <ToolbarItem variant="pagination" align={{ default: "alignEnd" }}>
+            {renderPagination()}
+          </ToolbarItem>
+        )}
+      </ToolbarContent>
+    </Toolbar>
+  );
 }
 
 export function CardView({
@@ -104,74 +201,87 @@ export function CardView({
   emptyStateAction,
   onCardSelect,
   onCardDelete,
-  filterCategories,
   enableSelection = true,
   enablePagination = true,
   defaultPerPage = 10,
 }: CardViewProps) {
-  const totalItemCount = items.length;
   const [cardData, setCardData] = useState(items);
+  const totalItemCount = cardData.length;
   const [selectedItems, setSelectedItems] = useState<(string | number)[]>([]);
   const [areAllSelected, setAreAllSelected] = useState<boolean>(false);
-
-  // Sync cardData when items prop changes
-  useEffect(() => {
-    setCardData(items);
-  }, [items]);
   const [splitButtonDropdownIsOpen, setSplitButtonDropdownIsOpen] =
-    useState(false);
-  const [isLowerToolbarDropdownOpen, setIsLowerToolbarDropdownOpen] =
-    useState(false);
-  const [isLowerToolbarKebabDropdownOpen, setIsLowerToolbarKebabDropdownOpen] =
     useState(false);
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(defaultPerPage);
-  const [filters, setFilters] = useState<Record<string, string[]>>(
-    filterCategories
-      ? Object.fromEntries(
-          Object.keys(filterCategories).map((key) => [key, []])
-        )
-      : {}
-  );
-  const [cardActionsState, setCardActionsState] = useState<
-    Record<string, boolean>
-  >({});
+
+  useEffect(() => {
+    if (cardData !== items) {
+      setCardData(items);
+      setSelectedItems([]);
+      setAreAllSelected(false);
+      setPage(1);
+      setPerPage(defaultPerPage);
+      setSplitButtonDropdownIsOpen(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items, defaultPerPage]);
 
   const checkAllSelected = (selected: number, total: number) => {
+    if (total === 0) {
+      return false;
+    }
     if (selected && selected < total) {
       return null;
     }
     return selected === total;
   };
 
-  const onToolbarDropdownToggle = () => {
-    setIsLowerToolbarDropdownOpen(!isLowerToolbarDropdownOpen);
-  };
+  const removeItems = (idsToRemove: (string | number)[]) => {
+    const idSet = new Set(idsToRemove.map((id) => String(id)));
 
-  const onToolbarKebabDropdownToggle = () => {
-    setIsLowerToolbarKebabDropdownOpen(!isLowerToolbarKebabDropdownOpen);
-  };
+    if (idSet.size === 0) {
+      return;
+    }
 
-  const onToolbarKebabDropdownSelect = () => {
-    setIsLowerToolbarKebabDropdownOpen(!isLowerToolbarKebabDropdownOpen);
-  };
+    const removedItems = cardData.filter((card) => idSet.has(String(card.id)));
 
-  const onCardKebabDropdownToggle = (
-    event:
-      | React.MouseEvent<HTMLButtonElement, MouseEvent>
-      | React.MouseEvent<HTMLDivElement, MouseEvent>,
-    key: string
-  ) => {
-    setCardActionsState({
-      [key]: !cardActionsState[key],
+    if (removedItems.length === 0) {
+      return;
+    }
+
+    const remainingItems = cardData.filter(
+      (card) => !idSet.has(String(card.id))
+    );
+
+    setCardData(remainingItems);
+
+    const updatedSelection = selectedItems.filter(
+      (id) => !idSet.has(String(id))
+    );
+    setSelectedItems(updatedSelection);
+    onCardSelect?.(updatedSelection);
+
+    const allSelectedState = checkAllSelected(
+      updatedSelection.length,
+      remainingItems.length
+    );
+    setAreAllSelected(!!allSelectedState);
+
+    setPage((currentPage) => {
+      if (remainingItems.length === 0) {
+        return 1;
+      }
+      const maxPage = Math.ceil(remainingItems.length / perPage);
+      return Math.min(currentPage, maxPage);
     });
+
+    if (onCardDelete) {
+      removedItems.forEach((item) => onCardDelete(item));
+    }
   };
 
-  const deleteItem = (item: CardItem) => {
-    const filtered = cardData.filter((card) => card.id !== item.id);
-    setCardData(filtered);
-    setSelectedItems(selectedItems.filter((id) => id !== item.id));
-    onCardDelete?.(item);
+  const deleteSelected = () => {
+    removeItems(selectedItems);
   };
 
   const onSetPage = (_event: unknown, pageNumber: number) => {
@@ -181,44 +291,6 @@ export function CardView({
   const onPerPageSelect = (_event: unknown, perPage: number) => {
     setPerPage(perPage);
     setPage(1);
-  };
-
-  const onSplitButtonToggle = () => {
-    setSplitButtonDropdownIsOpen(!splitButtonDropdownIsOpen);
-  };
-
-  const onSplitButtonSelect = () => {
-    setSplitButtonDropdownIsOpen(false);
-  };
-
-  const onFilterSelect = (
-    event: React.FormEvent<HTMLInputElement> | React.MouseEvent<Element>,
-    selection = "",
-    category: string
-  ) => {
-    const checked = (event.target as HTMLInputElement)?.checked ?? false;
-    const prevSelections = filters[category] || [];
-
-    setFilters({
-      ...filters,
-      [category]: checked
-        ? [...prevSelections, selection]
-        : prevSelections.filter((value) => value !== selection),
-    });
-  };
-
-  const onDelete = (category?: string) => {
-    if (category) {
-      setFilters({
-        ...filters,
-        [category]: [],
-      });
-    } else {
-      const cleared = Object.fromEntries(
-        Object.keys(filters).map((key) => [key, []])
-      );
-      setFilters(cleared);
-    }
   };
 
   const onChange = (event: React.FormEvent<HTMLInputElement>) => {
@@ -241,35 +313,40 @@ export function CardView({
   };
 
   const getAllItems = () => {
-    return cardData.map((card) => card.id);
+    return cardData.map((card) => String(card.id));
   };
 
-  const splitCheckboxSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let collection: (string | number)[] = [];
-
-    if (e.target.checked) {
-      collection = getAllItems();
+  const selectAllToggle = () => {
+    if (areAllSelected) {
+      setSelectedItems([]);
+      setAreAllSelected(false);
+      onCardSelect?.([]);
+    } else {
+      const collection = getAllItems();
+      setSelectedItems(collection);
+      setAreAllSelected(collection.length > 0);
+      onCardSelect?.(collection);
     }
-
-    setSelectedItems(collection);
-    setAreAllSelected(e.target.checked);
-    onCardSelect?.(collection);
   };
 
   const selectPage = () => {
     const start = (page - 1) * perPage;
     const end = start + perPage;
-    const collection = cardData.slice(start, end).map((card) => card.id);
+    const collection = cardData
+      .slice(start, end)
+      .map((card) => String(card.id));
 
     setSelectedItems(collection);
-    setAreAllSelected(totalItemCount === perPage);
+    const isAllSelected =
+      collection.length === totalItemCount && totalItemCount > 0;
+    setAreAllSelected(isAllSelected);
     onCardSelect?.(collection);
   };
 
   const selectAll = () => {
     const collection = getAllItems();
     setSelectedItems(collection);
-    setAreAllSelected(true);
+    setAreAllSelected(collection.length > 0);
     onCardSelect?.(collection);
   };
 
@@ -300,184 +377,7 @@ export function CardView({
     );
   };
 
-  const buildSelectDropdown = () => {
-    const numSelected = selectedItems.length;
-    const anySelected = numSelected > 0;
-    const splitButtonDropdownItems = (
-      <>
-        <DropdownItem key="item-1" onClick={selectNone}>
-          Select none (0 items)
-        </DropdownItem>
-        <DropdownItem key="item-2" onClick={selectPage}>
-          Select page ({Math.min(perPage, totalItemCount)} items)
-        </DropdownItem>
-        <DropdownItem key="item-3" onClick={selectAll}>
-          Select all ({totalItemCount} items)
-        </DropdownItem>
-      </>
-    );
-    return (
-      <Dropdown
-        onSelect={onSplitButtonSelect}
-        isOpen={splitButtonDropdownIsOpen}
-        onOpenChange={(isOpen) => setSplitButtonDropdownIsOpen(isOpen)}
-        toggle={(toggleRef) => (
-          <MenuToggle
-            ref={toggleRef}
-            isExpanded={splitButtonDropdownIsOpen}
-            onClick={onSplitButtonToggle}
-            aria-label="Select cards"
-            splitButtonItems={[
-              <MenuToggleCheckbox
-                id="split-dropdown-checkbox"
-                key="split-dropdown-checkbox"
-                aria-label={
-                  anySelected ? "Deselect all cards" : "Select all cards"
-                }
-                isChecked={areAllSelected}
-                onClick={(e) =>
-                  splitCheckboxSelectAll(
-                    e as unknown as React.ChangeEvent<HTMLInputElement>
-                  )
-                }
-              >
-                {numSelected !== 0 && `${numSelected} selected`}
-              </MenuToggleCheckbox>,
-            ]}
-          ></MenuToggle>
-        )}
-      >
-        <DropdownList>{splitButtonDropdownItems}</DropdownList>
-      </Dropdown>
-    );
-  };
-
-  const buildFilterDropdown = (category: string, options: string[]) => {
-    const filterDropdownItems = (
-      <SelectList>
-        {options.map((option) => (
-          <SelectOption
-            hasCheckbox
-            key={option}
-            value={option}
-            isSelected={filters[category]?.includes(option)}
-          >
-            {option}
-          </SelectOption>
-        ))}
-      </SelectList>
-    );
-
-    return (
-      <ToolbarFilter
-        categoryName={category}
-        labels={filters[category] || []}
-        deleteLabel={(type) => onDelete(type as string)}
-      >
-        <Select
-          aria-label={category}
-          role="menu"
-          toggle={(toggleRef) => (
-            <MenuToggle
-              ref={toggleRef}
-              onClick={onToolbarDropdownToggle}
-              isExpanded={isLowerToolbarDropdownOpen}
-            >
-              Filter by {category.toLowerCase()}
-              {filters[category]?.length > 0 && (
-                <Badge isRead>{filters[category].length}</Badge>
-              )}
-            </MenuToggle>
-          )}
-          onSelect={(event, selection) =>
-            onFilterSelect(
-              event as unknown as React.FormEvent<HTMLInputElement>,
-              selection?.toString() || "",
-              category
-            )
-          }
-          onOpenChange={(isOpen) => {
-            setIsLowerToolbarDropdownOpen(isOpen);
-          }}
-          selected={filters[category] || []}
-          isOpen={isLowerToolbarDropdownOpen}
-        >
-          {filterDropdownItems}
-        </Select>
-      </ToolbarFilter>
-    );
-  };
-
-  const toolbarKebabDropdownItems = [
-    <OverflowMenuDropdownItem itemId={0} key="link">
-      Link
-    </OverflowMenuDropdownItem>,
-    <OverflowMenuDropdownItem itemId={1} key="action" component="button">
-      Action
-    </OverflowMenuDropdownItem>,
-  ];
-
-  const toolbarItems = (
-    <Fragment>
-      {enableSelection && <ToolbarItem>{buildSelectDropdown()}</ToolbarItem>}
-      {filterCategories &&
-        Object.entries(filterCategories).map(([category, options]) => (
-          <ToolbarItem key={category}>
-            {buildFilterDropdown(category, options)}
-          </ToolbarItem>
-        ))}
-      <ToolbarItem>
-        <OverflowMenu breakpoint="md">
-          <OverflowMenuItem>
-            <Button variant="primary">Create</Button>
-          </OverflowMenuItem>
-          <OverflowMenuControl hasAdditionalOptions>
-            <Dropdown
-              onSelect={onToolbarKebabDropdownSelect}
-              toggle={(toggleRef) => (
-                <MenuToggle
-                  ref={toggleRef}
-                  aria-label="Toolbar kebab overflow menu"
-                  variant="plain"
-                  onClick={onToolbarKebabDropdownToggle}
-                  isExpanded={isLowerToolbarKebabDropdownOpen}
-                  icon={<EllipsisVIcon />}
-                />
-              )}
-              isOpen={isLowerToolbarKebabDropdownOpen}
-              onOpenChange={(isOpen) =>
-                setIsLowerToolbarKebabDropdownOpen(isOpen)
-              }
-            >
-              <DropdownList>{toolbarKebabDropdownItems}</DropdownList>
-            </Dropdown>
-          </OverflowMenuControl>
-        </OverflowMenu>
-      </ToolbarItem>
-      {enablePagination && (
-        <ToolbarItem variant="pagination" align={{ default: "alignEnd" }}>
-          {renderPagination()}
-        </ToolbarItem>
-      )}
-    </Fragment>
-  );
-
-  // Apply filters
-  let filtered = cardData;
-  if (filterCategories) {
-    Object.entries(filters).forEach(([category, selected]) => {
-      if (selected.length > 0) {
-        filtered = filtered.filter((card) => {
-          // Check meta field (case-insensitive key matching)
-          const metaKey = Object.keys(card.meta || {}).find(
-            (key) => key.toLowerCase() === category.toLowerCase()
-          );
-          const value = metaKey ? card.meta?.[metaKey] : card.title;
-          return value && selected.includes(value);
-        });
-      }
-    });
-  }
+  const filtered = cardData;
 
   // Apply pagination
   const paginated =
@@ -495,9 +395,27 @@ export function CardView({
       </PageSection>
 
       <PageSection isFilled aria-label="Selectable card gallery">
-        <Toolbar id="toolbar-group-types" clearAllFilters={onDelete}>
-          <ToolbarContent>{toolbarItems}</ToolbarContent>
-        </Toolbar>
+        <CardViewToolbar
+          selectedCount={selectedItems.length}
+          areAllSelected={areAllSelected}
+          enableSelection={enableSelection}
+          enablePagination={enablePagination}
+          perPage={perPage}
+          totalItemCount={totalItemCount}
+          isSelectDropdownOpen={splitButtonDropdownIsOpen}
+          onToggleSelectDropdown={() =>
+            setSplitButtonDropdownIsOpen((prev) => !prev)
+          }
+          onSelectDropdownOpenChange={(isOpen) =>
+            setSplitButtonDropdownIsOpen(isOpen)
+          }
+          onSelectToggle={selectAllToggle}
+          onSelectNone={selectNone}
+          onSelectPage={selectPage}
+          onSelectAll={selectAll}
+          onDeleteSelected={deleteSelected}
+          renderPagination={renderPagination}
+        />
         <Gallery hasGutter aria-label="Selectable card container">
           {paginated.length === 0 && showEmptyState ? (
             <Card isCompact>
@@ -521,7 +439,7 @@ export function CardView({
               </Bullseye>
             </Card>
           ) : (
-            paginated.map((product, key) => (
+            paginated.map((product) => (
               <Card
                 isCompact
                 isClickable
@@ -533,7 +451,7 @@ export function CardView({
                   selectableActions={
                     enableSelection
                       ? {
-                          isChecked: selectedItems.includes(product.id),
+                          isChecked: selectedItems.includes(String(product.id)),
                           selectableActionId: `selectable-actions-item-${product.id}`,
                           selectableActionAriaLabelledby: product.title.replace(
                             / /g,
@@ -544,60 +462,17 @@ export function CardView({
                         }
                       : undefined
                   }
-                  actions={{
-                    actions: (
-                      <>
-                        <Dropdown
-                          isOpen={!!cardActionsState[key]}
-                          onOpenChange={(isOpen) =>
-                            setCardActionsState({ [key]: isOpen })
-                          }
-                          toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-                            <MenuToggle
-                              ref={toggleRef}
-                              aria-label={`${product.title} actions`}
-                              variant="plain"
-                              onClick={(e) => {
-                                onCardKebabDropdownToggle(e, key.toString());
-                              }}
-                              isExpanded={!!cardActionsState[key]}
-                              icon={<EllipsisVIcon />}
-                            />
-                          )}
-                          popperProps={{ position: "right" }}
-                        >
-                          <DropdownList>
-                            {onCardDelete && (
-                              <DropdownItem
-                                key="trash"
-                                onClick={() => {
-                                  deleteItem(product);
-                                }}
-                              >
-                                <TrashIcon /> Delete
-                              </DropdownItem>
-                            )}
-                          </DropdownList>
-                        </Dropdown>
-                      </>
-                    ),
-                  }}
                 >
                   {product.icon && icons[product.icon] && (
-                    <div
-                      style={{
-                        fontSize: "2.5rem",
-                        color: "var(--pf-v5-global--primary-color--100)",
-                      }}
-                    >
-                      <Icon>{React.createElement(icons[product.icon])}</Icon>
-                    </div>
+                    <Icon>{React.createElement(icons[product.icon])}</Icon>
                   )}
                   {!product.icon && product.image && (
-                    <img
+                    <Image
                       src={product.image}
                       alt={`${product.title} icon`}
-                      style={{ maxWidth: "60px" }}
+                      width={60}
+                      height={60}
+                      style={{ maxWidth: "60px", height: "auto" }}
                     />
                   )}
                 </CardHeader>

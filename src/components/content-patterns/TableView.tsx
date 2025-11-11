@@ -78,88 +78,101 @@ export function TableView({
       )}
       <PageSection>
         <Toolbar>
-        <ToolbarContent>
-          <ToolbarItem>
-            <SearchInput
-              value={filter}
-              onChange={(_e, v) => setFilter(v)}
-              onClear={() => setFilter("")}
-            />
-          </ToolbarItem>
-          <ToolbarItem>
-            <Button
-              variant="secondary"
-              isDisabled={selectedIds.length === 0}
-              onClick={() => setSelectedIds([])}
-            >
-              Clear selection ({selectedIds.length})
-            </Button>
-          </ToolbarItem>
-        </ToolbarContent>
-        <ToolbarContent>
-          <ToolbarItem>
-            <Pagination
-              itemCount={filtered.length}
-              perPage={perPage}
-              page={page}
-              onSetPage={(_e, p) => setPage(p)}
-              onPerPageSelect={(_e, pp) => {
-                setPerPage(pp);
-                setPage(1);
-              }}
-            />
-          </ToolbarItem>
-        </ToolbarContent>
-      </Toolbar>
-
-      {isLoading ? (
-        <Bullseye>
-          <div>
-            <Title headingLevel="h4">Loading</Title>
-            <p>Please wait while we load data…</p>
-          </div>
-        </Bullseye>
-      ) : filtered.length === 0 ? (
-        <Bullseye>
-          <div>
-            <Title headingLevel="h4">No results</Title>
-            <p>Try adjusting your search.</p>
-          </div>
-        </Bullseye>
-      ) : (
-        <Table aria-label="Data table">
-          <Thead>
-            <Tr>
-              <Th
-                select={{
-                  onSelect: toggleAllVisible,
-                  isSelected: allVisibleSelected,
-                }}
-                screenReaderText="Selection column"
+          <ToolbarContent>
+            <ToolbarItem>
+              <SearchInput
+                value={filter}
+                onChange={(_e, v) => setFilter(v)}
+                onClear={() => setFilter("")}
               />
-              {columns.map((c) => (
-                <Th key={c}>{c}</Th>
-              ))}
-            </Tr>
-          </Thead>
-          <Tbody>
-            {pageRows.map((r) => (
-              <Tr key={r.id}>
-                <Td
-                  select={{
-                    rowIndex: 0,
-                    onSelect: () => toggleRow(r.id),
-                    isSelected: selectedIds.includes(r.id),
-                  }}
-                />
-                {r.cells.map((cell, i) => (
-                  <Td key={`${r.id}-${i}`}>{cell}</Td>
+            </ToolbarItem>
+            <ToolbarItem>
+              <Button
+                variant="secondary"
+                isDisabled={selectedIds.length === 0}
+                onClick={() => setSelectedIds([])}
+              >
+                Clear selection ({selectedIds.length})
+              </Button>
+            </ToolbarItem>
+            <ToolbarItem variant="pagination" align={{ default: "alignEnd" }}>
+              <Pagination
+                itemCount={filtered.length}
+                perPage={perPage}
+                page={page}
+                onSetPage={(_e, p) => setPage(p)}
+                onPerPageSelect={(_e, pp) => {
+                  setPerPage(pp);
+                  setPage(1);
+                }}
+              />
+            </ToolbarItem>
+          </ToolbarContent>
+        </Toolbar>
+
+        {isLoading ? (
+          <Bullseye>
+            <div>
+              <Title headingLevel="h4">Loading</Title>
+              <p>Please wait while we load data…</p>
+            </div>
+          </Bullseye>
+        ) : filtered.length === 0 ? (
+          <Bullseye>
+            <div>
+              <Title headingLevel="h4">No results</Title>
+              <p>Try adjusting your search.</p>
+            </div>
+          </Bullseye>
+        ) : (
+          <>
+            <Table aria-label="Data table">
+              <Thead>
+                <Tr>
+                  <Th
+                    select={{
+                      onSelect: toggleAllVisible,
+                      isSelected: allVisibleSelected,
+                    }}
+                    screenReaderText="Selection column"
+                  />
+                  {columns.map((c) => (
+                    <Th key={c}>{c}</Th>
+                  ))}
+                </Tr>
+              </Thead>
+              <Tbody>
+                {pageRows.map((r, rowIndex) => (
+                  <Tr key={r.id}>
+                    <Td
+                      select={{
+                        rowIndex,
+                        onSelect: () => toggleRow(r.id),
+                        isSelected: selectedIds.includes(r.id),
+                      }}
+                    />
+                    {r.cells.map((cell, i) => (
+                      <Td key={`${r.id}-${i}`}>{cell}</Td>
+                    ))}
+                  </Tr>
                 ))}
-              </Tr>
-            ))}
-          </Tbody>
-        </Table>
-      )}
+              </Tbody>
+            </Table>
+            {filtered.length > perPage && (
+              <Pagination
+                itemCount={filtered.length}
+                perPage={perPage}
+                page={page}
+                onSetPage={(_e, p) => setPage(p)}
+                onPerPageSelect={(_e, pp) => {
+                  setPerPage(pp);
+                  setPage(1);
+                }}
+                variant="bottom"
+              />
+            )}
+          </>
+        )}
       </PageSection>
     </>
   );

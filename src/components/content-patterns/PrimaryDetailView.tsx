@@ -308,46 +308,55 @@ export function PrimaryDetailView({
           selectedDataListItemId={String(selectedDataListItemId)}
           onSelectDataListItem={onSelectDataListItem}
         >
-          {filteredItems.map((item) => (
-            <DataListItem key={item.id} id={String(item.id)}>
-              <DataListItemRow>
-                <DataListItemCells
-                  dataListCells={[
-                    <DataListCell key="primary-content">
-                      <Flex
-                        spaceItems={{ default: "spaceItemsMd" }}
-                        direction={{ default: "column" }}
-                      >
-                        <FlexItem>
-                          <p style={{ fontWeight: "bold", margin: 0 }}>
-                            {item.title}
-                          </p>
-                          {item.description && (
-                            <small
-                              style={{
-                                color: "var(--pf-v5-global--Color--200)",
-                              }}
-                            >
-                              {item.description}
-                            </small>
+          {filteredItems.map((item) => {
+            const isSelected =
+              String(item.id) === String(selectedDataListItemId);
+            return (
+              <DataListItem
+                key={item.id}
+                id={String(item.id)}
+                aria-selected={isSelected}
+                className={isSelected ? "pf-m-selected" : undefined}
+              >
+                <DataListItemRow>
+                  <DataListItemCells
+                    dataListCells={[
+                      <DataListCell key="primary-content">
+                        <Flex
+                          spaceItems={{ default: "spaceItemsMd" }}
+                          direction={{ default: "column" }}
+                        >
+                          <FlexItem>
+                            <p style={{ fontWeight: "bold", margin: 0 }}>
+                              {item.title}
+                            </p>
+                            {item.description && (
+                              <small
+                                style={{
+                                  color: "var(--pf-v5-global--Color--200)",
+                                }}
+                              >
+                                {item.description}
+                              </small>
+                            )}
+                          </FlexItem>
+                          {item.meta && Object.keys(item.meta).length > 0 && (
+                            <Flex spaceItems={{ default: "spaceItemsMd" }}>
+                              {Object.entries(item.meta).map(([key, value]) => (
+                                <FlexItem key={key}>
+                                  <strong>{key}:</strong> {String(value)}
+                                </FlexItem>
+                              ))}
+                            </Flex>
                           )}
-                        </FlexItem>
-                        {item.meta && Object.keys(item.meta).length > 0 && (
-                          <Flex spaceItems={{ default: "spaceItemsMd" }}>
-                            {Object.entries(item.meta).map(([key, value]) => (
-                              <FlexItem key={key}>
-                                <strong>{key}:</strong> {String(value)}
-                              </FlexItem>
-                            ))}
-                          </Flex>
-                        )}
-                      </Flex>
-                    </DataListCell>,
-                  ]}
-                />
-              </DataListItemRow>
-            </DataListItem>
-          ))}
+                        </Flex>
+                      </DataListCell>,
+                    ]}
+                  />
+                </DataListItemRow>
+              </DataListItem>
+            );
+          })}
         </DataList>
       )}
     </Fragment>

@@ -105,15 +105,7 @@ npm run dev
 # Optional: Reconfigure app layout
 npm run quick-start
 
-# Optional: Generate components/pages
-npm run generate page <path>
-npm run generate component <name>
-
-# Optional: Sync routes from filesystem
-npm run sync routes
-
-# Optional: Configure navigation
-npm run config navigation
+# Note: additional CLI generators/sync/config commands will return in a future phase
 
 # Production build
 npm run build

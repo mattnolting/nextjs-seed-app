@@ -1,129 +1,118 @@
-# PatternFly Next.js Starter - Project Plan
+# PatternFly Next.js Starter – Project Plan
 
 ## 🎯 Project Vision
 
-Create a modern Next.js starter application with PatternFly React components. The project features:
+Deliver a modern PatternFly starter built on Next.js 16 that showcases:
 
-- **Quick Start Mode**: Generate a complete app instantly
-- **Manifest-driven architecture**: Single source of truth via `.build.json`
-- **Filesystem-based navigation**: Routes discovered automatically
-- **Simple, elegant code generation**: Production-ready output
+- **AppShell-first layout**: A responsive masthead + sidebar experience powered
+  by PatternFly `Page`
+- **Reusable content patterns**: Drop-in dashboards, tables, cards, primary/detail,
+  and form experiences
+- **Manifest-driven navigation**: `public/routes.json` augments file-based routes
+  with titles and ordering
+- **Single-step bootstrap**: A quick-start workflow that rebuilds the demo and
+  captures layout preferences
 
 ## ✅ Core Technologies
 
-- **Next.js 16** with App Router
+- **Next.js 16** (App Router + Turbopack)
 - **TypeScript** with strict mode
 - **PatternFly v6** React components
-- **Turbopack** for development
+- **Vitest** + Testing Library for smoke coverage
 - **npm** for package management
 
-## 📁 Project Structure
+## 📁 Project Structure (Phase 1)
 
 ```
 nextjs-seed-app/
 ├── src/
-│   ├── app/                # Next.js App Router routes
-│   │   ├── page.tsx        # Root page
-│   │   └── [routes]/       # Dynamic routes
+│   ├── app/                      # Next.js routes + root layout
 │   ├── components/
-│   │   ├── layouts/        # Layout components
-│   │   └── ui/             # Reusable UI components
-│   └── lib/                # Utilities
-├── public/                 # Public assets (at root)
-│   ├── logo.svg
-│   └── routes.json         # Generated navigation data
-├── cli/                    # CLI tools
-│   ├── generators/         # Code generators
-│   ├── templates/          # Template files
-│   ├── types/              # TypeScript types
-│   └── utils/              # Utilities
-├── docs/                   # Documentation
-├── ai-documentation/       # AI development guidelines
-├── package.json            # Root dependencies
+│   │   ├── ui/                   # AppShell, masthead, sidebar
+│   │   └── content-patterns/     # Page-level demo views
+│   └── lib/
+│       ├── data/                 # Demo data loader + types
+│       └── navigation/           # routes.json consumer
+├── cli/
+│   ├── commands/quick-start.ts   # Interactive bootstrap command
+│   ├── generators/quick-start.ts # Scaffold + demo generator
+│   └── utils/                    # Shared bootstrap helpers
+├── public/
+│   ├── app-data.json             # Demo data backing content patterns
+│   └── routes.json               # Navigation manifest (auto-managed)
+├── docs/                         # Human-authored documentation
+├── ai-documentation/             # AI guidance for contributors
+├── package.json
 ├── tsconfig.json
 └── next.config.ts
 ```
 
 ## 🚀 Quick Start Workflow
 
-1. **Run Quick Start**
+1. **Install & bootstrap**
 
    ```bash
-   npm run cli quick-start
+   npm install
+   npm run quick-start
    ```
 
-   Generates:
+   Output:
+   - Ensures `AppShell` scaffold is present
+   - Rebuilds demo routes (dashboard, analytics, users, settings, gallery)
+   - Refreshes `public/routes.json` and `public/app-data.json` as needed
 
-   - `.build.json` manifest
-   - Layout components
-   - Page routes
-   - `routes.json` navigation
-   - Public assets
-
-2. **Start Development**
+2. **Run the dev server**
 
    ```bash
    npm run dev
    ```
 
-   Working app with navigation
+   Visit http://localhost:3000 to explore the PatternFly experience.
 
 3. **Customize**
-   - Edit generated files
-   - Add new pages
-   - Run CLI commands to add components
+   - Update `src/components/ui/` for chrome tweaks
+   - Extend or replace content patterns under `components/content-patterns/`
+   - Edit `routes.json` to adjust navigation ordering/titles
 
 ## 🔧 Implementation Status
 
 ### ✅ Completed
 
-- Manifest system (`.build.json`)
-- Route scanner (filesystem-based)
-- Quick Start command
-- DashboardLayout with dynamic navigation
-- Templates for layouts and pages
-- Route generation (`routes.json`)
+- PatternFly-powered AppShell (`AppWrapper`, `AppShell`, masthead, sidebar)
+- Five demo content patterns with data hooks
+- Quick-start CLI (interactive bootstrap + demo regeneration)
+- Navigation manifest (`public/routes.json`) + client hook (`useRoutes`)
+- Smoke tests validating the demo pages mount successfully
 
 ### 🚧 In Progress
 
-- Testing full workflow
-- Additional layout templates
-- Component generation
+- Phase 2 content pattern enhancements (validation, richer tooling)
+- Additional documentation polish and developer personas
 
 ### 📝 Planned
 
-- CLI for adding components
-- Regeneration commands
-- Testing framework
+- Reintroduce granular CLI commands (generate/sync/config) with improved UX
+- Optional feature toggles for chart/data density
+- Broader automated test coverage
 
 ## 🎨 Key Design Decisions
 
-### Manifest-Driven
-
-- `.build.json` is source of truth for generation
-- Filesystem is source of truth for runtime
-- Manifest informs structure, filesystem determines navigation
-
-### Filesystem-Based Navigation
-
-- Routes scanned from `app` directory
-- `routes.json` generated at build time
-- Layout reads from static JSON file
-- No runtime filesystem access
-
-### Simple & Elegant
-
-- Templates are operational code
-- No complex abstraction layers
-- Generated code is standard React
-- Users can edit anything freely
+- **Manifest augmentation**: File-based routing remains canonical; `routes.json`
+  adds human-friendly labels and ordering metadata.
+- **Data-driven demos**: `app-data.json` powers table, card, and form views so
+  teams can swap in their own sources quickly.
+- **Minimal API surface**: Phase 1 exposes only `npm run quick-start` to avoid
+  stale commands while the generator architecture is redesigned.
+- **Composable content**: Each content pattern is a regular React component that
+  can be imported directly into product routes.
 
 ## 📚 Documentation
 
-- [Quick Start Guide](./QUICK_START_MODE.md)
-- [Architecture Overview](./MANIFEST_ARCHITECTURE.md)
-- [Design Decisions](./ARCHITECTURE_CLARIFICATION.md)
-- [Solution Analysis](./SOLUTION_EVALUATION.md)
+- [Project README](../README.md) – High-level overview
+- [Quick Start Guide](./QUICK_START_MODE.md) – Detailed bootstrap workflow
+- [Architecture](./ARCHITECTURE.md) – System layers and rationale
+- [Directory Structure](./DIRECTORY_STRUCTURE.md) – Source tree breakdown
+- [Routes Manifest](./ROUTES.md) – Navigation schema and maintenance tips
 
 ## 🛠️ Dependencies
 
@@ -133,9 +122,9 @@ nextjs-seed-app/
 - `@patternfly/react-core`: 6.4.0
 - `@patternfly/react-icons`: 6.4.0
 - `@patternfly/patternfly`: 6.4.0
-- TypeScript, commander, inquirer, tsx, chalk
+- TypeScript, inquirer, tsx, chalk
 
 ---
 
-**Last Updated:** 2025-10-28
-**Status:** Core implementation complete, in testing phase
+**Last Updated:** 2025-11-10  
+**Status:** Phase 1 polish, Phase 2 planning underway

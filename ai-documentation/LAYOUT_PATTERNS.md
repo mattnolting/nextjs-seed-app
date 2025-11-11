@@ -2,53 +2,56 @@
 
 ## Overview
 
-Guidelines for using PatternFly layout components in Next.js applications.
+This starter wraps the App Router in a PatternFly `Page` layout via the custom
+`AppShell`. The shell supplies a masthead, sidebar, and main content area that
+all feature pages render into.
 
-## App Router Integration
+## Root Layout
 
-### Root Layout
-
-- Use PatternFly's `Page` component as the root container
-- Configure header and sidebar using PatternFly components
-- Import global CSS in the layout file
-
-### Page Sections
-
-- Use `PageSection` for content areas
-- Use appropriate variants for visual hierarchy
-- Keep nesting consistent across the application
-
-## Navigation
-
-### Routing
-
-- Use Next.js App Router file-based routing
-- Define routes in a configuration object
-- Implement client-side navigation with proper state management
-
-### Sidebar Navigation
-
-- Use PatternFly `Nav` components
-- Maintain active state based on current route
-- Keep navigation hierarchy flat when possible
-
-## Examples
+- `src/app/layout.tsx` imports global styles and renders `<AppWrapper>`
+- `AppWrapper` provides error boundaries and instantiates `AppShell`
+- `AppShell` composes `Page`, `Masthead`, and `Nav` components from
+  PatternFly React
 
 ```tsx
-// Root Layout Pattern
-import { Page } from "@patternfly/react-core";
-import Masthead from "@/components/layout/Masthead";
-import Sidebar from "@/components/layout/Sidebar";
-
-export default function RootLayout({ children }) {
+// layout.tsx (excerpt)
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html>
+    <html lang="en">
       <body>
-        <Page header={<Masthead />} sidebar={<Sidebar />}>
-          {children}
-        </Page>
+        <AppWrapper>{children}</AppWrapper>
       </body>
     </html>
   );
 }
 ```
+
+## Page Sections
+
+- Use `PageSection` and `PageGroup` within content patterns to create visual
+  rhythm
+- Prefer PatternFly spacing tokens and variants (default, light, noPadding,
+  etc.) to maintain consistency
+- Keep page-level state inside the corresponding content-pattern component and
+  pass data/handlers from the App Router page
+
+## Navigation
+
+- Navigation items are sourced from `public/routes.json`
+- `useRoutes()` reads that manifest and powers the sidebar in `AppSidebar`
+- Keep navigation shallow; groupings can be introduced later once the CLI
+  reintroduces advanced metadata
+
+## Content Patterns
+
+The starter exposes ready-made page layouts under `components/content-patterns`:
+
+- `CardView` – selectable card gallery with toolbar actions
+- `DashboardView` – KPI cards + PatternFly charts
+- `FormView` – data-driven form rendered from JSON schema
+- `PrimaryDetailView` – master/detail experience with PatternFly Drawer
+- `TableView` – searchable, paginated table with bulk actions
+
+Use these as references when building new PatternFly experiences: each pattern
+shows recommended toolbar placement, pagination, empty states, and selection
+behavior aligned with PatternFly guidelines.

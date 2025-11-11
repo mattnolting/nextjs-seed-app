@@ -75,8 +75,8 @@ npm run dev
 ## Related CLI
 
 ```bash
-npm run generate page
-npm run generate component
-npm run sync routes
-npm run config navigation
+npm run quick-start
 ```
+
+> Phase 1 ships with the quick-start workflow only. The more granular generate,
+> sync, and config commands will return once their new architecture is ready.

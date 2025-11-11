@@ -30,7 +30,6 @@ export default function Gallery() {
         items={data.cardView.items || []}
         title="Gallery"
         description="Browse available projects and items"
-        filterCategories={data.cardView.filters?.categories}
       />
     );
   }
