@@ -15,7 +15,11 @@ all feature pages render into.
 
 ```tsx
 // layout.tsx (excerpt)
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
       <body>
@@ -37,14 +41,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
 ## Navigation
 
-- Navigation items are sourced from `public/routes.json`
+- Navigation items are sourced from `src/app/routes.json` (served via `/api/routes`)
 - `useRoutes()` reads that manifest and powers the sidebar in `AppSidebar`
 - Keep navigation shallow; groupings can be introduced later once the CLI
   reintroduces advanced metadata
 
 ## Content Patterns
 
-The starter exposes ready-made page layouts under `components/content-patterns`:
+The starter exposes ready-made page layouts under `components/content-patterns`. Each file is tagged with a “SAMPLE CONTENT PATTERN” banner to make it clear the implementation is optional:
 
 - `CardView` – selectable card gallery with toolbar actions
 - `DashboardView` – KPI cards + PatternFly charts

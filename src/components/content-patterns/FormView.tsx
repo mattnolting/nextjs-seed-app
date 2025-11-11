@@ -1,5 +1,13 @@
 "use client";
 
+/**
+ * SAMPLE CONTENT PATTERN
+ * ----------------------
+ * Example of a PatternFly form rendered from a JSON schema. Provided for demo
+ * purposes so teams can see how to wire form controls; feel free to replace or
+ * streamline it for production use.
+ */
+
 import { useState, useEffect } from "react";
 import {
   PageSection,
@@ -16,7 +24,7 @@ import {
   Button,
   Alert,
 } from "@patternfly/react-core";
-import type { FormField, FormViewData } from "@/lib/data/types";
+import type { FormField } from "@/lib/data/types";
 
 export interface FormViewProps {
   formSchema: FormField[];
@@ -110,7 +118,11 @@ export function FormView({
     }
   };
 
-  const handleCheckboxChange = (name: string, value: string, checked: boolean) => {
+  const handleCheckboxChange = (
+    name: string,
+    value: string,
+    checked: boolean
+  ) => {
     setFormData((prev) => {
       const current = prev[name] || [];
       if (checked) {
@@ -246,10 +258,14 @@ export function FormView({
             variant="success"
             title="Form submitted successfully"
             isInline
-            style={{ marginBottom: "var(--pf-v5-global--spacer--md)" }}
           />
         )}
-        <Form isHorizontal isWidthLimited maxWidth="600px" onSubmit={handleSubmit}>
+        <Form
+          isHorizontal
+          isWidthLimited
+          maxWidth="600px"
+          onSubmit={handleSubmit}
+        >
           {formSchema.map((field) => {
             const error = errors[field.name];
             return (
@@ -263,9 +279,9 @@ export function FormView({
                 {error && (
                   <div
                     style={{
-                      color: "var(--pf-v5-global--danger-color--100)",
-                      fontSize: "var(--pf-v5-global--FontSize--sm)",
-                      marginTop: "var(--pf-v5-global--spacer--xs)",
+                      color: "var(--pf-global--danger-color--100)",
+                      fontSize: "var(--pf-global--FontSize--sm)",
+                      marginTop: "var(--pf-global--spacer--xs)",
                     }}
                   >
                     {error}
@@ -288,4 +304,3 @@ export function FormView({
     </>
   );
 }
-

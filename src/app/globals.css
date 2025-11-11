@@ -5,3 +5,16 @@
 /* Ensure charts respond to dark theme */
 /* PatternFly charts automatically respond to pf-v6-theme-dark class on html element */
 /* The patternfly-charts.css file contains all necessary theme variables */
+
+.show-dark {
+  display: none;
+}
+
+.pf-v6-theme-dark {
+  .show-dark {
+    display: revert;
+  }
+  .show-light {
+    display: none;
+  }
+}

@@ -2,13 +2,13 @@
 
 ## Overview
 
-All component data is provisioned through a single JSON file: `public/app-data.json`. This provides a centralized, easy-to-modify source of truth for all non-static content.
+All component data is provisioned through a single JSON file: `src/app/app-data.json`. This provides a centralized, easy-to-modify source of truth for all non-static content and is served to the client via `/api/app-data`.
 
 ## Structure
 
 ### Files
 
-- **`public/app-data.json`** - Single JSON file containing all component data
+- **`src/app/app-data.json`** - Single JSON file containing all component data
 - **`src/lib/data/types.ts`** - TypeScript type definitions for data structure
 - **`src/lib/data/useAppData.ts`** - React hook for loading data
 
@@ -87,5 +87,5 @@ See `src/lib/data/types.ts` for complete type definitions.
 
 ## Modifying Data
 
-Simply edit `public/app-data.json` to update component data. Changes will be reflected after a page refresh (or hot reload in development).
+Simply edit `src/app/app-data.json` to update component data. Changes will be reflected after a page refresh (or hot reload in development).
 

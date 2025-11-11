@@ -2,8 +2,8 @@
 
 ## Location
 
-- `public/routes.json` (served statically)
-- Consumed by `src/lib/navigation/useRoutes.ts` on the client
+- `src/app/routes.json` (source of truth)
+- Served by `/api/routes` route handler and consumed by `src/lib/navigation/useRoutes.ts`
 
 ## Schema
 
@@ -46,7 +46,7 @@ Fields:
 ## Managing Routes
 
 - **Quick Start:** `npm run quick-start` rebuilds demo pages and refreshes
-  `public/routes.json` to match the scaffolded content.
+  `src/app/routes.json` to match the scaffolded content.
 - **Manual edits:** You can edit `routes.json` directly for custom ordering,
   titles, or advanced metadata. Keep paths aligned with `src/app/` routes.
 

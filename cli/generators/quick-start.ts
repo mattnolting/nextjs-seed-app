@@ -30,12 +30,13 @@ export async function runQuickStart(
   try {
     const appDir = path.join(projectRoot, "src", "app");
     const layoutPath = path.join(appDir, "layout.tsx");
-    const publicDir = path.join(projectRoot, "public");
+    const dataDir = path.join(projectRoot, "src", "app");
 
     // 1. Check current state
     const hasAppShell = await checkAppShell(layoutPath);
     const existingPages = await checkExistingPages(appDir);
     let shouldRegeneratePages = true;
+    const includeDemoContent = config?.includeDemoContent ?? true;
 
     // 2. Handle existing scaffold
     if (hasAppShell && existingPages.length > 0) {
@@ -88,12 +89,12 @@ export async function runQuickStart(
     }
 
     // 4. Generate pages with content patterns (NO DashboardLayout!)
-    if (shouldRegeneratePages) {
+    if (includeDemoContent && shouldRegeneratePages) {
       // These render INSIDE AppShell's main content area
       console.log(
         chalk.cyan("Generating pages (content only, no nested layouts)...")
       );
-      await fs.mkdir(publicDir, { recursive: true });
+      await fs.mkdir(dataDir, { recursive: true });
 
       const routes = [
         { path: "/", title: "Home", order: 1, pattern: "DashboardView" },
@@ -140,13 +141,19 @@ export async function runQuickStart(
       };
 
       await fs.writeFile(
-        path.join(publicDir, "routes.json"),
+        path.join(dataDir, "routes.json"),
         JSON.stringify(routesData, null, 2),
         "utf-8"
       );
       console.log(
         chalk.green(
           `✓ routes.json created with ${routesData.routes.length} routes\n`
+        )
+      );
+    } else if (!includeDemoContent) {
+      console.log(
+        chalk.yellow(
+          "\nSkipped demo page generation (sample content disabled in configuration).\n"
         )
       );
     } else {
@@ -234,13 +241,6 @@ async function ensureAppShell(
     // layout.tsx doesn't exist
   }
 
-  // Determine nav mode based on config
-  // Default: sidebar enabled, horizontal nav disabled
-  const sidebarEnabled = config?.sidebar?.enabled ?? true;
-  const sidebarDefaultOpen = config?.sidebar?.defaultOpen ?? true;
-  const horizontalNavEnabled = config?.horizontalNav?.enabled ?? false;
-  const navMode = sidebarEnabled ? "sidebar" : "masthead";
-
   // Build toolbar items from config
   const showToolbar = config?.masthead?.showToolbar ?? true;
   const toolbarItems =
@@ -249,9 +249,6 @@ async function ensureAppShell(
       : showToolbar
       ? ["notifications", "settings", "theme"]
       : [];
-
-  // Use config logo or default
-  const logoPath = config?.masthead?.logo || "/PF-HorizontalLogo-Color.svg";
 
   if (!layoutExists || config) {
     // Create or regenerate layout.tsx with AppShell (THE OUTER WRAPPER)
@@ -302,17 +299,17 @@ export function AppWrapper({ children }: { children: React.ReactNode }) {
       <AppShell
         config={{
           masthead: {
-            logo: "${logoPath}",
+            logo: "/PF-HorizontalLogo-Color.svg",
             showToolbar: ${showToolbar ? "true" : "false"},
             toolbarItems: ${JSON.stringify(toolbarItems)},
           },
-          navMode: "${navMode}",
+          navMode: "sidebar",
           sidebar: {
-            enabled: ${sidebarEnabled ? "true" : "false"},
-            defaultOpen: ${sidebarDefaultOpen ? "true" : "false"},
+            enabled: true,
+            defaultOpen: true,
           },
           horizontalNav: {
-            enabled: ${horizontalNavEnabled ? "true" : "false"},
+            enabled: false,
           },
         }}
       >

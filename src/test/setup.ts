@@ -16,14 +16,14 @@ vi.mock("@/lib/navigation/useRoutes", () => {
   };
 });
 
-// Provide a deterministic fetch for routes.json used by useRoutes()
+// Provide deterministic fetch responses for data endpoints used in hooks
 if (!(globalThis as any).fetch) {
   (globalThis as any).fetch = vi.fn();
 }
 
 (globalThis as any).fetch = vi.fn(async (input: RequestInfo | URL) => {
   const url = typeof input === "string" ? input : (input as URL).toString();
-  if (url.endsWith("/routes.json") || url.endsWith("routes.json")) {
+  if (url.endsWith("/api/routes") || url.endsWith("api/routes")) {
     return {
       ok: true,
       json: async () => ({
@@ -31,6 +31,15 @@ if (!(globalThis as any).fetch) {
           { path: "/", title: "Home" },
           { path: "/dashboard", title: "Dashboard" },
         ],
+      }),
+    } as any;
+  }
+  if (url.endsWith("/api/app-data") || url.endsWith("api/app-data")) {
+    return {
+      ok: true,
+      json: async () => ({
+        tableView: { columns: [], rows: [] },
+        cardView: { items: [] },
       }),
     } as any;
   }

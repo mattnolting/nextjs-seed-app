@@ -1,5 +1,13 @@
 "use client";
 
+/**
+ * SAMPLE CONTENT PATTERN
+ * ----------------------
+ * Demonstrates a PatternFly data table with toolbar filtering, pagination, and
+ * bulk selection. Intended as demo code that you can replace with your own
+ * implementation or slim down for production usage.
+ */
+
 import { useState } from "react";
 import {
   PageSection,

@@ -2,102 +2,31 @@ import inquirer from "inquirer";
 import chalk from "chalk";
 
 export interface BootstrapConfig {
-  sidebar: {
-    enabled: boolean;
-    type: "standard" | "grouped" | "expandable";
-    defaultOpen: boolean;
-  };
-  horizontalNav: {
-    enabled: boolean;
-  };
   masthead: {
-    logo: string;
     showToolbar: boolean;
     toolbarItems: string[];
   };
+  includeDemoContent: boolean;
 }
 
 /**
- * Run bootstrap setup prompts
- * Asks user about sidebar, horizontal nav, and masthead configuration
+ * Run bootstrap setup prompts for optional demo content and masthead toolbar
+ * configuration.
  */
 export async function runBootstrapSetup(): Promise<BootstrapConfig> {
   console.log(chalk.blue.bold("\n🚀 PatternFly Bootstrap Configuration\n"));
 
-  // 1. Sidebar configuration
-  const { needsSidebar } = await inquirer.prompt([
+  // 1. Sample content toggle
+  const { includeDemoContent } = await inquirer.prompt([
     {
       type: "confirm",
-      name: "needsSidebar",
-      message: "Does your app need a sidebar?",
-      default: true,
-    },
-  ]);
-
-  let sidebarType: "standard" | "grouped" | "expandable" = "standard";
-  let sidebarDefaultOpen = true;
-
-  if (needsSidebar) {
-    const { type } = await inquirer.prompt([
-      {
-        type: "list",
-        name: "type",
-        message: "Sidebar Navigation type?",
-        choices: [
-          { name: "standard (default, v1)", value: "standard" },
-          {
-            name: "grouped (v2 - coming soon)",
-            value: "grouped",
-            disabled: true,
-          },
-          {
-            name: "expandable (v2 - coming soon)",
-            value: "expandable",
-            disabled: true,
-          },
-        ],
-        default: "standard",
-      },
-    ]);
-    sidebarType = type;
-
-    const { defaultOpen } = await inquirer.prompt([
-      {
-        type: "confirm",
-        name: "defaultOpen",
-        message: "Default sidebar open?",
-        default: true,
-      },
-    ]);
-    sidebarDefaultOpen = defaultOpen;
-  }
-
-  // 2. Horizontal navigation
-  const { needsHorizontalNav } = await inquirer.prompt([
-    {
-      type: "confirm",
-      name: "needsHorizontalNav",
-      message: "Do you need horizontal navigation in page masthead?",
+      name: "includeDemoContent",
+      message: "Generate sample PatternFly demo pages and data?",
       default: false,
     },
   ]);
 
-  // 3. Masthead configuration
-  const { logoPath } = await inquirer.prompt([
-    {
-      type: "input",
-      name: "logoPath",
-      message: "Logo path:",
-      default: "/PF-HorizontalLogo-Color.svg",
-      validate: (input: string) => {
-        if (!input.trim()) {
-          return "Logo path cannot be empty";
-        }
-        return true;
-      },
-    },
-  ]);
-
+  // 2. Masthead configuration (toolbar only)
   const { showToolbar } = await inquirer.prompt([
     {
       type: "confirm",
@@ -129,18 +58,10 @@ export async function runBootstrapSetup(): Promise<BootstrapConfig> {
   console.log(chalk.green("\n✓ Configuration complete!\n"));
 
   return {
-    sidebar: {
-      enabled: needsSidebar,
-      type: sidebarType,
-      defaultOpen: sidebarDefaultOpen,
-    },
-    horizontalNav: {
-      enabled: needsHorizontalNav,
-    },
     masthead: {
-      logo: logoPath,
       showToolbar,
       toolbarItems,
     },
+    includeDemoContent,
   };
 }

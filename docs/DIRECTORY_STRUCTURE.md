@@ -22,7 +22,7 @@ nextjs-seed-app/
 │   │   │   ├── AppShell.tsx           # PatternFly Page scaffold
 │   │   │   ├── AppMasthead.tsx
 │   │   │   └── AppSidebar.tsx
-│   │   └── content-patterns/          # Reusable page-level content views
+│   │   └── content-patterns/          # Sample PatternFly page-level views (optional)
 │   │       ├── CardView.tsx
 │   │       ├── DashboardView.tsx
 │   │       ├── FormView.tsx
@@ -48,9 +48,9 @@ nextjs-seed-app/
 │
 ├── docs/                              # Human-authored documentation
 ├── ai-documentation/                  # AI-oriented guidance
+├── src/app/app-data.json              # Demo content backing PatternFly views
+├── src/app/routes.json                # Navigation manifest served via /api/routes
 ├── public/
-│   ├── app-data.json                  # Demo content
-│   ├── routes.json                    # Navigation manifest
 │   └── static assets (logos, etc.)
 ├── package.json
 ├── tsconfig.json
@@ -72,23 +72,23 @@ the PatternFly-powered `AppShell`.
   handling around the shell.
 - `components/ui/` contains the chrome elements (`AppShell`, `AppMasthead`,
   `AppSidebar`) that assemble the PatternFly layout.
-- `components/content-patterns/` packages reusable page-level views used by the
-  demo routes (Card, Dashboard, Form, Primary/Detail, Table).
+- `components/content-patterns/` packages sample page-level views used by the
+  demo routes (Card, Dashboard, Form, Primary/Detail, Table). Each file is marked
+  as demo-only and can be removed for a leaner seed.
 
 ### `src/lib/`
 
 - `lib/data/` centralizes data loading for demo pages via `useAppData`.
-- `lib/navigation/useRoutes.ts` reads `public/routes.json` at runtime to drive
+- `lib/navigation/useRoutes.ts` reads `/api/routes` at runtime to drive
   sidebar navigation.
 
 ### `cli/`
 
 Phase 1 ships a single `quick-start` workflow. The command prompts for layout
-choices, ensures the AppShell scaffold exists, rebuilds demo pages, and updates
-`public/routes.json`. Shared helpers live under `cli/utils/`, and the generator
-logic sits in `cli/generators/quick-start.ts`.
+choices, optionally generates demo pages/data, and updates `src/app/routes.json`.
+Shared helpers live under `cli/utils/`, and the generator logic sits in
+`cli/generators/quick-start.ts`.
 
 ### `public/`
 
-Static assets served by Next.js. The quick-start routine maintains
-`routes.json`, and `app-data.json` seeds the demo content patterns.
+Static assets served by Next.js (logos, icons, etc.).

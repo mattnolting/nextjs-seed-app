@@ -1,5 +1,13 @@
 "use client";
 
+/**
+ * SAMPLE CONTENT PATTERN
+ * ----------------------
+ * A comprehensive PatternFly dashboard showcase (cards, charts, lists, etc.).
+ * Intended purely as demonstration code—trim or replace it with the views your
+ * product needs when customizing the starter.
+ */
+
 import { ReactNode, useRef, useState, useEffect } from "react";
 import {
   PageSection,
@@ -27,11 +35,6 @@ import {
   FlexItem,
   List,
   ListItem,
-  DataList,
-  DataListItem,
-  DataListItemRow,
-  DataListItemCells,
-  DataListCell,
   Button,
   DescriptionList,
   DescriptionListGroup,
@@ -50,8 +53,6 @@ import InfoCircleIcon from "@patternfly/react-icons/dist/esm/icons/info-circle-i
 import ArrowRightIcon from "@patternfly/react-icons/dist/esm/icons/arrow-right-icon";
 import ExternalLinkAltIcon from "@patternfly/react-icons/dist/esm/icons/external-link-alt-icon";
 import ExclamationCircleIcon from "@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon";
-import ExclamationTriangleIcon from "@patternfly/react-icons/dist/esm/icons/exclamation-triangle-icon";
-import CheckCircleIcon from "@patternfly/react-icons/dist/esm/icons/check-circle-icon";
 import type { MenuToggleElement } from "@patternfly/react-core";
 import {
   ChartBar,
@@ -267,8 +268,6 @@ function KPICardRecommendations({ kpi }: { kpi: KPICard }) {
   const [isOpen, setIsOpen] = useState(false);
   const recommendations = kpi.recommendations;
   if (!recommendations || !recommendations.enabled) return null;
-  const titleHeadingLevel = recommendations.titleHeadingLevel || "h4";
-  const titleSize = recommendations.titleSize || "lg";
   const filterOptions = recommendations.filterOptions || [];
 
   const selectItems = (
@@ -307,7 +306,6 @@ function KPICardRecommendations({ kpi }: { kpi: KPICard }) {
   return (
     <Card isFullHeight id={`recommendations-card-${kpi.id}`} component="div">
       <CardHeader
-        className="pf-v5-u-align-items-flex-start"
         actions={
           headerActions
             ? { actions: headerActions, hasNoOffset: true }
@@ -315,9 +313,7 @@ function KPICardRecommendations({ kpi }: { kpi: KPICard }) {
         }
       >
         <CardTitle>
-          <Title headingLevel={titleHeadingLevel} size={titleSize}>
-            {recommendations.title || kpi.title || "Recommendations"}
-          </Title>
+          {recommendations.title || kpi.title || "Recommendations"}
         </CardTitle>
       </CardHeader>
       <CardBody>
@@ -436,16 +432,10 @@ function KPICardDetails({ kpi }: { kpi: KPICard }) {
   if (!details || !details.enabled) return null;
 
   const items = details.items || [];
-  const titleHeadingLevel = details.titleHeadingLevel || "h4";
-  const titleSize = details.titleSize || "xl";
 
   return (
     <Card>
-      <CardTitle>
-        <Title headingLevel={titleHeadingLevel} size={titleSize}>
-          {details.title || kpi.title || "Details"}
-        </Title>
-      </CardTitle>
+      <CardTitle>{details.title || kpi.title || "Details"}</CardTitle>
       <CardBody>
         <DescriptionList
           aria-label={details.ariaLabel || `${kpi.title} details`}
@@ -511,7 +501,13 @@ function KPICardSummary({ kpi }: { kpi: KPICard }) {
           )}
           {kpi.description && (
             <StackItem>
-              <p className="pf-v5-u-font-size-sm pf-v5-u-color-200 pf-v5-u-mb-0">
+              <p
+                style={{
+                  fontSize: "var(--pf-global--FontSize--sm)",
+                  color: "var(--pf-global--Color--200)",
+                  margin: 0,
+                }}
+              >
                 {kpi.description}
               </p>
             </StackItem>
@@ -589,7 +585,7 @@ function CpuUsageByNodeChart() {
   }));
 
   return (
-    <div ref={chartRef} className="pf-v5-u-w-100">
+    <div ref={chartRef} style={{ width: "100%" }}>
       {width > 0 && (
         <Chart
           ariaDesc="CPU utilization by node over the last 4 hours"
@@ -671,7 +667,7 @@ function ClusterCpuTrendChart() {
   }));
 
   return (
-    <div ref={chartRef} className="pf-v5-u-w-100">
+    <div ref={chartRef} style={{ width: "100%" }}>
       {width > 0 && (
         <Chart
           ariaDesc="Cluster CPU utilization trend over the last 24 hours"
@@ -833,84 +829,6 @@ const SUMMARY_CARD_THREE: KPICard = {
   value: "124 running",
 };
 
-const CLUSTER_OVERVIEW_DETAILS = [
-  {
-    term: "API endpoint",
-    description: "https://api1.devcluster.openshift.com",
-  },
-  { term: "Cluster ID", description: "63b9-7ac1-b850-41d9-8820" },
-  { term: "OpenShift version", description: "4.16.5" },
-  { term: "Provider", description: "AWS (us-east-1)" },
-  { term: "Nodes", description: "12 total (6 control plane, 6 worker)" },
-];
-
-const CLUSTER_STATUS_SUMMARY = [
-  {
-    status: "Control plane",
-    resourceName: "api1.devcluster.openshift.com",
-    detail: "Responding in 45 ms • last heartbeat 2 minutes ago",
-    icon: (
-      <Icon size="xl" status="success">
-        <CheckCircleIcon />
-      </Icon>
-    ),
-  },
-  {
-    status: "Worker nodes",
-    resourceName: "6 of 6 reporting healthy",
-    detail: "node-worker-03 at 92% memory · auto-remediation enabled",
-    icon: (
-      <Icon size="xl" status="warning">
-        <ExclamationTriangleIcon />
-      </Icon>
-    ),
-  },
-  {
-    status: "Platform services",
-    resourceName: "Monitoring, logging, service mesh",
-    detail: "All services running • 3 optimization recommendations",
-    icon: (
-      <Icon size="xl" status="info">
-        <InfoCircleIcon />
-      </Icon>
-    ),
-  },
-  {
-    status: "Cluster updates",
-    resourceName: "OpenShift 4.16.5",
-    detail: "Next maintenance window: 11 Nov 2025 · 01:00 UTC",
-    icon: (
-      <Icon size="xl" status="success">
-        <CheckCircleIcon />
-      </Icon>
-    ),
-  },
-];
-
-const RECENT_EVENTS = [
-  {
-    id: "event-1",
-    title: "Deployment scaled",
-    description: "web-frontend scaled to 6 replicas",
-    severity: "info",
-    time: "2 minutes ago",
-  },
-  {
-    id: "event-2",
-    title: "Node memory pressure",
-    description: "node-worker-03 reporting 92% memory usage",
-    severity: "warning",
-    time: "8 minutes ago",
-  },
-  {
-    id: "event-3",
-    title: "Certificate renewed",
-    description: "kube-apiserver certificate rotation completed",
-    severity: "success",
-    time: "15 minutes ago",
-  },
-];
-
 const RECOMMENDATION_CARD: KPICard = {
   id: "3",
   title: "Recommendations",
@@ -983,11 +901,7 @@ export function DashboardView({
       <>
         {title && (
           <PageSection>
-            <Title
-              headingLevel="h1"
-              size="2xl"
-              style={{ marginBottom: "var(--pf-v5-global--spacer--lg)" }}
-            >
+            <Title headingLevel="h1" size="2xl">
               {title}
             </Title>
           </PageSection>
@@ -1012,17 +926,10 @@ export function DashboardView({
       {title && (
         <PageSection isWidthLimited>
           <Content>
-            <Stack hasGutter>
-              <StackItem>
-                <Title headingLevel="h1">{title}</Title>
-              </StackItem>
-              <StackItem>
-                <p className="pf-v5-u-m-0">
-                  This is a PatternFly-based dashboard built with React
-                  components.
-                </p>
-              </StackItem>
-            </Stack>
+            <h1 id="dashboard-page-title">{title}</h1>
+            <p>
+              This is a PatternFly-based dashboard built with React components.
+            </p>
           </Content>
         </PageSection>
       )}
@@ -1035,11 +942,7 @@ export function DashboardView({
 
           <GridItem md={4}>
             <Card isFullHeight>
-              <CardTitle>
-                <Title headingLevel="h4" size="lg">
-                  {UTILIZATION_CARD.title}
-                </Title>
-              </CardTitle>
+              <CardTitle>{UTILIZATION_CARD.title}</CardTitle>
               <CardBody>
                 <KPIUtilizationChart kpi={UTILIZATION_CARD} />
               </CardBody>
@@ -1048,11 +951,7 @@ export function DashboardView({
 
           <GridItem md={4}>
             <Card isFullHeight>
-              <CardTitle>
-                <Title headingLevel="h4" size="lg">
-                  CPU utilization by node
-                </Title>
-              </CardTitle>
+              <CardTitle>CPU utilization by node</CardTitle>
               <CardBody>
                 <CpuUsageByNodeChart />
               </CardBody>
@@ -1061,11 +960,7 @@ export function DashboardView({
 
           <GridItem md={4}>
             <Card isFullHeight>
-              <CardTitle>
-                <Title headingLevel="h4" size="lg">
-                  Cluster CPU trend
-                </Title>
-              </CardTitle>
+              <CardTitle>Cluster CPU trend</CardTitle>
               <CardBody>
                 <ClusterCpuTrendChart />
               </CardBody>
@@ -1078,143 +973,6 @@ export function DashboardView({
 
           <GridItem md={6}>
             <KPICardDetails kpi={DETAILS_CARD} />
-          </GridItem>
-
-          <GridItem md={8}>
-            <Card isFullHeight>
-              <CardHeader>
-                <CardTitle>
-                  <Title headingLevel="h4" size="lg">
-                    Cluster overview
-                  </Title>
-                </CardTitle>
-              </CardHeader>
-              <CardBody>
-                <Stack hasGutter>
-                  <StackItem>
-                    <DescriptionList
-                      columnModifier={{ lg: "2Col" }}
-                      aria-label="Cluster status summary"
-                    >
-                      {CLUSTER_STATUS_SUMMARY.map(
-                        ({ status, resourceName, detail, icon }, index) => (
-                          <DescriptionListGroup key={`${status}-${index}`}>
-                            <DescriptionListTerm>
-                              <Flex
-                                spaceItems={{ default: "spaceItemsSm" }}
-                                alignItems={{ default: "alignItemsCenter" }}
-                              >
-                                <FlexItem>{icon}</FlexItem>
-                                <FlexItem>
-                                  <Title headingLevel="h4" size="md">
-                                    {status}
-                                  </Title>
-                                </FlexItem>
-                              </Flex>
-                            </DescriptionListTerm>
-                            <DescriptionListDescription>
-                              <a href="#">{resourceName}</a>
-                              <div className="pf-v5-u-color-200 pf-v5-u-mt-xs">
-                                {detail}
-                              </div>
-                            </DescriptionListDescription>
-                          </DescriptionListGroup>
-                        )
-                      )}
-                    </DescriptionList>
-                  </StackItem>
-                  {/* <StackItem>
-                    <Divider />
-                  </StackItem>
-                  <StackItem>
-                    <DescriptionList
-                      isHorizontal
-                      columnModifier={{ lg: "2Col" }}
-                      aria-label="Cluster metadata details"
-                    >
-                      {CLUSTER_OVERVIEW_DETAILS.map((item) => (
-                        <DescriptionListGroup key={item.term}>
-                          <DescriptionListTerm>{item.term}</DescriptionListTerm>
-                          <DescriptionListDescription>
-                            {item.description}
-                          </DescriptionListDescription>
-                        </DescriptionListGroup>
-                      ))}
-                    </DescriptionList>
-                  </StackItem> */}
-                </Stack>
-              </CardBody>
-              <CardFooter>
-                <Button
-                  variant="link"
-                  icon={<ArrowRightIcon />}
-                  iconPosition="right"
-                >
-                  View settings
-                </Button>
-              </CardFooter>
-            </Card>
-          </GridItem>
-
-          <GridItem md={4}>
-            <Card isFullHeight>
-              <CardHeader>
-                <CardTitle>
-                  <Title headingLevel="h4" size="lg">
-                    Recent events
-                  </Title>
-                </CardTitle>
-              </CardHeader>
-              <CardBody>
-                <DataList aria-label="Recent cluster events" isCompact>
-                  {RECENT_EVENTS.map((event) => (
-                    <DataListItem key={event.id} aria-labelledby={event.id}>
-                      <DataListItemRow>
-                        <DataListItemCells
-                          dataListCells={[
-                            <DataListCell
-                              width={1}
-                              key={`${event.id}-severity`}
-                            >
-                              <Label
-                                color={
-                                  event.severity === "warning"
-                                    ? "orange"
-                                    : event.severity === "success"
-                                    ? "green"
-                                    : "blue"
-                                }
-                                isCompact
-                              >
-                                {event.severity.toUpperCase()}
-                              </Label>
-                            </DataListCell>,
-                            <DataListCell width={2} key={`${event.id}-content`}>
-                              <strong id={event.id}>{event.title}</strong>
-                              <p className="pf-v5-u-color-200 pf-v5-u-m-0">
-                                {event.description}
-                              </p>
-                              <small className="pf-v5-u-color-200">
-                                {event.time}
-                              </small>
-                            </DataListCell>,
-                          ]}
-                        />
-                      </DataListItemRow>
-                    </DataListItem>
-                  ))}
-                </DataList>
-              </CardBody>
-              <CardFooter>
-                <Button
-                  variant="link"
-                  icon={<ArrowRightIcon />}
-                  iconPosition="right"
-                >
-                  View event log
-                </Button>
-              </CardFooter>
-            </Card>
           </GridItem>
 
           <GridItem md={4}>

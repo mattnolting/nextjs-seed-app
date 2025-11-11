@@ -18,7 +18,6 @@ import {
   PageToggleButton,
   Brand,
 } from "@patternfly/react-core";
-import pfLogo from "@patternfly/react-core/src/demos/assets/PF-HorizontalLogo-Color.svg";
 import BarsIcon from "@patternfly/react-icons/dist/esm/icons/bars-icon";
 import BellIcon from "@patternfly/react-icons/dist/esm/icons/bell-icon";
 import CogIcon from "@patternfly/react-icons/dist/esm/icons/cog-icon";
@@ -28,6 +27,9 @@ import DesktopIcon from "@patternfly/react-icons/dist/esm/icons/desktop-icon";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useRoutes } from "@/lib/navigation/useRoutes";
+
+const DEFAULT_LOGO_LIGHT = "/PF-HorizontalLogo-Color.svg";
+const DEFAULT_LOGO_DARK = "/PF-HorizontalLogo-Color-reverse.svg";
 
 export function AppMasthead({
   isSidebarOpen,
@@ -55,8 +57,11 @@ export function AppMasthead({
   const routes = useRoutes();
   const [isHydrated, setIsHydrated] = useState(false);
 
+  // Use rAF to defer hydration-sensitive updates so the server/CSR output stays
+  // aligned and avoids React 19 double-render warnings in Strict Mode.
   useEffect(() => {
-    setIsHydrated(true);
+    const raf = requestAnimationFrame(() => setIsHydrated(true));
+    return () => cancelAnimationFrame(raf);
   }, []);
 
   const effectiveToolbarItems = toolbarItems ?? [];
@@ -103,7 +108,7 @@ export function AppMasthead({
         {shouldRenderToolbar && (
           <ToolbarGroup
             align={{ default: "alignEnd" }}
-            className="pf-m-action-group-plain pf-m-gap-none pf-m-gap-md-on-md"
+            variant="action-group-plain"
           >
             {effectiveToolbarItems.includes("notifications") && (
               <ToolbarItem>
@@ -172,11 +177,20 @@ export function AppMasthead({
         )}
         <MastheadBrand>
           <MastheadLogo component="a" href="/">
-            <Brand
-              src={logo || pfLogo}
-              alt="PatternFly"
-              heights={{ default: "36px" }}
-            />
+            <div className="show-light">
+              <Brand
+                src={logo ?? DEFAULT_LOGO_LIGHT}
+                alt="Patternfly"
+                heights={{ default: "36px" }}
+              />
+            </div>
+            <div className="show-dark">
+              <Brand
+                src={DEFAULT_LOGO_DARK}
+                alt="Patternfly"
+                heights={{ default: "36px" }}
+              />
+            </div>
           </MastheadLogo>
         </MastheadBrand>
       </MastheadMain>

@@ -10,8 +10,7 @@
 
 - **[Architecture](./ARCHITECTURE.md)** - Complete architecture and design decisions
 - **[CLI Architecture](./CLI_ARCHITECTURE.md)** - CLI command structure and patterns
-- **[Project Plan](./PROJECT_PLAN.md)** - Project overview and roadmap
-- **[Phase 2 Plan](./PHASE2_PLAN.md)** - Content patterns and data-driven architecture
+- Sample component guidance is embedded in each content-pattern file header and the main `README`.
 
 ## Additional Resources
 

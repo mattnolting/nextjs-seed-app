@@ -7,7 +7,7 @@ the other subcommands have been removed to avoid stale entry points.
 ## Command Surface
 
 ```
-npm run quick-start   # Reconfigure layout and regenerate demo content
+npm run quick-start   # Reconfigure layout and optionally regenerate demo content
 ```
 
 ## Implementation
@@ -27,7 +27,7 @@ cli/
 ├── commands/
 │   └── quick-start.ts          # Standalone bootstrap and rebuild script
 ├── generators/
-│   └── quick-start.ts          # Implements scaffold + demo content creation
+│   └── quick-start.ts          # Implements scaffold + optional demo content creation
 ├── utils/
 │   ├── bootstrap-check.ts      # Shared: detect existing layout configuration
 │   ├── bootstrap-setup.ts      # Shared: interactive bootstrap prompts
@@ -39,7 +39,7 @@ cli/
 
 ```bash
 npm run quick-start
-# → Re-run bootstrap, rebuild AppShell, recreate demo pages, update routes.json
+# → Re-run bootstrap, rebuild AppShell, optionally recreate demo pages, update routes.json
 ```
 
 ## Roadmap

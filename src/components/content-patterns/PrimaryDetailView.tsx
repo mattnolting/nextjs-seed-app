@@ -1,5 +1,13 @@
 "use client";
 
+/**
+ * SAMPLE CONTENT PATTERN
+ * ----------------------
+ * Demonstrates a PatternFly primary-detail layout with filtering, drawer
+ * details, and toolbar actions. Treat this as reference/sample code and adjust
+ * or replace it when tailoring the starter to your product.
+ */
+
 import { useState, useEffect, Fragment } from "react";
 import {
   PageSection,
@@ -7,7 +15,6 @@ import {
   Content,
   Divider,
   DataList,
-  DataListAction,
   DataListCell,
   DataListItem,
   DataListItemCells,
@@ -53,7 +60,6 @@ export interface PrimaryDetailViewProps {
   renderDetail: (item: PrimaryItem) => React.ReactNode;
   title?: string;
   emptyStateMessage?: string;
-  masterTitle?: string;
   detailTitle?: string;
   enableSearch?: boolean;
   enableFilters?: boolean;
@@ -65,7 +71,6 @@ export function PrimaryDetailView({
   renderDetail,
   title = "Primary Detail",
   emptyStateMessage = "Select an item to view details",
-  masterTitle = "Items",
   detailTitle = "Details",
   enableSearch = true,
   enableFilters = false,
@@ -91,9 +96,13 @@ export function PrimaryDetailView({
   // Sync drawer state when masterItems changes
   useEffect(() => {
     if (masterItems.length === 0) {
-      setIsDrawerExpanded(false);
-      setSelectedDataListItemId("");
+      const raf = requestAnimationFrame(() => {
+        setIsDrawerExpanded(false);
+        setSelectedDataListItemId("");
+      });
+      return () => cancelAnimationFrame(raf);
     }
+    return undefined;
   }, [masterItems]);
 
   const onSelectDataListItem = (
@@ -331,13 +340,7 @@ export function PrimaryDetailView({
                               {item.title}
                             </p>
                             {item.description && (
-                              <small
-                                style={{
-                                  color: "var(--pf-v5-global--Color--200)",
-                                }}
-                              >
-                                {item.description}
-                              </small>
+                              <small>{item.description}</small>
                             )}
                           </FlexItem>
                           {item.meta && Object.keys(item.meta).length > 0 && (

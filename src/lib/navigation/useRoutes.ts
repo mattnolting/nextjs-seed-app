@@ -19,12 +19,12 @@ export function useRoutes(): NavRoute[] {
     let cancelled = false;
     async function load() {
       try {
-        const res = await fetch("/routes.json", { cache: "no-store" });
+        const res = await fetch("/api/routes", { cache: "no-store" });
         if (!res.ok) {
           if (process.env.NODE_ENV !== "production") {
             // eslint-disable-next-line no-console
             console.warn(
-              "useRoutes: failed to fetch routes.json (",
+              "useRoutes: failed to fetch routes manifest (",
               res.status,
               ")"
             );
@@ -54,7 +54,7 @@ export function useRoutes(): NavRoute[] {
       } catch (err) {
         if (process.env.NODE_ENV !== "production") {
           // eslint-disable-next-line no-console
-          console.warn("useRoutes: error loading routes.json", err);
+          console.warn("useRoutes: error loading routes manifest", err);
         }
         if (!cancelled) setRoutes([]);
       }

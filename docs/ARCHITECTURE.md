@@ -8,7 +8,7 @@ Create a simple, elegant, fast starter that composes PatternFly primitives into 
 
 1. **Action-First CLI**: Quick Start scaffolds a working 5-page app
 2. **Filesystem-Driven**: Routes discovered from `src/app/`
-3. **Manifest-Augmented**: `public/routes.json` adds titles/icons/order
+3. **Manifest-Augmented**: `src/app/routes.json` adds titles/icons/order
 4. **Graceful Degradation**: Missing manifest → sensible defaults
 5. **Separation of Concerns**: App chrome vs page content patterns
 
@@ -77,7 +77,7 @@ src/
 │       └── FormView.tsx
 └── lib/
     └── navigation/
-        └── useRoutes.ts         # Loads public/routes.json on client
+        └── useRoutes.ts         # Loads /api/routes on client
 ```
 
 ### AppShell configuration via props
@@ -119,11 +119,10 @@ Quick Start scaffolds `AppShell`, `AppMasthead`, `AppSidebar`, and content patte
 ### File Structure
 
 ```
-public/
-└── routes.json                     # Route metadata (generated)
+src/app/routes.json                 # Route metadata (generated)
 
 src/lib/navigation/
-└── useRoutes.ts                    # Client hook to load routes.json
+└── useRoutes.ts                    # Client hook to load /api/routes
 ```
 
 ### Navigation Flow
@@ -148,7 +147,7 @@ src/lib/navigation/
 └─────────────┘              └─────────────┘
 ```
 
-### Routes Metadata Schema (public/routes.json)
+### Routes Metadata Schema (`src/app/routes.json`)
 
 ```typescript
 interface RouteMetadata {
@@ -184,6 +183,8 @@ interface RouteMetadata {
 
 ## 3. Demo Pages (Quick Start Output)
 
+These pages are generated only when you opt into sample content during the Quick Start prompt. They exist to showcase PatternFly layouts and can be deleted when you begin building product-specific views.
+
 - DashboardView: dashboard with KPI cards and charts
 - TableView: data table with toolbar, search, pagination
 - CardView: card gallery with filtering and selection
@@ -200,11 +201,12 @@ Wraps entire app (PF Page with masthead + sidebar). Receives a config prop for:
 
 - Masthead logo and toolbar items
 - Theme mode (light/dark/system) with localStorage persistence
-- Navigation mode (sidebar vs horizontal masthead navigation)
+- Sidebar navigation is enabled by default; adjust `AppShell` directly if you need a different navigation pattern
+- Hydration guard: `AppMasthead` uses `requestAnimationFrame` to enable toolbar/nav state after hydration, preventing React 19 Strict Mode warnings.
 
 ### Content Patterns
 
-Reusable, composable page content layouts under `src/components/content-patterns/`:
+Reusable, composable page content layouts under `src/components/content-patterns/`. Each file begins with a “SAMPLE CONTENT PATTERN” banner so maintainers know the code is optional:
 
 - **DashboardView** - Full-featured dashboard with KPI cards and PatternFly charts (Area, Bar, Donut) using `@patternfly/react-charts`
 - **CardView** - Card gallery layout with filtering, pagination, and selection
@@ -228,8 +230,8 @@ npm run quick-start
 
 - Generate `AppShell`, `AppMasthead`, `AppSidebar`
 - Update `src/app/layout.tsx` to wrap with `AppShell`
-- Generate content patterns and demo pages
-- Update `public/routes.json` to match new navigation
+- Optionally generate content patterns and demo pages (based on the include-demo prompt)
+- Update/create `src/app/routes.json` to match new navigation when demos are included
 
 ---
 
@@ -247,17 +249,18 @@ src/
 │   │   ├── AppShell.tsx
 │   │   ├── AppMasthead.tsx
 │   │   └── AppSidebar.tsx
-│   └── content-patterns/
+│   └── content-patterns/   # Sample PatternFly demos (optional)
 │       ├── DashboardView.tsx
 │       ├── CardView.tsx
 │       ├── TableView.tsx
-│       └── PrimaryDetailView.tsx
+│       ├── PrimaryDetailView.tsx
+│       └── FormView.tsx
 ├── lib/
 │   └── navigation/
 │       └── useRoutes.ts
-└── public/
-    ├── routes.json
-    └── PF-HorizontalLogo-Color.svg
+└── src/app/
+    ├── routes.json        # Navigation manifest served via /api/routes
+    └── app-data.json      # Demo data backing sample components
 ```
 
 ---

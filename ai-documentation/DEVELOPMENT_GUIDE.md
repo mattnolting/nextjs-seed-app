@@ -11,8 +11,8 @@
 
 - `src/app/` contains all routes and the root `layout.tsx`
 - `src/components/ui/` holds the PatternFly AppShell chrome
-- `src/components/content-patterns/` provides reusable demo pages
-- `src/lib/data/useAppData.ts` loads sample data from `public/app-data.json`
+- `src/components/content-patterns/` provides sample/demo pages (each file is marked as optional)
+- `src/lib/data/useAppData.ts` loads sample data from `src/app/app-data.json`
 
 ## Working with Components
 
@@ -20,12 +20,14 @@
 - Follow PatternFly prop patterns and export typed interfaces
 - Keep shared UI in `components/ui/` and page-level views in
   `components/content-patterns/`
+- `AppMasthead` defers hydration-only state with `requestAnimationFrame` to avoid React Strict Mode warnings; remove that effect if you no longer need toolbar/nav guards.
 
 ## CLI Workflow
 
 - `npm run quick-start` is the only Phase 1 CLI entry point
-- It re-runs layout configuration, regenerates demo routes, and refreshes
-  `public/routes.json`
+- It re-runs layout configuration, optionally generates demo routes/data, and refreshes
+  `src/app/routes.json` when samples are included
+- Skip demo generation by answering “no” to the include-demo prompt for a lean seed
 
 ## Testing
 

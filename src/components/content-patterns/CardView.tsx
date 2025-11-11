@@ -1,5 +1,13 @@
 "use client";
 
+/**
+ * SAMPLE CONTENT PATTERN
+ * ----------------------
+ * This component demonstrates a PatternFly card gallery with selection,
+ * filtering, and pagination. It is provided as demo/reference code and can
+ * be removed or replaced when building a production application.
+ */
+
 import Image from "next/image";
 import React, { Fragment, useState, useEffect } from "react";
 import {
@@ -88,7 +96,7 @@ export interface CardViewProps {
 
 function CardViewToolbar({
   selectedCount,
-  areAllSelected,
+  selectionState,
   enableSelection,
   enablePagination,
   perPage,
@@ -104,7 +112,7 @@ function CardViewToolbar({
   renderPagination,
 }: {
   selectedCount: number;
-  areAllSelected: boolean;
+  selectionState: boolean | null;
   enableSelection: boolean;
   enablePagination: boolean;
   perPage: number;
@@ -112,7 +120,7 @@ function CardViewToolbar({
   isSelectDropdownOpen: boolean;
   onToggleSelectDropdown: () => void;
   onSelectDropdownOpenChange: (isOpen: boolean) => void;
-  onSelectToggle: () => void;
+  onSelectToggle: (checked: boolean) => void;
   onSelectNone: () => void;
   onSelectPage: () => void;
   onSelectAll: () => void;
@@ -143,10 +151,9 @@ function CardViewToolbar({
                       aria-label={
                         anySelected ? "Deselect all cards" : "Select all cards"
                       }
-                      isChecked={areAllSelected}
-                      onClick={(event) => {
-                        event.preventDefault();
-                        onSelectToggle();
+                      isChecked={selectionState}
+                      onChange={(checked) => {
+                        onSelectToggle(checked);
                       }}
                     >
                       {selectedCount !== 0 && `${selectedCount} selected`}
@@ -207,8 +214,8 @@ export function CardView({
 }: CardViewProps) {
   const [cardData, setCardData] = useState(items);
   const totalItemCount = cardData.length;
-  const [selectedItems, setSelectedItems] = useState<(string | number)[]>([]);
-  const [areAllSelected, setAreAllSelected] = useState<boolean>(false);
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [selectionState, setSelectionState] = useState<boolean | null>(false);
   const [splitButtonDropdownIsOpen, setSplitButtonDropdownIsOpen] =
     useState(false);
   const [page, setPage] = useState(1);
@@ -218,7 +225,7 @@ export function CardView({
     if (cardData !== items) {
       setCardData(items);
       setSelectedItems([]);
-      setAreAllSelected(false);
+      setSelectionState(false);
       setPage(1);
       setPerPage(defaultPerPage);
       setSplitButtonDropdownIsOpen(false);
@@ -265,7 +272,7 @@ export function CardView({
       updatedSelection.length,
       remainingItems.length
     );
-    setAreAllSelected(!!allSelectedState);
+    setSelectionState(allSelectedState);
 
     setPage((currentPage) => {
       if (remainingItems.length === 0) {
@@ -293,22 +300,19 @@ export function CardView({
     setPage(1);
   };
 
-  const onChange = (event: React.FormEvent<HTMLInputElement>) => {
-    const name = event.currentTarget.name;
-    const itemId = name.replace("check-", "");
-
-    if (selectedItems.includes(itemId)) {
+  const handleCardSelection = (itemId: string, isChecked: boolean) => {
+    if (isChecked) {
+      const updated = selectedItems.includes(itemId)
+        ? selectedItems
+        : [...selectedItems, itemId];
+      setSelectedItems(updated);
+      onCardSelect?.(updated);
+      setSelectionState(checkAllSelected(updated.length, totalItemCount));
+    } else {
       const updated = selectedItems.filter((id) => id !== itemId);
       setSelectedItems(updated);
       onCardSelect?.(updated);
-      const checkAll = checkAllSelected(updated.length, totalItemCount);
-      setAreAllSelected(!!checkAll);
-    } else {
-      const updated = [...selectedItems, itemId];
-      setSelectedItems(updated);
-      onCardSelect?.(updated);
-      const checkAll = checkAllSelected(updated.length, totalItemCount);
-      setAreAllSelected(!!checkAll);
+      setSelectionState(checkAllSelected(updated.length, totalItemCount));
     }
   };
 
@@ -316,15 +320,15 @@ export function CardView({
     return cardData.map((card) => String(card.id));
   };
 
-  const selectAllToggle = () => {
-    if (areAllSelected) {
+  const selectAllToggle = (checked: boolean) => {
+    if (!checked) {
       setSelectedItems([]);
-      setAreAllSelected(false);
+      setSelectionState(false);
       onCardSelect?.([]);
     } else {
       const collection = getAllItems();
       setSelectedItems(collection);
-      setAreAllSelected(collection.length > 0);
+      setSelectionState(checkAllSelected(collection.length, totalItemCount));
       onCardSelect?.(collection);
     }
   };
@@ -337,22 +341,23 @@ export function CardView({
       .map((card) => String(card.id));
 
     setSelectedItems(collection);
-    const isAllSelected =
-      collection.length === totalItemCount && totalItemCount > 0;
-    setAreAllSelected(isAllSelected);
+    const nextState = checkAllSelected(collection.length, totalItemCount);
+    setSelectionState(nextState);
     onCardSelect?.(collection);
   };
 
   const selectAll = () => {
     const collection = getAllItems();
     setSelectedItems(collection);
-    setAreAllSelected(collection.length > 0);
+    setSelectionState(
+      collection.length === 0 ? false : collection.length === totalItemCount
+    );
     onCardSelect?.(collection);
   };
 
   const selectNone = () => {
     setSelectedItems([]);
-    setAreAllSelected(false);
+    setSelectionState(false);
     onCardSelect?.([]);
   };
 
@@ -397,7 +402,7 @@ export function CardView({
       <PageSection isFilled aria-label="Selectable card gallery">
         <CardViewToolbar
           selectedCount={selectedItems.length}
-          areAllSelected={areAllSelected}
+          selectionState={selectionState}
           enableSelection={enableSelection}
           enablePagination={enablePagination}
           perPage={perPage}
@@ -446,11 +451,13 @@ export function CardView({
                 isSelectable={enableSelection}
                 key={product.id}
                 id={String(product.id)}
+                isSelected={selectedItems.includes(String(product.id))}
               >
                 <CardHeader
                   selectableActions={
                     enableSelection
                       ? {
+                          variant: "multiple",
                           isChecked: selectedItems.includes(String(product.id)),
                           selectableActionId: `selectable-actions-item-${product.id}`,
                           selectableActionAriaLabelledby: product.title.replace(
@@ -458,7 +465,11 @@ export function CardView({
                             "-"
                           ),
                           name: `check-${product.id}`,
-                          onChange,
+                          onChange: (event, checked) =>
+                            handleCardSelection(
+                              String(product.id),
+                              Boolean(checked)
+                            ),
                         }
                       : undefined
                   }

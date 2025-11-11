@@ -17,9 +17,9 @@ export function useAppData() {
 
     async function load() {
       try {
-        const res = await fetch("/app-data.json", { cache: "no-store" });
+        const res = await fetch("/api/app-data", { cache: "no-store" });
         if (!res.ok) {
-          throw new Error(`Failed to load app-data.json: ${res.status}`);
+          throw new Error(`Failed to load app data: ${res.status}`);
         }
         const json = await res.json();
         if (!cancelled) {
@@ -30,7 +30,7 @@ export function useAppData() {
         if (!cancelled) {
           setError(err instanceof Error ? err : new Error(String(err)));
           if (process.env.NODE_ENV !== "production") {
-            console.warn("useAppData: error loading app-data.json", err);
+            console.warn("useAppData: error loading app data", err);
           }
         }
       } finally {

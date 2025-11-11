@@ -18,17 +18,16 @@ Visit [http://localhost:3000](http://localhost:3000) to see your app.
 
 ### Optional: Reconfigure Your App
 
-The application works perfectly with default settings. If you want to customize your application layout (sidebar, navigation, masthead), you can optionally run:
+The application works with default settings. If you want to regenerate the PatternFly shell or lay down the sample content, you can optionally run:
 
 ```bash
 npm run quick-start
 ```
 
-This interactive tool lets you reconfigure:
+This interactive tool lets you:
 
-- Sidebar navigation (enabled/disabled, type, default state)
-- Horizontal navigation (masthead navigation)
-- Masthead (logo, toolbar items)
+- Decide whether to include the sample PatternFly demo content
+- Toggle the masthead toolbar (and pick which actions appear)
 
 **Note:** This is completely optional. The app is fully functional without running `quick-start`.
 
@@ -38,8 +37,8 @@ This interactive tool lets you reconfigure:
 - ⚛️ **Next.js 16** - App Router, React Server Components
 - 📝 **TypeScript** - Type-safe by default
 - 🧭 **Dynamic Navigation** - Automatically built from your pages
-- 📐 **Content Patterns** - Dashboard, Card View, Table View, Primary Detail, Form View
-- 📊 **Data-Driven** - Single JSON file (`app-data.json`) for all component data
+- 📐 **Sample Content Patterns** - Optional demo views (Dashboard, Card View, Table View, Primary Detail, Form View)
+- 📊 **Data-Driven** - Single JSON file (`src/app/app-data.json`) for all component data
 - 🎯 **Zero Config** - Sensible defaults, ready to customize
 - ⚡ **Optional Quick Start** - Reconfigure app layout when needed
 
@@ -52,12 +51,13 @@ nextjs-seed-app/
 │   │   ├── page.tsx        # Root page
 │   │   └── [routes]/       # Dynamic routes
 │   ├── components/
-│   │   ├── content-patterns/  # Pre-built page content layouts
+│   │   ├── content-patterns/  # Sample PatternFly page content (optional)
 │   │   └── ui/             # App chrome (AppShell, AppMasthead, AppSidebar)
 │   └── lib/                # Utilities
 ├── public/                 # Public assets (at root)
-│   ├── routes.json         # Generated navigation
 │   └── logo.svg
+├── src/app/app-data.json   # Demo content backing page patterns
+├── src/app/routes.json     # Navigation manifest consumed by /api/routes
 ├── cli/                    # CLI tools
 │   ├── generators/         # Code generators
 │   └── templates/          # Template files
@@ -66,13 +66,17 @@ nextjs-seed-app/
 
 ## What You Get
 
-### Pre-built Content Patterns
+### Sample Content Patterns
 
-- **DashboardView** - Full-featured dashboard with KPI cards and charts (Area, Bar, Donut)
-- **CardView** - Responsive card gallery with filtering and pagination
-- **TableView** - Data table with search, pagination, and bulk actions
-- **PrimaryDetailView** - Primary-detail pattern with DataList and Drawer
-- **FormView** - Data-driven forms with validation
+The files under `src/components/content-patterns/` are intentionally labeled as **sample** implementations. They show how to use PatternFly primitives together and are safe to remove or replace:
+
+- **DashboardView** – KPI cards and charts (Area, Bar, Donut)
+- **CardView** – Card gallery with filtering, pagination, and selection
+- **TableView** – Data table with search, pagination, and bulk actions
+- **PrimaryDetailView** – Master/detail layout using DataList and Drawer
+- **FormView** – JSON-driven forms with validation helpers
+
+> Prefer a lean starter? When running `npm run quick-start`, answer “no” to the “Generate sample PatternFly demo pages and data?” prompt to keep the shell minimal.
 
 ### Dynamic Navigation
 
@@ -83,7 +87,7 @@ Navigation automatically discovers routes from your file structure and updates a
 - Accessible by default
 - Responsive design
 - TypeScript types
-- Hydration-safe patterns
+- Hydration-safe patterns (AppMasthead defers client-only state with `requestAnimationFrame`)
 - SEO optimized
 
 ## Development
@@ -102,7 +106,7 @@ npm install
 # Development server (start here!)
 npm run dev
 
-# Optional: Reconfigure app layout
+# Optional: Reconfigure app layout (includes opt-in demo content)
 npm run quick-start
 
 # Note: additional CLI generators/sync/config commands will return in a future phase
@@ -118,13 +122,12 @@ npm start
 
 - **[Quick Start Guide](./docs/QUICK_START_MODE.md)** - Detailed CLI usage
 - **[Architecture](./docs/ARCHITECTURE.md)** - Design decisions and technical details
-- **[Project Plan](./docs/PROJECT_PLAN.md)** - Project structure and status
 
 ## How It Works
 
 1. **Generate** - CLI creates layout and page components based on manifest
 2. **Scan** - Filesystem discovery finds all routes
-3. **Build** - `routes.json` generated for navigation
+3. **Build** - `src/app/routes.json` generated for navigation
 4. **Run** - Standard Next.js development workflow
 
 ## Customization
@@ -137,6 +140,10 @@ Generated files are production-ready React code. You can:
 - Use any Next.js feature
 
 No abstraction layers or magic—just standard React and Next.js.
+
+### Hydration Safety in `AppMasthead`
+
+The masthead defers client-only UI updates with `requestAnimationFrame` to keep server and client markup aligned in React 19 Strict Mode. This prevents hydration warnings when toggling toolbar or navigation state. If you simplify the masthead or no longer need client-side guards, feel free to remove that effect.
 
 ## Requirements
 

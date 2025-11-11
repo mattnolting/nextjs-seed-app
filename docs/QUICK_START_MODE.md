@@ -13,9 +13,9 @@ npm run quick-start
 Reconfigures your application layout with:
 
 - App chrome: `AppShell`, `AppMasthead`, `AppSidebar` (with theme toggle and nav mode)
-- Content patterns: `DashboardView`, `CardView`, `TableView`, `PrimaryDetailView`, `FormView`
-- Pages: `/`, `/analytics`, `/gallery`, `/users`, `/settings`
-- Manifest: `public/routes.json` (used by `useRoutes()`)
+- Optional sample content patterns: `DashboardView`, `CardView`, `TableView`, `PrimaryDetailView`, `FormView`
+- Optional demo pages: `/`, `/analytics`, `/gallery`, `/users`, `/settings`
+- Manifest: `src/app/routes.json` (served via `/api/routes` and used by `useRoutes()`)
 - Charts: PatternFly charts integrated (Area, Bar, Donut)
 
 ## Generated Structure
@@ -45,8 +45,10 @@ src/
     └── navigation/
         └── useRoutes.ts
 
+src/app/app-data.json        # Demo content backing content patterns (created when samples are enabled)
+src/app/routes.json          # Navigation manifest consumed by /api/routes
+
 public/
-├── routes.json
 └── PF-HorizontalLogo-Color.svg
 ```
 
@@ -55,7 +57,7 @@ public/
 The application works perfectly without running `quick-start`. Only run it if you want to customize:
 
 ```bash
-# Optional: Reconfigure app layout
+# Optional: Reconfigure app layout (prompt lets you skip demo content)
 npm run quick-start
 
 # Then start development
@@ -65,12 +67,13 @@ npm run dev
 
 ## Notes
 
-- Navigation ordering is by appearance in `public/routes.json` by default; `order` or `priority` fields can override. `hidden: true` omits a route from nav.
+- Navigation ordering is by appearance in `src/app/routes.json` by default; `order` or `priority` fields can override. `hidden: true` omits a route from nav.
 - `TableView` uses `@patternfly/react-table` with pagination, search, and bulk actions.
 - `DashboardView` includes PatternFly charts (Area, Bar, Donut) using `@patternfly/react-charts`.
-- All content patterns are data-driven via `public/app-data.json`.
-- AppShell config allows changing the masthead logo, toolbar items, theme mode, and navigation mode (sidebar/horizontal) from `app/layout.tsx`.
-- Theme toggle supports light/dark/system modes with localStorage persistence.
+- Sample components are clearly labeled in their file headers so you can replace or delete them.
+- All sample content patterns are data-driven via `src/app/app-data.json`.
+- AppShell defaults to sidebar navigation with masthead toolbar. Edit `AppShell` directly if you need a different navigation pattern.
+- Theme toggle supports light/dark/system modes with localStorage persistence. `AppMasthead` defers hydration work with `requestAnimationFrame` to avoid Strict Mode warnings.
 
 ## Related CLI
 
