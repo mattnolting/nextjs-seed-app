@@ -150,9 +150,7 @@ export function AppShell({ children, config }: AppShellProps) {
       }
       isManagedSidebar={sidebarEnabled}
     >
-      <div suppressHydrationWarning>
-        {children}
-      </div>
+      <div suppressHydrationWarning>{children}</div>
     </Page>
   );
 }
