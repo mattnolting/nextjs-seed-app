@@ -134,7 +134,7 @@ export function AppShell({ children, config }: AppShellProps) {
     <Page
       masthead={
         <AppMasthead
-          isSidebarOpen={effectiveSidebarOpen}
+          isSidebarOpen={sidebarEnabled ? isSidebarOpen : false}
           onSidebarToggle={onSidebarToggle}
           logo={resolvedConfig.masthead?.logo}
           toolbarItems={toolbarItems}
@@ -144,13 +144,15 @@ export function AppShell({ children, config }: AppShellProps) {
         />
       }
       sidebar={
-        hasSidebar ? (
-          <AppSidebar isOpen={effectiveSidebarOpen} items={navItems} />
+        sidebarEnabled ? (
+          <AppSidebar isOpen={isSidebarOpen} items={navItems} />
         ) : undefined
       }
-      isManagedSidebar={hasSidebar}
+      isManagedSidebar={sidebarEnabled}
     >
-      {children}
+      <div suppressHydrationWarning>
+        {children}
+      </div>
     </Page>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import {
   Masthead,
   MastheadMain,
@@ -43,16 +44,18 @@ export function AppMasthead({
   showToolbar?: boolean;
 }) {
   const router = useRouter();
+  const [isMounted, setIsMounted] = useState(false);
+
+  // Only render toolbar after hydration to avoid PatternFly responsive behavior SSR mismatch
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const effectiveToolbarItems = toolbarItems ?? [];
   const shouldRenderToolbar = showToolbar && effectiveToolbarItems.length > 0;
 
-  const mastheadToolbar = shouldRenderToolbar && (
-    <Toolbar
-      suppressHydrationWarning
-      id="vertical-toolbar"
-      ouiaId="app-masthead-toolbar"
-    >
+  const mastheadToolbar = shouldRenderToolbar && isMounted && (
+    <Toolbar id="vertical-toolbar" ouiaId="app-masthead-toolbar">
       <ToolbarContent>
         <ToolbarGroup
           align={{ default: "alignEnd" }}
