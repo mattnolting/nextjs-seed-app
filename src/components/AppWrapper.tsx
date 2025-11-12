@@ -16,7 +16,7 @@ export function AppWrapper({ children }: { children: React.ReactNode }) {
           masthead: {
             logo: "/PF-HorizontalLogo-Color.svg",
             showToolbar: true,
-            toolbarItems: ["y"],
+            toolbarItems: ["notifications","settings","user-menu"],
           },
           navMode: "sidebar",
           sidebar: {

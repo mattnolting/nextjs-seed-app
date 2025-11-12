@@ -2,5 +2,25 @@
   {
     "path": "/",
     "title": "Home"
+  },
+  {
+    "path": "/dashboard",
+    "title": "Dashboard"
+  },
+  {
+    "path": "/analytics",
+    "title": "Analytics"
+  },
+  {
+    "path": "/users",
+    "title": "Users"
+  },
+  {
+    "path": "/settings",
+    "title": "Settings"
+  },
+  {
+    "path": "/gallery",
+    "title": "Gallery"
   }
 ]

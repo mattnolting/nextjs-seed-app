@@ -166,30 +166,47 @@ async function generateDemoPages(appDir: string): Promise<void> {
     {
       path: "/dashboard",
       title: "Dashboard",
-      order: 2,
-      pattern: "DashboardView",
+      componentName: "DashboardView",
+      props: { title: "Dashboard" },
     },
     {
       path: "/analytics",
       title: "Analytics",
-      order: 3,
-      pattern: "PrimaryDetailView",
+      componentName: "PrimaryDetailView",
+      props: {},
     },
-    { path: "/users", title: "Users", order: 4, pattern: "TableView" },
+    {
+      path: "/users",
+      title: "Users",
+      componentName: "TableView",
+      props: { title: "Users" },
+    },
     {
       path: "/settings",
       title: "Settings",
-      order: 5,
-      pattern: "FormView",
+      componentName: "FormView",
+      props: { title: "Settings", description: "Manage your settings" },
     },
-    { path: "/gallery", title: "Gallery", order: 6, pattern: "CardView" },
+    {
+      path: "/gallery",
+      title: "Gallery",
+      componentName: "CardView",
+      props: {
+        title: "Gallery",
+        description: "Browse available projects and items",
+      },
+    },
   ];
 
   for (const route of routes) {
     const pageDir = path.join(appDir, route.path.replace(/^\//, ""));
     await fs.mkdir(pageDir, { recursive: true });
 
-    const pageCode = generatePageCode(route);
+    const pageCode = generatePageCode({
+      title: route.title,
+      componentName: route.componentName,
+      props: route.props,
+    });
     await fs.writeFile(path.join(pageDir, "page.tsx"), pageCode, "utf-8");
     console.log(chalk.green(`  ✓ ${route.path} page`));
   }
@@ -308,284 +325,54 @@ export default function GlobalError({
 }
 
 /**
- * Generate page code using content patterns ONLY (NO DashboardLayout!)
- * These render inside AppShell's main content area.
+ * Generate page code using a standardized template
+ * All pages use the same two-PageSection structure with demo components
  */
-function generatePageCode(route: {
-  path: string;
+interface PageConfig {
   title: string;
-  pattern: string;
-}): string {
-  if (route.pattern === "TableView") {
-    return `"use client";
-
-import { TableView } from "@/components/content-patterns/TableView";
-import { useAppData } from "@/lib/data/useAppData";
-
-export default function ${route.title}() {
-  const { data, loading, error } = useAppData();
-
-  // Toggle hooks for content pattern selection
-  const useTableView = true;
-
-  if (loading) {
-    return <TableView columns={[]} rows={[]} title="${route.title}" />;
-  }
-
-  if (error) {
-    return (
-      <TableView
-        columns={[]}
-        rows={[]}
-        title="${route.title}"
-      />
-    );
-  }
-
-  if (useTableView && data?.tableView) {
-    return (
-      <TableView
-        columns={data.tableView.columns || []}
-        rows={data.tableView.rows || []}
-        title="${route.title}"
-      />
-    );
-  }
-
-  return (
-    <TableView columns={[]} rows={[]} title="${route.title}" />
-  );
+  componentName: string;
+  props?: Record<string, string | undefined>;
 }
-`;
-  }
 
-  if (route.pattern === "CardView") {
-    return `"use client";
+function generatePageCode(config: PageConfig): string {
+  const titleId = `${config.title.toLowerCase()}-title`;
+  const componentName = config.componentName;
 
-import { CardView } from "@/components/content-patterns/CardView";
-import { useAppData } from "@/lib/data/useAppData";
+  // Generate props string from config, filtering out undefined values
+  const propsString = config.props
+    ? Object.entries(config.props)
+        .filter(([, value]) => value !== undefined)
+        .map(([key, value]) => `${key}="${value}"`)
+        .join("\n          ")
+    : "";
 
-export default function ${route.title}() {
-  const { data, loading, error } = useAppData();
+  // Format component usage
+  const componentUsage = propsString
+    ? `<${componentName}
+          ${propsString}
+        />`
+    : `<${componentName} />`;
 
-  // Toggle hooks for content pattern selection
-  const useCardView = true;
-
-  if (loading) {
-    return <CardView items={[]} title="${route.title}" showEmptyState={false} />;
-  }
-
-  if (error) {
-    return (
-      <CardView
-        items={[]}
-        title="${route.title}"
-        description={\`Error loading data: \${error.message}\`}
-        showEmptyState={false}
-      />
-    );
-  }
-
-  if (useCardView && data?.cardView) {
-    return (
-      <CardView
-        items={data.cardView.items || []}
-        title="${route.title}"
-        description="Browse available projects and items"
-        filterCategories={data.cardView.filters?.categories}
-      />
-    );
-  }
-
-  return (
-    <CardView
-      items={[]}
-      title="${route.title}"
-      description="No data available"
-      showEmptyState={false}
-    />
-  );
-}
-`;
-  }
-
-  if (route.pattern === "DashboardView") {
-    return `"use client";
-
-import { DashboardView } from "@/components/content-patterns/DashboardView";
-export default function ${route.title}() {
-  return <DashboardView title="${route.title}" />;
-}
-`;
-  }
-
-  if (route.pattern === "PrimaryDetailView") {
-    return `"use client";
-
-import { PrimaryDetailView } from "@/components/content-patterns/PrimaryDetailView";
-import {
-  DescriptionList,
-  DescriptionListGroup,
-  DescriptionListTerm,
-  DescriptionListDescription,
-} from "@patternfly/react-core";
-import { useAppData } from "@/lib/data/useAppData";
-
-export default function ${route.title}() {
-  const { data, loading, error } = useAppData();
-
-  // Toggle hooks for content pattern selection
-  const usePrimaryDetailView = true;
-
-  if (loading) {
-    return (
-      <PrimaryDetailView
-        masterItems={[]}
-        renderDetail={() => <div>Loading...</div>}
-        title="${route.title}"
-      />
-    );
-  }
-
-  if (error) {
-    return (
-      <PrimaryDetailView
-        masterItems={[]}
-        renderDetail={() => <div>Error loading data: {error.message}</div>}
-        title="${route.title}"
-      />
-    );
-  }
-
-  if (usePrimaryDetailView && data?.primaryDetail) {
-    return (
-      <PrimaryDetailView
-        masterItems={data.primaryDetail.primaryItems || []}
-        renderDetail={(item) => {
-          return (
-            <DescriptionList>
-              <DescriptionListGroup>
-                <DescriptionListTerm>Title</DescriptionListTerm>
-                <DescriptionListDescription>{item.title}</DescriptionListDescription>
-              </DescriptionListGroup>
-              {item.description && (
-                <DescriptionListGroup>
-                  <DescriptionListTerm>Description</DescriptionListTerm>
-                  <DescriptionListDescription>
-                    {item.description}
-                  </DescriptionListDescription>
-                </DescriptionListGroup>
-              )}
-              {item.meta &&
-                Object.entries(item.meta).map(([key, value]) => (
-                  <DescriptionListGroup key={key}>
-                    <DescriptionListTerm>
-                      {key.charAt(0).toUpperCase() + key.slice(1)}
-                    </DescriptionListTerm>
-                    <DescriptionListDescription>
-                      {String(value)}
-                    </DescriptionListDescription>
-                  </DescriptionListGroup>
-                ))}
-            </DescriptionList>
-          );
-        }}
-        title="${route.title}"
-      />
-    );
-  }
-
-  return (
-    <PrimaryDetailView
-      masterItems={[]}
-      renderDetail={() => <div>No data available</div>}
-      title="${route.title}"
-    />
-  );
-}
-`;
-  }
-
-  if (route.pattern === "FormView") {
-    return `"use client";
-
-import { FormView } from "@/components/content-patterns/FormView";
-import { useAppData } from "@/lib/data/useAppData";
-
-export default function ${route.title}() {
-  const { data, loading, error } = useAppData();
-
-  // Toggle hooks for content pattern selection
-  const useFormView = true;
-
-  if (loading) {
-    return (
-      <FormView
-        formSchema={[]}
-        initialData={{}}
-        onSubmit={() => {}}
-        title="${route.title}"
-        description="Loading..."
-      />
-    );
-  }
-
-  if (error) {
-    return (
-      <FormView
-        formSchema={[]}
-        initialData={{}}
-        onSubmit={() => {}}
-        title="${route.title}"
-        description={\`Error loading data: \${error.message}\`}
-      />
-    );
-  }
-
-  if (useFormView && data?.formView) {
-    const handleSubmit = (formData: Record<string, any>) => {
-      if (typeof window !== "undefined") {
-        localStorage.setItem("userSettings", JSON.stringify(formData));
-      }
-    };
-
-    return (
-      <FormView
-        formSchema={data.formView.fields}
-        initialData={{}}
-        onSubmit={handleSubmit}
-        title="${route.title}"
-        description="Manage your settings"
-      />
-    );
-  }
-
-  return (
-    <FormView
-      formSchema={[]}
-      initialData={{}}
-      onSubmit={() => {}}
-      title="${route.title}"
-      description="No data available"
-    />
-  );
-}
-`;
-  }
-
-  // Default: DashboardView
   return `"use client";
 
-import { DashboardView } from "@/components/content-patterns/DashboardView";
-import { Card, CardBody } from "@patternfly/react-core";
+import { Content, PageSection, Title } from "@patternfly/react-core";
+import { ${componentName} } from "@/components/content-patterns/${componentName}";
 
-export default function ${route.title}() {
+export default function ${config.title}() {
   return (
-    <DashboardView title="${route.title}">
-      <Card>
-        <CardBody>Welcome to ${route.title}</CardBody>
-      </Card>
-    </DashboardView>
+    <>
+      <PageSection isWidthLimited aria-labelledby="${titleId}">
+        <Content>
+          <Title id="${titleId}" headingLevel="h1">
+            ${config.title}
+          </Title>
+        </Content>
+      </PageSection>
+      <PageSection isWidthLimited>
+        {/* ${componentName} demo, you can replace this with your own implementation. */}
+        ${componentUsage}
+      </PageSection>
+    </>
   );
 }
 `;
