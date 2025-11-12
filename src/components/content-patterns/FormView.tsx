@@ -28,8 +28,8 @@ import type { FormField } from "@/lib/data/types";
 
 export interface FormViewProps {
   formSchema: FormField[];
-  initialData?: Record<string, any>;
-  onSubmit: (data: Record<string, any>) => void;
+  initialData?: Record<string, unknown>;
+  onSubmit: (data: Record<string, unknown>) => void;
   onCancel?: () => void;
   title?: string;
   description?: string;
@@ -43,13 +43,13 @@ export function FormView({
   title = "Form",
   description,
 }: FormViewProps) {
-  const [formData, setFormData] = useState<Record<string, any>>(initialData);
+  const [formData, setFormData] = useState<Record<string, unknown>>(initialData);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   // Initialize form data from schema defaults
   useEffect(() => {
-    const defaults: Record<string, any> = {};
+    const defaults: Record<string, unknown> = {};
     formSchema.forEach((field) => {
       if (field.type === "checkbox" || field.type === "radio") {
         defaults[field.name] = [];
@@ -59,10 +59,13 @@ export function FormView({
         defaults[field.name] = "";
       }
     });
-    setFormData({ ...defaults, ...initialData });
+    const raf = requestAnimationFrame(() => {
+      setFormData({ ...defaults, ...initialData });
+    });
+    return () => cancelAnimationFrame(raf);
   }, [formSchema, initialData]);
 
-  const validateField = (field: FormField, value: any): string | null => {
+  const validateField = (field: FormField, value: unknown): string | null => {
     if (!field.validation) return null;
 
     const { required, minLength, maxLength, pattern } = field.validation;
@@ -106,7 +109,7 @@ export function FormView({
     return isValid;
   };
 
-  const handleChange = (name: string, value: any) => {
+  const handleChange = (name: string, value: unknown) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
     // Clear error when user starts typing
     if (errors[name]) {
@@ -124,12 +127,13 @@ export function FormView({
     checked: boolean
   ) => {
     setFormData((prev) => {
-      const current = prev[name] || [];
-      if (checked) {
-        return { ...prev, [name]: [...current, value] };
-      } else {
-        return { ...prev, [name]: current.filter((v: string) => v !== value) };
-      }
+      const current = Array.isArray(prev[name])
+        ? (prev[name] as string[])
+        : [];
+      const nextValues: string[] = checked
+        ? [...current, value]
+        : current.filter((v) => v !== value);
+      return { ...prev, [name]: nextValues };
     });
   };
 
@@ -153,9 +157,12 @@ export function FormView({
   };
 
   const renderField = (field: FormField) => {
-    const value = formData[field.name] || "";
+    const rawValue = formData[field.name];
+    const stringValue = typeof rawValue === "string" ? rawValue : "";
+    const arrayValue = Array.isArray(rawValue)
+      ? (rawValue as string[])
+      : [];
     const error = errors[field.name];
-    const isValid = !error;
 
     switch (field.type) {
       case "text":
@@ -165,7 +172,7 @@ export function FormView({
           <TextInput
             id={field.name}
             type={field.type}
-            value={value}
+            value={stringValue}
             onChange={(_event, val) => handleChange(field.name, val)}
             placeholder={field.placeholder}
             validated={error ? "error" : "default"}
@@ -177,7 +184,7 @@ export function FormView({
         return (
           <TextArea
             id={field.name}
-            value={value}
+            value={stringValue}
             onChange={(_event, val) => handleChange(field.name, val)}
             placeholder={field.placeholder}
             validated={error ? "error" : "default"}
@@ -189,7 +196,7 @@ export function FormView({
         return (
           <FormSelect
             id={field.name}
-            value={value}
+            value={stringValue}
             onChange={(_event, val) => handleChange(field.name, val)}
           >
             {field.options?.map((option) => (
@@ -210,7 +217,7 @@ export function FormView({
                 key={option.value}
                 id={`${field.name}-${option.value}`}
                 label={option.label}
-                isChecked={(formData[field.name] || []).includes(option.value)}
+                isChecked={arrayValue.includes(option.value)}
                 onChange={(_event, checked) =>
                   handleCheckboxChange(field.name, option.value, checked)
                 }
@@ -228,7 +235,7 @@ export function FormView({
                 id={`${field.name}-${option.value}`}
                 name={field.name}
                 label={option.label}
-                isChecked={formData[field.name] === option.value}
+                isChecked={rawValue === option.value}
                 onChange={(_event, checked) => {
                   if (checked) {
                     handleChange(field.name, option.value);

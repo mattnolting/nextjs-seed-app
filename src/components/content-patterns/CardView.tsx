@@ -92,6 +92,7 @@ export interface CardViewProps {
   enableSelection?: boolean;
   enablePagination?: boolean;
   defaultPerPage?: number;
+  filterCategories?: Record<string, string[]>;
 }
 
 function CardViewToolbar({

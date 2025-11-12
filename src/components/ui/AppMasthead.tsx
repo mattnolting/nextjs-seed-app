@@ -14,7 +14,7 @@ import {
   Button,
   Nav,
   NavList,
-  NavItem,
+  NavItem as PFNavItem,
   PageToggleButton,
   Brand,
 } from "@patternfly/react-core";
@@ -23,10 +23,8 @@ import BellIcon from "@patternfly/react-icons/dist/esm/icons/bell-icon";
 import CogIcon from "@patternfly/react-icons/dist/esm/icons/cog-icon";
 import MoonIcon from "@patternfly/react-icons/dist/esm/icons/moon-icon";
 import SunIcon from "@patternfly/react-icons/dist/esm/icons/sun-icon";
-import DesktopIcon from "@patternfly/react-icons/dist/esm/icons/desktop-icon";
-import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { useRoutes } from "@/lib/navigation/useRoutes";
+import type { NavItem } from "@/components/ui/AppShell";
 
 const DEFAULT_LOGO_LIGHT = "/PF-HorizontalLogo-Color.svg";
 const DEFAULT_LOGO_DARK = "/PF-HorizontalLogo-Color-reverse.svg";
@@ -41,34 +39,36 @@ export function AppMasthead({
   navMode = "sidebar",
   showToolbar = true,
   showHorizontalNav = false,
+  navItems,
 }: {
   isSidebarOpen: boolean;
   onSidebarToggle: () => void;
   logo?: string;
   toolbarItems?: string[];
-  theme?: "light" | "dark" | "system";
+  theme?: "light" | "dark";
   onThemeToggle?: () => void;
   navMode?: "sidebar" | "masthead";
   showToolbar?: boolean;
   showHorizontalNav?: boolean;
+  navItems?: NavItem[];
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const routes = useRoutes();
-  const [isHydrated, setIsHydrated] = useState(false);
-
-  // Use rAF to defer hydration-sensitive updates so the server/CSR output stays
-  // aligned and avoids React 19 double-render warnings in Strict Mode.
-  useEffect(() => {
-    const raf = requestAnimationFrame(() => setIsHydrated(true));
-    return () => cancelAnimationFrame(raf);
-  }, []);
+  const routes =
+    navItems && navItems.length > 0
+      ? navItems
+      : [
+          {
+            path: "/",
+            title: "Home",
+          },
+        ];
 
   const effectiveToolbarItems = toolbarItems ?? [];
   const shouldRenderToolbar = showToolbar && effectiveToolbarItems.length > 0;
 
   const shouldRenderHorizontalNav =
-    isHydrated && (showHorizontalNav || navMode === "masthead");
+    (showHorizontalNav || navMode === "masthead") && routes.length > 0;
   const hasToolbarContent = shouldRenderHorizontalNav || shouldRenderToolbar;
 
   const mastheadToolbar = hasToolbarContent && (
@@ -82,24 +82,22 @@ export function AppMasthead({
           <ToolbarItem isOverflowContainer>
             <Nav aria-label="Global" variant="horizontal">
               <NavList>
-                {routes
-                  .filter((r) => !r.hidden)
-                  .map((item) => (
-                    <NavItem
-                      key={item.path}
-                      isActive={
-                        pathname === item.path ||
-                        pathname.startsWith(item.path + "/")
-                      }
-                      preventDefault
-                      onClick={(e) => {
-                        e.preventDefault();
-                        router.push(item.path);
-                      }}
-                    >
-                      {item.title}
-                    </NavItem>
-                  ))}
+                {routes.map((item) => (
+                  <PFNavItem
+                    key={item.path}
+                    isActive={
+                      pathname === item.path ||
+                      pathname.startsWith(item.path + "/")
+                    }
+                    preventDefault
+                    onClick={(e) => {
+                      e.preventDefault();
+                      router.push(item.path);
+                    }}
+                  >
+                    {item.title}
+                  </PFNavItem>
+                ))}
               </NavList>
             </Nav>
           </ToolbarItem>
@@ -135,20 +133,10 @@ export function AppMasthead({
                   variant="plain"
                   aria-label={
                     theme === "dark"
-                      ? "Switch to system theme"
-                      : theme === "light"
-                      ? "Switch to dark theme"
-                      : "Switch to light theme"
+                      ? "Switch to light theme"
+                      : "Switch to dark theme"
                   }
-                  icon={
-                    theme === "dark" ? (
-                      <DesktopIcon />
-                    ) : theme === "light" ? (
-                      <MoonIcon />
-                    ) : (
-                      <SunIcon />
-                    )
-                  }
+                  icon={theme === "dark" ? <SunIcon /> : <MoonIcon />}
                   onClick={onThemeToggle}
                 />
               </ToolbarItem>

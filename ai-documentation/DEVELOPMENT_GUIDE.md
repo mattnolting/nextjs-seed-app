@@ -10,9 +10,10 @@
 ## Project Layout Highlights
 
 - `src/app/` contains all routes and the root `layout.tsx`
+- `src/app/error.tsx` provides the global EmptyState-based error boundary
 - `src/components/ui/` holds the PatternFly AppShell chrome
 - `src/components/content-patterns/` provides sample/demo pages (each file is marked as optional)
-- `src/lib/data/useAppData.ts` loads sample data from `src/app/app-data.json`
+- `src/lib/data/useAppData.ts` exposes the embedded demo dataset from `src/lib/data/seed.ts`
 
 ## Working with Components
 

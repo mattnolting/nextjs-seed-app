@@ -5,13 +5,19 @@ import { Page } from "@patternfly/react-core";
 import { AppMasthead } from "@/components/ui/AppMasthead";
 import { AppSidebar } from "@/components/ui/AppSidebar";
 
+export interface NavItem {
+  path: string;
+  title: string;
+  group?: string;
+}
+
 export interface AppShellConfig {
   masthead?: {
     logo?: string;
     toolbarItems?: string[];
     showToolbar?: boolean;
   };
-  theme?: "light" | "dark" | "system";
+  theme?: "light" | "dark";
   navMode?: "sidebar" | "masthead";
   sidebar?: {
     enabled?: boolean;
@@ -20,6 +26,7 @@ export interface AppShellConfig {
   horizontalNav?: {
     enabled?: boolean;
   };
+  navItems?: NavItem[];
 }
 
 export interface AppShellProps {
@@ -40,6 +47,12 @@ const defaultConfig: AppShellConfig = {
     enabled: true,
   },
   navMode: "sidebar",
+  navItems: [
+    {
+      path: "/",
+      title: "Home",
+    },
+  ],
 };
 
 export function AppShell({ children, config }: AppShellProps) {
@@ -54,95 +67,53 @@ export function AppShell({ children, config }: AppShellProps) {
   const sidebarDefaultOpen = resolvedConfig.sidebar?.defaultOpen ?? true;
   const hasSidebar = sidebarEnabled && navMode === "sidebar";
 
-  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(() =>
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(
     hasSidebar ? sidebarDefaultOpen : false
   );
 
-  useEffect(() => {
-    setIsSidebarOpen(hasSidebar ? sidebarDefaultOpen : false);
-  }, [hasSidebar, sidebarDefaultOpen]);
+  const defaultTheme = resolvedConfig.theme ?? "light";
+  const [themeMode, setThemeMode] = useState<"light" | "dark">(defaultTheme);
 
-  // Always start with "light" to ensure SSR/client hydration match
-  const [themeMode, setThemeMode] = useState<"light" | "dark" | "system">(
-    resolvedConfig.theme ?? "light"
-  );
-  const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">("light");
-
-  // Initialize theme from config/localStorage or prefers-color-scheme after mount
-  // This ensures SSR/client render match on first render
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("theme") as
-        | "light"
-        | "dark"
-        | "system"
-        | null;
-      const prefersDark =
-        window.matchMedia &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches;
-      const initial = (resolvedConfig.theme ??
-        saved ??
-        (prefersDark ? "dark" : "light")) as "light" | "dark" | "system";
-      if (initial !== themeMode) {
-        setThemeMode(initial);
-      }
+    if (typeof window === "undefined") {
+      return;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
-  // Resolve system theme and listen for changes when in system mode
-  useEffect(() => {
-    const mql =
-      typeof window !== "undefined" && window.matchMedia
-        ? window.matchMedia("(prefers-color-scheme: dark)")
-        : null;
-    const compute = () => {
-      if (themeMode === "system") {
-        const dark = mql ? mql.matches : false;
-        setResolvedTheme(dark ? "dark" : "light");
-      } else {
-        setResolvedTheme(themeMode);
-      }
-    };
-    compute();
-    if (mql && themeMode === "system") {
-      const handler = () => compute();
-      if (mql.addEventListener) {
-        mql.addEventListener("change", handler);
-      } else if (mql.addListener) {
-        mql.addListener(handler);
-      }
-      return () => {
-        if (mql.removeEventListener) {
-          mql.removeEventListener("change", handler);
-        } else if (mql.removeListener) {
-          mql.removeListener(handler);
-        }
-      };
+    let nextTheme: "light" | "dark" | null = null;
+    const stored = localStorage.getItem("theme");
+    if (stored === "light" || stored === "dark") {
+      nextTheme = stored;
+    } else if (!resolvedConfig.theme) {
+      const prefersDark = window.matchMedia(
+        "(prefers-color-scheme: dark)"
+      ).matches;
+      nextTheme = prefersDark ? "dark" : "light";
     }
+
+    if (!nextTheme || nextTheme === defaultTheme) {
+      return;
+    }
+
+    const timeout = window.setTimeout(() => setThemeMode(nextTheme!), 0);
+    return () => window.clearTimeout(timeout);
+  }, [defaultTheme, resolvedConfig.theme]);
+
+  useEffect(() => {
+    if (typeof document === "undefined") {
+      return;
+    }
+    const html = document.documentElement;
+    html.classList.remove("pf-v6-theme-light", "pf-v6-theme-dark");
+    html.classList.add(`pf-v6-theme-${themeMode}`);
+    html.setAttribute("data-pf-theme", themeMode);
+    try {
+      localStorage.setItem("theme", themeMode);
+    } catch {}
   }, [themeMode]);
-
-  // Apply resolved theme to <html> and persist chosen mode
-  useEffect(() => {
-    if (typeof document !== "undefined") {
-      const html = document.documentElement;
-      // Remove existing theme classes
-      html.classList.remove("pf-v6-theme-light", "pf-v6-theme-dark");
-      // Add the correct theme class
-      html.classList.add(`pf-v6-theme-${resolvedTheme}`);
-      // Also set data attribute for PatternFly
-      html.setAttribute("data-pf-theme", resolvedTheme);
-      try {
-        localStorage.setItem("theme", themeMode);
-      } catch {}
-    }
-  }, [resolvedTheme, themeMode]);
 
   const onSidebarToggle = () => setIsSidebarOpen((v) => !v);
   const onThemeToggle = () =>
-    setThemeMode((t) =>
-      t === "light" ? "dark" : t === "dark" ? "system" : "light"
-    );
+    setThemeMode((current) => (current === "light" ? "dark" : "light"));
 
   const showToolbar = resolvedConfig.masthead?.showToolbar ?? true;
   let toolbarItems =
@@ -158,11 +129,15 @@ export function AppShell({ children, config }: AppShellProps) {
   const showHorizontalNav =
     resolvedConfig.horizontalNav?.enabled ?? navMode === "masthead";
 
+  const navItems = resolvedConfig.navItems ?? defaultConfig.navItems ?? [];
+
+  const effectiveSidebarOpen = hasSidebar ? isSidebarOpen : false;
+
   return (
     <Page
       masthead={
         <AppMasthead
-          isSidebarOpen={isSidebarOpen}
+          isSidebarOpen={effectiveSidebarOpen}
           onSidebarToggle={onSidebarToggle}
           logo={resolvedConfig.masthead?.logo}
           toolbarItems={toolbarItems}
@@ -171,9 +146,14 @@ export function AppShell({ children, config }: AppShellProps) {
           navMode={navMode}
           showToolbar={showToolbar}
           showHorizontalNav={showHorizontalNav}
+          navItems={navItems}
         />
       }
-      sidebar={hasSidebar ? <AppSidebar isOpen={isSidebarOpen} /> : undefined}
+      sidebar={
+        hasSidebar ? (
+          <AppSidebar isOpen={effectiveSidebarOpen} items={navItems} />
+        ) : undefined
+      }
       isManagedSidebar={hasSidebar}
     >
       {children}

@@ -14,6 +14,7 @@
   .show-dark {
     display: revert;
   }
+
   .show-light {
     display: none;
   }

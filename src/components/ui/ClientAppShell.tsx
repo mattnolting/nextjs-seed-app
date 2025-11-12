@@ -23,7 +23,8 @@ export function ClientAppShell({ children, config }: AppShellProps) {
         <div
           style={{
             height: "3.5rem",
-            borderBottom: "1px solid var(--pf-t--global--border--color--default)",
+            borderBottom:
+              "1px solid var(--pf-t--global--border--color--default)",
             background:
               "var(--pf-t--global--background--color--primary--default)",
           }}

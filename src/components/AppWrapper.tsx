@@ -1,17 +1,22 @@
 "use client";
 
-import { ClientAppShell } from "@/components/ui/ClientAppShell";
+import routes from "@/app/routes.json";
+import { AppShell } from "@/components/ui/AppShell";
+import type { AppNavItem } from "@/components/ui/AppShell";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 export function AppWrapper({ children }: { children: React.ReactNode }) {
+  const navItems = routes as AppNavItem[];
+
   return (
     <ErrorBoundary>
-      <ClientAppShell
+      <AppShell
         config={{
+          navItems,
           masthead: {
             logo: "/PF-HorizontalLogo-Color.svg",
             showToolbar: true,
-            toolbarItems: ["notifications", "settings", "user-menu"],
+            toolbarItems: ["y"],
           },
           navMode: "sidebar",
           sidebar: {
@@ -19,12 +24,12 @@ export function AppWrapper({ children }: { children: React.ReactNode }) {
             defaultOpen: true,
           },
           horizontalNav: {
-            enabled: true,
+            enabled: false,
           },
         }}
       >
         {children}
-      </ClientAppShell>
+      </AppShell>
     </ErrorBoundary>
   );
 }

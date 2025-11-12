@@ -2,83 +2,37 @@
 
 ## Location
 
-- `src/app/routes.json` (source of truth)
-- Served by `/api/routes` route handler and consumed by `src/lib/navigation/useRoutes.ts`
+- `src/app/routes.json` (single source of truth)
+- Imported by `AppWrapper` at build time and passed to `AppShell`
+- When demo content is disabled, the manifest defaults to a single Home entry.
 
 ## Schema
 
+`routes.json` exports a plain array of navigation items:
+
 ```json
-{
-  "routes": [
-    {
-      "path": "/dashboard",
-      "title": "Dashboard",
-      "icon": "HistoryIcon",
-      "order": 1,
-      "priority": 1,
-      "group": "Reports",
-      "hidden": false,
-      "description": "Main dashboard"
-    }
-  ],
-  "lastSynced": "2025-01-01T00:00:00.000Z"
-}
+[
+  { "path": "/", "title": "Home" },
+  { "path": "/dashboard", "title": "Dashboard" },
+  { "path": "/analytics", "title": "Analytics", "group": "Reports" }
+]
 ```
 
 Fields:
 
 - `path` (required): must match a route directory in `src/app/`
 - `title` (required): label shown in navigation
-- `icon` (optional): PatternFly icon name (future rendering)
-- `order` (optional): explicit ordering (lower appears first)
-- `priority` (optional): legacy ordering key; treated like `order`
-- `group` (optional): enables grouped navigation (future)
-- `hidden` (optional): exclude route from navigation
-- `description` (optional): tooltip/aria helper text
-- `lastSynced` (optional): informational timestamp recorded by automation
+- `group` (optional): when specified, groups related links in the sidebar masthead (future flexibility)
 
-## Ordering Rules
-
-- Default: appearance order in `routes.json` is used
-- If any route specifies `order` or `priority`, a stable sort is applied by `(order || priority)`, with original index as tiebreaker
-- Hidden routes are omitted from the sidebar
+The runtime reads the array in order; no additional sorting or filtering is applied.
 
 ## Managing Routes
 
-- **Quick Start:** `npm run quick-start` rebuilds demo pages and refreshes
-  `src/app/routes.json` to match the scaffolded content.
-- **Manual edits:** You can edit `routes.json` directly for custom ordering,
-  titles, or advanced metadata. Keep paths aligned with `src/app/` routes.
-
-> The legacy `sync routes` command has been removed while the CLI is being
-> redesigned. Future phases will reintroduce targeted sync tooling.
+- **Quick Start:** `npm run quick-start` rewrites demo pages (when requested) and refreshes `src/app/routes.json` to list the generated routes.
+- **Manual edits:** Update `routes.json` directly to add, remove, or rename links. Array ordering becomes the sidebar ordering.
 
 ## Error Handling
 
-- Missing file → `useRoutes()` returns an empty list and logs a dev warning
-- Fetch error → dev warning; sidebar renders with no items
-- Invalid fields → ignored; defaults applied
-
-## Examples
-
-Minimal:
-
-```json
-{
-  "routes": [
-    { "path": "/", "title": "Home" },
-    { "path": "/dashboard", "title": "Dashboard" }
-  ]
-}
-```
-
-Explicit ordering:
-
-```json
-{
-  "routes": [
-    { "path": "/dashboard", "title": "Dashboard", "order": 1 },
-    { "path": "/analytics", "title": "Analytics", "order": 2 }
-  ]
-}
-```
+- Missing file → the Next.js build fails because `AppWrapper` cannot import the manifest.
+- Invalid JSON → the build fails with a parse error.
+- Unknown fields → ignored by the UI (they are preserved in the manifest but not consumed yet).

@@ -41,10 +41,10 @@ export default function RootLayout({
 
 ## Navigation
 
-- Navigation items are sourced from `src/app/routes.json` (served via `/api/routes`)
-- `useRoutes()` reads that manifest and powers the sidebar in `AppSidebar`
-- Keep navigation shallow; groupings can be introduced later once the CLI
-  reintroduces advanced metadata
+- Navigation items are sourced from `src/app/routes.json`, which `AppWrapper`
+  imports and passes to the shell.
+- Keep navigation shallow; add group labels to the JSON only when you need
+  grouped lists or horizontal navigation.
 
 ## Content Patterns
 

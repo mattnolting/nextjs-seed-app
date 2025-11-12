@@ -1,52 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import type { AppData } from "./types";
+import { demoData } from "./seed";
 
 /**
- * Hook to load app data from JSON file
- * Provides all component data in a single source of truth
+ * Hook to load app data for demo content
+ * Returns static data so components remain fully client-side.
  */
-export function useAppData() {
-  const [data, setData] = useState<AppData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function load() {
-      try {
-        const res = await fetch("/api/app-data", { cache: "no-store" });
-        if (!res.ok) {
-          throw new Error(`Failed to load app data: ${res.status}`);
-        }
-        const json = await res.json();
-        if (!cancelled) {
-          setData(json);
-          setError(null);
-        }
-      } catch (err) {
-        if (!cancelled) {
-          setError(err instanceof Error ? err : new Error(String(err)));
-          if (process.env.NODE_ENV !== "production") {
-            console.warn("useAppData: error loading app data", err);
-          }
-        }
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
-      }
-    }
-
-    load();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  return { data, loading, error };
+export function useAppData(): {
+  data: AppData | null;
+  loading: boolean;
+  error: Error | null;
+} {
+  return { data: demoData, loading: false, error: null };
 }
-

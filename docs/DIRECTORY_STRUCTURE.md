@@ -6,13 +6,14 @@
 nextjs-seed-app/
 ├── src/                               # Application source
 │   ├── app/                           # Next.js App Router entrypoints
-│   │   ├── analytics/page.tsx
+│   │   ├── layout.tsx                 # Root layout (wraps AppShell)
+│   │   ├── page.tsx                   # Home route (welcome screen)
+│   │   ├── error.tsx                  # Global error boundary (EmptyState)
+│   │   ├── analytics/page.tsx         # Generated when demo content is enabled
 │   │   ├── dashboard/page.tsx
 │   │   ├── gallery/page.tsx
 │   │   ├── settings/page.tsx
 │   │   ├── users/page.tsx
-│   │   ├── layout.tsx                 # Root layout (wraps AppShell)
-│   │   ├── page.tsx                   # Home route
 │   │   ├── globals.css                # Global styles
 │   │   └── favicon.ico
 │   ├── components/
@@ -29,11 +30,10 @@ nextjs-seed-app/
 │   │       ├── PrimaryDetailView.tsx
 │   │       └── TableView.tsx
 │   └── lib/
-│       ├── data/
-│       │   ├── useAppData.ts
-│       │   └── types.ts
-│       └── navigation/
-│           └── useRoutes.ts
+│       └── data/
+│           ├── seed.ts                # Embedded demo data for samples
+│           ├── useAppData.ts
+│           └── types.ts
 │
 ├── cli/                               # CLI tooling (Phase 1)
 │   ├── commands/
@@ -43,13 +43,12 @@ nextjs-seed-app/
 │   ├── utils/
 │   │   ├── bootstrap-check.ts
 │   │   ├── bootstrap-setup.ts
-│   │   └── routes.ts
+│   │   └── (shared helpers)
 │   └── tsconfig.json
 │
 ├── docs/                              # Human-authored documentation
 ├── ai-documentation/                  # AI-oriented guidance
-├── src/app/app-data.json              # Demo content backing PatternFly views
-├── src/app/routes.json                # Navigation manifest served via /api/routes
+├── src/app/routes.json                # Navigation manifest imported by AppWrapper
 ├── public/
 │   └── static assets (logos, etc.)
 ├── package.json
@@ -64,7 +63,10 @@ nextjs-seed-app/
 
 Next.js App Router routes and layout. Each folder with a `page.tsx` maps to a
 route. `layout.tsx` wraps all content with `AppWrapper`, which in turn renders
-the PatternFly-powered `AppShell`.
+the PatternFly-powered `AppShell`. The `page.tsx` file ships with a minimal
+welcome experience, while `error.tsx` provides a global EmptyState-driven error
+boundary. Additional demo routes are generated only when the Quick Start prompt
+opts into sample content.
 
 ### `src/components/`
 
@@ -78,9 +80,8 @@ the PatternFly-powered `AppShell`.
 
 ### `src/lib/`
 
-- `lib/data/` centralizes data loading for demo pages via `useAppData`.
-- `lib/navigation/useRoutes.ts` reads `/api/routes` at runtime to drive
-  sidebar navigation.
+- `lib/data/` centralizes demo data. `seed.ts` contains the embedded sample
+  dataset and `useAppData` exposes it to components.
 
 ### `cli/`
 

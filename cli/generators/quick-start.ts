@@ -1,7 +1,6 @@
 import fs from "fs/promises";
 import path from "path";
 import chalk from "chalk";
-import { scanRoutes } from "../utils/routes.js";
 
 import type { BootstrapConfig } from "../utils/bootstrap-setup.js";
 
@@ -30,52 +29,21 @@ export async function runQuickStart(
   try {
     const appDir = path.join(projectRoot, "src", "app");
     const layoutPath = path.join(appDir, "layout.tsx");
-    const dataDir = path.join(projectRoot, "src", "app");
-
     // 1. Check current state
     const hasAppShell = await checkAppShell(layoutPath);
     const existingPages = await checkExistingPages(appDir);
-    let shouldRegeneratePages = true;
     const includeDemoContent = config?.includeDemoContent ?? true;
-
-    // 2. Handle existing scaffold
-    if (hasAppShell && existingPages.length > 0) {
-      try {
-        const inquirer = await import("inquirer");
-        const { overwrite } = await inquirer.default.prompt([
-          {
-            type: "confirm",
-            name: "overwrite",
-            message:
-              "I see you have a configured project. Would you like to rebuild the application? This will overwrite existing pages.",
-            default: false,
-          },
-        ]);
-
-        if (!overwrite) {
-          console.log(
-            chalk.yellow(
-              "\nKeeping existing pages. Quick-start will only refresh the AppShell configuration.\n"
-            )
-          );
-          shouldRegeneratePages = false;
-        }
-      } catch (error) {
-        // Handle user cancellation (Ctrl+C)
-        if (
-          error &&
-          typeof error === "object" &&
-          "name" in error &&
-          (error.name === "ExitPromptError" ||
-            error.name === "SIGINT" ||
-            String(error).includes("SIGINT"))
-        ) {
-          console.log(chalk.yellow("\n\nOperation cancelled by user."));
-          return;
-        }
-        throw error;
-      }
-    }
+    const navItems = includeDemoContent
+      ? [
+          { path: "/", title: "Home" },
+          { path: "/dashboard", title: "Dashboard" },
+          { path: "/analytics", title: "Analytics" },
+          { path: "/users", title: "Users" },
+          { path: "/settings", title: "Settings" },
+          { path: "/gallery", title: "Gallery" },
+        ]
+      : [{ path: "/", title: "Home" }];
+    const hasDemoPages = existingPages.some((route) => route !== "/");
 
     // 3. Ensure AppShell exists (THE OUTER WRAPPER - rebuilds if missing or config provided)
     if (!hasAppShell || config) {
@@ -88,80 +56,29 @@ export async function runQuickStart(
       );
     }
 
-    // 4. Generate pages with content patterns (NO DashboardLayout!)
-    if (includeDemoContent && shouldRegeneratePages) {
-      // These render INSIDE AppShell's main content area
-      console.log(
-        chalk.cyan("Generating pages (content only, no nested layouts)...")
-      );
-      await fs.mkdir(dataDir, { recursive: true });
+    await writeRoutesManifest(appDir, navItems);
 
-      const routes = [
-        { path: "/", title: "Home", order: 1, pattern: "DashboardView" },
-        {
-          path: "/analytics",
-          title: "Analytics",
-          order: 2,
-          pattern: "PrimaryDetailView",
-        },
-        { path: "/users", title: "Users", order: 3, pattern: "TableView" },
-        {
-          path: "/settings",
-          title: "Settings",
-          order: 4,
-          pattern: "FormView",
-        },
-        { path: "/gallery", title: "Gallery", order: 5, pattern: "CardView" },
-      ];
+    // 4. Generate or tidy pages
+    await fs.mkdir(appDir, { recursive: true });
+    await generateBaseHomePage(appDir);
+    await writeErrorBoundary(appDir);
 
-      for (const route of routes) {
-        const pageDir = path.join(appDir, route.path === "/" ? "" : route.path);
-        await fs.mkdir(pageDir, { recursive: true });
-
-        const pageCode = generatePageCode(route);
-        await fs.writeFile(path.join(pageDir, "page.tsx"), pageCode, "utf-8");
-        console.log(chalk.green(`  ✓ ${route.path}/page.tsx`));
+    if (includeDemoContent) {
+      if (hasDemoPages) {
+        console.log(
+          chalk.yellow(
+            "Skipping demo page regeneration because existing content was detected.\n"
+          )
+        );
+      } else {
+        console.log(
+          chalk.cyan("Generating demo pages (content-only views)...")
+        );
+        await generateDemoPages(appDir);
       }
-      console.log(chalk.green("\n✓ All pages created\n"));
-
-      // 5. Create routes.json for navigation
-      console.log(chalk.cyan("Creating navigation..."));
-      const scannedRoutes = await scanRoutes(appDir);
-      const routesData = {
-        routes: routes.map((route) => {
-          const scanned = scannedRoutes.find((r) => r.path === route.path);
-          return {
-            path: route.path,
-            title: route.title,
-            order: route.order,
-            ...(scanned || {}),
-          };
-        }),
-        lastSynced: new Date().toISOString(),
-      };
-
-      await fs.writeFile(
-        path.join(dataDir, "routes.json"),
-        JSON.stringify(routesData, null, 2),
-        "utf-8"
-      );
-      console.log(
-        chalk.green(
-          `✓ routes.json created with ${routesData.routes.length} routes\n`
-        )
-      );
-    } else if (!includeDemoContent) {
-      console.log(
-        chalk.yellow(
-          "\nSkipped demo page generation (sample content disabled in configuration).\n"
-        )
-      );
-    } else {
-      console.log(
-        chalk.yellow(
-          "Skipped page regeneration and routes.json update (existing content preserved).\n"
-        )
-      );
+    } else if (hasDemoPages) {
+      console.log(chalk.cyan("Removing previously generated demo pages..."));
+      await removeDemoRoutes(appDir);
     }
 
     // Success!
@@ -220,119 +137,174 @@ async function checkExistingPages(appDir: string): Promise<string[]> {
   return existingPages;
 }
 
-/**
- * Generate AppShell in layout.tsx (THE OUTER WRAPPER)
- * This is the application scaffold that wraps everything.
- */
-async function ensureAppShell(
-  layoutPath: string,
-  projectRoot: string,
-  config?: BootstrapConfig | null
+async function writeRoutesManifest(
+  appDir: string,
+  navItems: { path: string; title: string }[]
 ): Promise<void> {
-  const uiDir = path.join(projectRoot, "src", "components", "ui");
-  await fs.mkdir(uiDir, { recursive: true });
+  const manifestPath = path.join(appDir, "routes.json");
+  await fs.mkdir(appDir, { recursive: true });
+  const nextContents = JSON.stringify(navItems, null, 2);
 
-  // Check if layout.tsx exists
-  let layoutExists = false;
   try {
-    await fs.access(layoutPath);
-    layoutExists = true;
+    const existing = await fs.readFile(manifestPath, "utf-8");
+    if (existing.trim() === nextContents) {
+      console.log(chalk.green("✓ routes.json already up to date\n"));
+      return;
+    }
   } catch {
-    // layout.tsx doesn't exist
+    // Manifest missing or unreadable; proceed with write.
   }
 
-  // Build toolbar items from config
-  const showToolbar = config?.masthead?.showToolbar ?? true;
-  const toolbarItems =
-    showToolbar && config?.masthead?.toolbarItems?.length
-      ? config.masthead.toolbarItems
-      : showToolbar
-      ? ["notifications", "settings", "theme"]
-      : [];
+  await fs.writeFile(manifestPath, `${nextContents}\n`, "utf-8");
+  console.log(
+    chalk.green(`✓ routes.json updated with ${navItems.length} route(s)\n`)
+  );
+}
 
-  if (!layoutExists || config) {
-    // Create or regenerate layout.tsx with AppShell (THE OUTER WRAPPER)
-    const layoutCode = `import type { Metadata } from "next";
-import "./globals.css";
-import { AppWrapper } from "@/components/AppWrapper";
+async function generateDemoPages(appDir: string): Promise<void> {
+  const routes = [
+    {
+      path: "/dashboard",
+      title: "Dashboard",
+      order: 2,
+      pattern: "DashboardView",
+    },
+    {
+      path: "/analytics",
+      title: "Analytics",
+      order: 3,
+      pattern: "PrimaryDetailView",
+    },
+    { path: "/users", title: "Users", order: 4, pattern: "TableView" },
+    {
+      path: "/settings",
+      title: "Settings",
+      order: 5,
+      pattern: "FormView",
+    },
+    { path: "/gallery", title: "Gallery", order: 6, pattern: "CardView" },
+  ];
 
-export const metadata: Metadata = {
-  title: "PatternFly Next.js Starter",
-  description:
-    "A modern Next.js starter application with PatternFly React components",
-};
+  for (const route of routes) {
+    const pageDir = path.join(appDir, route.path.replace(/^\//, ""));
+    await fs.mkdir(pageDir, { recursive: true });
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+    const pageCode = generatePageCode(route);
+    await fs.writeFile(path.join(pageDir, "page.tsx"), pageCode, "utf-8");
+    console.log(chalk.green(`  ✓ ${route.path} page`));
+  }
+}
+
+async function removeDemoRoutes(appDir: string): Promise<void> {
+  const demoFolders = [
+    "dashboard",
+    "analytics",
+    "users",
+    "settings",
+    "gallery",
+  ];
+  await Promise.all(
+    demoFolders.map((folder) =>
+      fs.rm(path.join(appDir, folder), { recursive: true, force: true })
+    )
+  );
+}
+
+async function generateBaseHomePage(appDir: string): Promise<void> {
+  const homeCode = `"use client";
+
+import {
+  Button,
+  Content,
+  PageSection,
+  Title,
+} from "@patternfly/react-core";
+import ArrowRightIcon from "@patternfly/react-icons/dist/esm/icons/arrow-right-icon";
+
+export default function Home() {
+  return (
+    <PageSection isWidthLimited aria-labelledby="welcome-title">
+      <Content>
+        <Title id="welcome-title" headingLevel="h1">
+          Welcome to the PatternFly Next.js Starter
+        </Title>
+        <p>
+          You’re looking at the minimal shell. Use the sidebar to navigate, run
+          the Quick Start CLI to scaffold demo content, or begin adding your own
+          routes inside the \`src/app/\` directory.
+        </p>
+        <Button
+          component="a"
+          variant="link"
+          icon={<ArrowRightIcon />}
+          iconPosition="right"
+          href="https://www.patternfly.org"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Explore PatternFly documentation
+        </Button>
+      </Content>
+    </PageSection>
+  );
+}
+`;
+
+  await fs.writeFile(path.join(appDir, "page.tsx"), homeCode, "utf-8");
+  console.log(chalk.green("  ✓ /page.tsx"));
+}
+
+async function writeErrorBoundary(appDir: string): Promise<void> {
+  const errorCode = `"use client";
+
+import { useEffect } from "react";
+import {
+  Button,
+  EmptyState,
+  EmptyStateBody,
+  PageSection,
+} from "@patternfly/react-core";
+import ExclamationCircleIcon from "@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon";
+
+export default function GlobalError({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => console.error(error));
+    return () => cancelAnimationFrame(raf);
+  }, [error]);
+
   return (
     <html lang="en">
       <body>
-        <AppWrapper>{children}</AppWrapper>
+        <PageSection isFilled aria-label="Application error">
+          <EmptyState
+            headingLevel="h1"
+            titleText="Something went wrong"
+            icon={ExclamationCircleIcon}
+          >
+            <EmptyStateBody>
+              We ran into an unexpected error while rendering this page. Try the
+              action below to retry, or return to the navigation to continue
+              exploring the application.
+            </EmptyStateBody>
+            <Button variant="primary" onClick={() => reset()}>
+              Try again
+            </Button>
+          </EmptyState>
+        </PageSection>
       </body>
     </html>
   );
 }
 `;
-    await fs.writeFile(layoutPath, layoutCode, "utf-8");
 
-    // Update AppWrapper with config
-    const appWrapperPath = path.join(
-      projectRoot,
-      "src",
-      "components",
-      "AppWrapper.tsx"
-    );
-    const appWrapperDir = path.dirname(appWrapperPath);
-    await fs.mkdir(appWrapperDir, { recursive: true });
-
-    const appWrapperCode = `"use client";
-
-import { AppShell } from "@/components/ui/AppShell";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
-
-export function AppWrapper({ children }: { children: React.ReactNode }) {
-  return (
-    <ErrorBoundary>
-      <AppShell
-        config={{
-          masthead: {
-            logo: "/PF-HorizontalLogo-Color.svg",
-            showToolbar: ${showToolbar ? "true" : "false"},
-            toolbarItems: ${JSON.stringify(toolbarItems)},
-          },
-          navMode: "sidebar",
-          sidebar: {
-            enabled: true,
-            defaultOpen: true,
-          },
-          horizontalNav: {
-            enabled: false,
-          },
-        }}
-      >
-        {children}
-      </AppShell>
-    </ErrorBoundary>
-  );
-}
-`;
-    await fs.writeFile(appWrapperPath, appWrapperCode, "utf-8");
-    console.log(chalk.green("✓ AppShell configured with your settings"));
-  } else {
-    // Verify existing layout.tsx has AppShell or AppWrapper
-    const content = await fs.readFile(layoutPath, "utf-8");
-    if (!content.includes("AppShell") && !content.includes("AppWrapper")) {
-      throw new Error(
-        "layout.tsx exists but AppShell/AppWrapper is not configured. " +
-          "Quick-start rebuilds the application scaffold - please configure AppShell or AppWrapper first."
-      );
-    }
-    // If AppWrapper exists, that's fine - we don't need to regenerate
-    console.log(chalk.green("✓ AppShell/AppWrapper already configured"));
-  }
+  await fs.writeFile(path.join(appDir, "error.tsx"), errorCode, "utf-8");
+  console.log(chalk.green("  ✓ /error.tsx"));
 }
 
 /**
@@ -617,4 +589,124 @@ export default function ${route.title}() {
   );
 }
 `;
+}
+
+/**
+ * Generate AppShell in layout.tsx (THE OUTER WRAPPER)
+ * This is the application scaffold that wraps everything.
+ */
+async function ensureAppShell(
+  layoutPath: string,
+  projectRoot: string,
+  config: BootstrapConfig | null | undefined
+): Promise<void> {
+  const uiDir = path.join(projectRoot, "src", "components", "ui");
+  await fs.mkdir(uiDir, { recursive: true });
+
+  // Check if layout.tsx exists
+  let layoutExists = false;
+  try {
+    await fs.access(layoutPath);
+    layoutExists = true;
+  } catch {
+    // layout.tsx doesn't exist
+  }
+
+  // Build toolbar items from config
+  const showToolbar = config?.masthead?.showToolbar ?? true;
+  const toolbarItems =
+    showToolbar && config?.masthead?.toolbarItems?.length
+      ? config.masthead.toolbarItems
+      : showToolbar
+      ? ["notifications", "settings", "theme"]
+      : [];
+
+  if (!layoutExists || config) {
+    // Create or regenerate layout.tsx with AppShell (THE OUTER WRAPPER)
+    const layoutCode = `import type { Metadata } from "next";
+import "./globals.css";
+import { AppWrapper } from "@/components/AppWrapper";
+
+export const metadata: Metadata = {
+  title: "PatternFly Next.js Starter",
+  description:
+    "A modern Next.js starter application with PatternFly React components",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en">
+      <body>
+        <AppWrapper>{children}</AppWrapper>
+      </body>
+    </html>
+  );
+}
+`;
+    await fs.writeFile(layoutPath, layoutCode, "utf-8");
+
+    // Update AppWrapper with config
+    const appWrapperPath = path.join(
+      projectRoot,
+      "src",
+      "components",
+      "AppWrapper.tsx"
+    );
+    const appWrapperDir = path.dirname(appWrapperPath);
+    await fs.mkdir(appWrapperDir, { recursive: true });
+
+    const appWrapperCode = `"use client";
+
+import routes from "@/app/routes.json";
+import { AppShell } from "@/components/ui/AppShell";
+import type { AppNavItem } from "@/components/ui/AppShell";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+
+export function AppWrapper({ children }: { children: React.ReactNode }) {
+  const navItems = routes as AppNavItem[];
+
+  return (
+    <ErrorBoundary>
+      <AppShell
+        config={{
+          navItems,
+          masthead: {
+            logo: "/PF-HorizontalLogo-Color.svg",
+            showToolbar: ${showToolbar ? "true" : "false"},
+            toolbarItems: ${JSON.stringify(toolbarItems)},
+          },
+          navMode: "sidebar",
+          sidebar: {
+            enabled: true,
+            defaultOpen: true,
+          },
+          horizontalNav: {
+            enabled: false,
+          },
+        }}
+      >
+        {children}
+      </AppShell>
+    </ErrorBoundary>
+  );
+}
+`;
+    await fs.writeFile(appWrapperPath, appWrapperCode, "utf-8");
+    console.log(chalk.green("✓ AppShell configured with your settings"));
+  } else {
+    // Verify existing layout.tsx has AppShell or AppWrapper
+    const content = await fs.readFile(layoutPath, "utf-8");
+    if (!content.includes("AppShell") && !content.includes("AppWrapper")) {
+      throw new Error(
+        "layout.tsx exists but AppShell/AppWrapper is not configured. " +
+          "Quick-start rebuilds the application scaffold - please configure AppShell or AppWrapper first."
+      );
+    }
+    // If AppWrapper exists, that's fine - we don't need to regenerate
+    console.log(chalk.green("✓ AppShell/AppWrapper already configured"));
+  }
 }

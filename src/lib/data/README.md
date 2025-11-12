@@ -2,30 +2,26 @@
 
 ## Overview
 
-All component data is provisioned through a single JSON file: `src/app/app-data.json`. This provides a centralized, easy-to-modify source of truth for all non-static content and is served to the client via `/api/app-data`.
+Demo components share a common dataset stored in `src/lib/data/seed.ts`. The `useAppData` hook imports that module directly, keeping the sample experience self-contained and eliminating the need for runtime fetching or JSON files.
 
 ## Structure
 
 ### Files
 
-- **`src/app/app-data.json`** - Single JSON file containing all component data
-- **`src/lib/data/types.ts`** - TypeScript type definitions for data structure
-- **`src/lib/data/useAppData.ts`** - React hook for loading data
+- **`src/lib/data/seed.ts`** – Embedded demo data used by the content-pattern samples
+- **`src/lib/data/types.ts`** – TypeScript type definitions for the dataset
+- **`src/lib/data/useAppData.ts`** – React hook exposing the demo data to components
 
 ### Data Sections
 
-The JSON file contains sections for each content pattern:
+The seed file provides sections for each content pattern:
 
-- **`cardView`** - Card items and filter categories
-- **`tableView`** - Table columns, rows, and filter categories
-- **`primaryDetail`** - Primary list items
-- **`formView`** - Form fields and validation rules
-
-> The home dashboard now renders static sample content directly in the component; it no longer relies on `app-data.json`.
+- **`cardView`** – Card items and filter categories
+- **`tableView`** – Table columns, rows, and filter categories
+- **`primaryDetail`** – Primary list items used by the master/detail sample
+- **`formView`** – Form fields and validation rules
 
 ## Usage
-
-### Basic Usage
 
 ```typescript
 "use client";
@@ -34,58 +30,29 @@ import { useAppData } from "@/lib/data/useAppData";
 import { CardView } from "@/components/content-patterns/CardView";
 
 export default function Gallery() {
-  const { data, loading, error } = useAppData();
+  const { data } = useAppData();
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error loading data</div>;
-  if (!data) return null;
-
-  return <CardView items={data.cardView.items} />;
-}
-```
-
-### With Toggle Pattern
-
-```typescript
-"use client";
-
-import { useAppData } from "@/lib/data/useAppData";
-import { CardView } from "@/components/content-patterns/CardView";
-import { DashboardView } from "@/components/content-patterns/DashboardView";
-
-export default function Page() {
-  const { data, loading } = useAppData();
-  const useDashboardView = true;
-  const useCardView = false;
-
-  if (loading) return <div>Loading...</div>;
-  if (!data) return null;
-
-  if (useDashboardView) {
-    return <DashboardView title="Dashboard" />;
+  if (!data) {
+    return null;
   }
 
-  if (useCardView) {
-    return <CardView items={data.cardView.items} />;
-  }
-
-  return null;
+  return (
+    <CardView
+      items={data.cardView.items}
+      title="Gallery"
+      description="Browse available projects and items"
+    />
+  );
 }
 ```
 
 ## Benefits
 
-1. **Single Source of Truth**: All data in one place
-2. **Easy Updates**: Change data without touching code
-3. **Type Safety**: TypeScript types ensure data structure consistency
-4. **Separation of Concerns**: Data is separate from component logic
-5. **Reference Implementation**: Developers can see how data is structured
-
-## Data Structure
-
-See `src/lib/data/types.ts` for complete type definitions.
+1. **Self-contained samples** – No runtime fetch or JSON file required
+2. **Type safety** – Dataset shape validated via TypeScript definitions
+3. **Easy customization** – Edit `seed.ts` or replace `useAppData` entirely when wiring real data sources
+4. **Clear separation** – Demo data is isolated from application logic, keeping the seed app focused
 
 ## Modifying Data
 
-Simply edit `src/app/app-data.json` to update component data. Changes will be reflected after a page refresh (or hot reload in development).
-
+Edit `src/lib/data/seed.ts` to adjust the demo dataset. Components consuming `useAppData` will immediately reflect the updated values without restarting the dev server.

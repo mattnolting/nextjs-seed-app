@@ -1,11 +1,19 @@
 /**
- * Type definitions for app-data.json
- * Single source of truth for all component data
+ * Type definitions for the demo data seed used by content-pattern samples
  */
 
 export interface KPICardLabel {
   text: string;
-  color: "blue" | "purple" | "green" | "orange" | "red" | "grey" | "orangered" | "teal" | "yellow";
+  color:
+    | "blue"
+    | "purple"
+    | "green"
+    | "orange"
+    | "red"
+    | "grey"
+    | "orangered"
+    | "teal"
+    | "yellow";
   icon?: boolean;
 }
 
@@ -104,7 +112,11 @@ export interface ChartConfig {
   title?: string;
   subtitle?: string;
   data: ChartData[];
-  legendData?: Array<{ name: string; childName?: string; symbol?: { type: string } }>;
+  legendData?: Array<{
+    name: string;
+    childName?: string;
+    symbol?: { type: string };
+  }>;
   legendPosition?: "bottom" | "bottom-left" | "right";
   padding?: {
     bottom?: number;
@@ -171,7 +183,14 @@ export interface PrimaryDetailData {
 export interface FormField {
   name: string;
   label: string;
-  type: "text" | "email" | "number" | "select" | "textarea" | "checkbox" | "radio";
+  type:
+    | "text"
+    | "email"
+    | "number"
+    | "select"
+    | "textarea"
+    | "checkbox"
+    | "radio";
   required?: boolean;
   placeholder?: string;
   options?: Array<{ value: string; label: string }>;
@@ -195,4 +214,3 @@ export interface AppData {
   primaryDetail: PrimaryDetailData;
   formView: FormViewData;
 }
-

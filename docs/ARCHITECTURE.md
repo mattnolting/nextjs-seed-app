@@ -63,7 +63,8 @@ We use Next.js App Router with a minimal root layout that wraps the client `AppS
 src/
 ├── app/
 │   ├── layout.tsx                # Root layout → wraps with AppShell
-│   └── page.tsx                  # Home content
+│   ├── page.tsx                  # Minimal welcome page
+│   └── error.tsx                 # Global error boundary (EmptyState)
 ├── components/
 │   ├── ui/                       # App chrome
 │   │   ├── AppShell.tsx
@@ -75,9 +76,8 @@ src/
 │       ├── TableView.tsx
 │       ├── PrimaryDetailView.tsx
 │       └── FormView.tsx
-└── lib/
-    └── navigation/
-        └── useRoutes.ts         # Loads /api/routes on client
+└── app/
+    └── routes.json              # Declarative navigation manifest
 ```
 
 ### AppShell configuration via props
@@ -119,32 +119,26 @@ Quick Start scaffolds `AppShell`, `AppMasthead`, `AppSidebar`, and content patte
 ### File Structure
 
 ```
-src/app/routes.json                 # Route metadata (generated)
-
-src/lib/navigation/
-└── useRoutes.ts                    # Client hook to load /api/routes
+src/app/routes.json                 # Navigation manifest consumed by AppWrapper
 ```
 
 ### Navigation Flow
 
 ```
-┌──────────────┐
-│ Filesystem   │───┐
-│ Scan         │   │
-└──────────────┘   │
-                   ▼
-              ┌──────────────┐
-              │   Merge      │
-              │   Metadata   │
-              └──────┬───────┘
-                     │
-    ┌────────────────┴────────────────┐
-    │                                  │
-    ▼                                  ▼
-┌─────────────┐              ┌─────────────┐
-│ routes.json │              │ Discovered  │
-│ (metadata)  │              │ Routes      │
-└─────────────┘              └─────────────┘
+┌─────────────┐
+│ routes.json │
+│ (manifest)  │
+└──────┬──────┘
+       │
+       ▼
+┌─────────────┐
+│ AppWrapper  │  imports manifest at build time
+└──────┬──────┘
+       │
+       ▼
+┌─────────────┐
+│ AppShell    │  passes items to AppMasthead/AppSidebar
+└─────────────┘
 ```
 
 ### Routes Metadata Schema (`src/app/routes.json`)
@@ -197,12 +191,13 @@ These pages are generated only when you opt into sample content during the Quick
 
 ### AppShell
 
-Wraps entire app (PF Page with masthead + sidebar). Receives a config prop for:
+Wraps the entire app (PatternFly `Page` with masthead + sidebar). Receives a config prop for:
 
-- Masthead logo and toolbar items
-- Theme mode (light/dark/system) with localStorage persistence
-- Sidebar navigation is enabled by default; adjust `AppShell` directly if you need a different navigation pattern
-- Hydration guard: `AppMasthead` uses `requestAnimationFrame` to enable toolbar/nav state after hydration, preventing React 19 Strict Mode warnings.
+- Masthead branding: the default config points to `public/PF-HorizontalLogo-Color.svg`. The logo element renders both light and dark variants using `.show-light` / `.show-dark` helpers defined in `globals.css`.
+- Toolbar items: notifications, settings, and theme toggle are preconfigured, but you can add or remove actions in `AppWrapper.tsx`.
+- Theme mode: the shell toggles the `pf-v6-theme-dark` class on `<html>`, causing icons, tokens, and the masthead logo to switch automatically. Values persist to `localStorage` so the user’s choice sticks across reloads.
+- Sidebar navigation: enabled by default; adjust `AppShell` if you want a masthead-only layout.
+- Client handoff: `ClientAppShell` renders a minimal skeleton during SSR and mounts the full shell on the client, eliminating PatternFly’s OUIA id mismatches during hydration.
 
 ### Content Patterns
 
@@ -242,6 +237,7 @@ src/
 ├── app/
 │   ├── layout.tsx           # Root layout → wraps with AppShell
 │   ├── page.tsx
+│   ├── error.tsx
 │   └── [routes]/
 │       └── page.tsx
 ├── components/
@@ -255,13 +251,11 @@ src/
 │       ├── TableView.tsx
 │       ├── PrimaryDetailView.tsx
 │       └── FormView.tsx
-├── lib/
-│   └── navigation/
-│       └── useRoutes.ts
 └── src/app/
-    ├── routes.json        # Navigation manifest served via /api/routes
-    └── app-data.json      # Demo data backing sample components
+    └── routes.json        # Navigation manifest consumed directly by the UI
 ```
+
+Sample data used by the demo components lives in `src/lib/data/seed.ts` and is imported directly by `useAppData`. API route handlers import helpers from `src/server/api/` so business logic stays separate from routing.
 
 ---
 
