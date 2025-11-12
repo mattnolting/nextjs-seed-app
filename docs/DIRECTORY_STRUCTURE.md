@@ -14,7 +14,7 @@ nextjs-seed-app/
 │   │   ├── gallery/page.tsx
 │   │   ├── settings/page.tsx
 │   │   ├── users/page.tsx
-│   │   ├── globals.css                # Global styles
+│   │   ├── globals.css                # Global styles + comprehensive PatternFly CSS documentation
 │   │   └── favicon.ico
 │   ├── components/
 │   │   ├── AppWrapper.tsx             # Error boundary + AppShell wrapper
@@ -76,7 +76,9 @@ opts into sample content.
   `AppSidebar`) that assemble the PatternFly layout.
 - `components/content-patterns/` packages sample page-level views used by the
   demo routes (Card, Dashboard, Form, Primary/Detail, Table). Each file is marked
-  as demo-only and can be removed for a leaner seed.
+  as demo-only and can be removed for a leaner seed. All components are self-contained
+  and work independently with sensible defaults, fetching their own data from
+  `src/lib/data/seed.ts` when props aren't provided.
 
 ### `src/lib/`
 

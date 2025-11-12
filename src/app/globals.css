@@ -1,11 +1,111 @@
 /* PatternFly CSS imports */
+/* Including css here will make them available to all pages */
+/* Next.js will automatically minify these files in production */
+
+/* Currently active imports */
+/* Base styles: fonts, icons, CSS variables, common utilities */
 @import "@patternfly/patternfly/patternfly-base.css";
+
+/* PatternFly charts automatically respond to pf-v6-theme-dark class on html element */
 @import "@patternfly/patternfly/patternfly-charts.css";
 
-/* Ensure charts respond to dark theme */
-/* PatternFly charts automatically respond to pf-v6-theme-dark class on html element */
-/* The patternfly-charts.css file contains all necessary theme variables */
+/* Enabled utilities by default, comment this line out if you don't need or want them */
+@import "@patternfly/patternfly/patternfly-addons.css";
 
+/*
+  ============================================================================
+  PATTERNFLY CSS FILE DOCUMENTATION
+  ============================================================================
+
+  Available PatternFly CSS files and their use cases:
+
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │ BASE STYLES (Choose ONE base option)                                    │
+  └─────────────────────────────────────────────────────────────────────────┘
+
+  1. patternfly-base.css (CURRENTLY ACTIVE)
+     - Base styles: fonts, icons, CSS variables, common utilities
+     - INCLUDES: CSS reset and normalize.css for cross-browser consistency
+     - ~8,805 lines
+     - Use when: You want full PatternFly base with reset/normalize
+     - Effect: Applies margin/padding resets, box-sizing, scrollbar styles
+
+  2. patternfly-base-no-globals.css
+     - Base styles: fonts, icons, CSS variables, common utilities
+     - EXCLUDES: CSS reset and normalize.css
+     - ~8,665 lines
+     - Use when: You already have reset/normalize or want to handle it yourself
+     - Effect: Provides PatternFly base without resetting browser defaults
+     - To use: Replace patternfly-base.css with this import
+
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │ FULL PATTERNFLY (Alternative to base + addons combination)              │
+  └─────────────────────────────────────────────────────────────────────────┘
+
+  3. patternfly.css
+     - FULL PatternFly: base + ALL component styles + ALL layout styles
+     - INCLUDES: CSS reset and normalize.css
+     - EXCLUDES: Utility classes (addons)
+     - ~36,408 lines
+     - Use when: You want all PatternFly components and layouts in one file
+     - Effect: Replaces patternfly-base.css, includes Button, Card, Table, etc.
+     - Note: You still need patternfly-addons.css for utility classes
+     - Alternative to: patternfly-base.css (if you need all components)
+
+  4. patternfly-no-globals.css
+     - FULL PatternFly: base + ALL component styles + ALL layout styles
+     - EXCLUDES: CSS reset and normalize.css, utility classes (addons)
+     - ~36,268 lines
+     - Use when: You want all PatternFly components without reset/normalize
+     - Effect: Full PatternFly without resetting browser defaults
+     - Note: You still need patternfly-addons.css for utility classes
+     - Alternative to: patternfly-base-no-globals.css (if you need all components)
+
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │ ADDITIONAL STYLES (Can be combined with any base option)                │
+  └─────────────────────────────────────────────────────────────────────────┘
+
+  5. patternfly-charts.css (CURRENTLY ACTIVE)
+     - Chart theme variables for dark theme support
+     - ~746 lines
+     - Required when: Using PatternFly charts with dark theme
+     - Effect: Provides theme variables for @patternfly/react-charts
+
+  6. patternfly-addons.css (CURRENTLY ACTIVE)
+     - Utility classes: spacing, display, text alignment, etc.
+     - ~7,814 lines
+     - Use when: You want utility classes (e.g., .pf-v6-u-m-md, .pf-v6-u-display-flex)
+     - Effect: Adds utility classes for common styling needs
+     - Can be: Commented out if you don't need utilities
+
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │ RECOMMENDED SETUPS                                                      │
+  └─────────────────────────────────────────────────────────────────────────┘
+
+  Setup 1: Base + Charts + Utilities (CURRENT - Recommended for most apps)
+    @import "@patternfly/patternfly/patternfly-base.css";
+    @import "@patternfly/patternfly/patternfly-charts.css";
+    @import "@patternfly/patternfly/patternfly-addons.css";
+
+  Setup 2: Full PatternFly + Charts + Utilities (All components included)
+    @import "@patternfly/patternfly/patternfly.css";
+    @import "@patternfly/patternfly/patternfly-charts.css";
+    @import "@patternfly/patternfly/patternfly-addons.css";
+
+  Setup 3: Base without reset/normalize (Custom reset handling)
+    @import "@patternfly/patternfly/patternfly-base-no-globals.css";
+    @import "@patternfly/patternfly/patternfly-charts.css";
+    @import "@patternfly/patternfly/patternfly-addons.css";
+
+  Setup 4: Full PatternFly without reset/normalize (Custom reset handling)
+    @import "@patternfly/patternfly/patternfly-no-globals.css";
+    @import "@patternfly/patternfly/patternfly-charts.css";
+    @import "@patternfly/patternfly/patternfly-addons.css";
+
+  ============================================================================
+*/
+
+/* Dark theme brand support */
 .show-dark {
   display: none;
 }

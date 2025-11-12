@@ -14,7 +14,7 @@
 [
   { "path": "/", "title": "Home" },
   { "path": "/dashboard", "title": "Dashboard" },
-  { "path": "/analytics", "title": "Analytics", "group": "Reports" }
+  { "path": "/analytics", "title": "Analytics" }
 ]
 ```
 

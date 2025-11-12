@@ -259,10 +259,86 @@ Sample data used by the demo components lives in `src/lib/data/seed.ts` and is i
 
 ---
 
-## 7. Benefits
+## 7. Styling and CSS Configuration
+
+### CSS File Documentation
+
+The seed includes comprehensive documentation in `src/app/globals.css` that explains all available PatternFly CSS files, their differences, use cases, and how to combine them. This documentation addresses three common developer pain points:
+
+1. **Discoverability** – PatternFly CSS files can be hard to find in `node_modules/@patternfly/patternfly/`
+2. **Understanding differences** – It's challenging to understand the differences between files like `patternfly-base.css`, `patternfly-base-no-globals.css`, `patternfly.css`, and `patternfly-no-globals.css`
+3. **Combination guidance** – Developers need clear guidance on how to combine files to suit their individual needs (with/without reset, with/without utilities, etc.)
+
+The documentation in `globals.css` includes:
+
+- Detailed descriptions of each CSS file
+- Line counts to help understand bundle size implications
+- Use cases for when to use each file
+- Effects of enabling/disabling each import
+- Four recommended setup configurations
+- Clear guidance on which files can be combined
+
+### CSS Delivery
+
+Next.js automatically minifies CSS in production builds. The seed app imports PatternFly CSS via `@import` statements in `globals.css`, making all styles available to all pages. For CSS optimization (tree shaking, purging unused styles), developers can configure tools like PurgeCSS if needed, but this is left to user discretion.
+
+### Theme Support
+
+The seed includes dark theme support via the `pf-v6-theme-dark` class on the `<html>` element. `AppShell` manages theme state and persists it to `localStorage`. The `globals.css` file includes `.show-light` and `.show-dark` helper classes for logo swapping based on theme.
+
+## 8. Developer Experience Enhancements
+
+The seed app includes several enhancements to improve developer experience:
+
+### Self-Contained Demo Components
+
+All content-pattern components (`DashboardView`, `CardView`, `TableView`, `PrimaryDetailView`, `FormView`) are self-contained and work independently:
+
+- Components fetch their own default data from `src/lib/data/seed.ts` when props aren't provided
+- All props are optional with sensible defaults
+- Components can be dropped into pages without any configuration
+- Easy to customize by providing props or replacing component logic
+
+### Simplified Page Structure
+
+Pages follow a simple, consistent structure:
+
+- No duplicate `PageSection` wrappers
+- No automated page headers (flexibility for manual headers)
+- Content-pattern components handle their own `PageSection` structure
+- Pages can add their own headers if needed, but it's not automated
+
+### Template-Based Page Generation
+
+The Quick Start CLI uses a template-based approach for generating demo pages:
+
+- Simple data-driven configuration array
+- Easy to add new demo pages by updating the routes array
+- Consistent page structure across all generated pages
+- No complex conditional logic
+
+### Comprehensive Documentation
+
+- **CSS documentation** – Detailed documentation in `globals.css` explaining all PatternFly CSS files
+- **Component documentation** – Each content-pattern component includes a "SAMPLE CONTENT PATTERN" banner
+- **Architecture documentation** – Clear documentation of design decisions and technical details
+- **CLI documentation** – Detailed usage guides for the Quick Start CLI
+
+### Hydration Safety
+
+- Navigation data is imported at build time (no runtime fetches)
+- `AppMasthead` uses `requestAnimationFrame` to defer hydration-sensitive state updates
+- Prevents React Strict Mode warnings
+- Ensures server and client render the same markup
+
+## 9. Benefits
 
 ✅ Uses Next.js and PatternFly idioms
 ✅ App chrome isolated from page content
 ✅ Filesystem-first with manifest augmentation
 ✅ Graceful fallbacks and dev warnings
 ✅ Action-first CLI commands for speed
+✅ Self-contained components with sensible defaults
+✅ Comprehensive documentation for CSS configuration
+✅ Simplified page structure without duplicate wrappers
+✅ Template-based generation for easy extensibility

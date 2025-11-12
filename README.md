@@ -179,10 +179,13 @@ Navigation data is imported at build time, so the masthead and sidebar render th
 The seed includes several conveniences tailored for PatternFly projects:
 
 - **CSS baseline** – `globals.css` imports PatternFly base and chart styles and defines `.show-light` / `.show-dark` helpers used by the masthead branding.
+- **Comprehensive CSS documentation** – `globals.css` includes detailed documentation for all PatternFly CSS files, explaining differences, use cases, and recommended setups. This addresses common developer pain points where these files can be hard to find, differences are challenging to understand, and it's unclear how they can be combined to suit individual needs.
 - **Scaffolded AppShell** – `AppShell`, `AppMasthead`, and `AppSidebar` are configured with sensible defaults for toolbar actions, theme toggling, and navigation.
+- **Self-contained demo components** – All content-pattern components work independently with sensible defaults. They fetch their own data from `src/lib/data/seed.ts` when props aren't provided, making them easy to drop into pages and customize.
 - **Sample content patterns** – Dashboard, table, card, primary-detail, and form views demonstrate how to assemble real layouts using PatternFly components.
 - **Demo data & manifest** – `src/lib/data/seed.ts` and `.build.json` document what the generator laid down, making it easy to trim or extend the demo experience.
 - **Quick Start CLI** – `npm run quick-start` replays PatternFly layout patterns on demand, ensuring AppShell and navigation stay correctly wired when you scaffold demos.
+- **Template-based page generation** – The CLI uses a simple template system that makes it easy to add new demo pages by updating a data-driven configuration array.
 
 ## Requirements
 
