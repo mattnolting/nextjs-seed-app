@@ -8,7 +8,7 @@
  * or replace it when tailoring the starter to your product.
  */
 
-import { useState, useEffect, Fragment } from "react";
+import { useState, useEffect, useMemo, Fragment } from "react";
 import {
   PageSection,
   Title,
@@ -54,10 +54,11 @@ import {
 import SearchIcon from "@patternfly/react-icons/dist/esm/icons/search-icon";
 import FilterIcon from "@patternfly/react-icons/dist/esm/icons/filter-icon";
 import type { PrimaryItem } from "@/lib/data/types";
+import { demoData } from "@/lib/data/seed";
 
 export interface PrimaryDetailViewProps {
-  masterItems: PrimaryItem[];
-  renderDetail: (item: PrimaryItem) => React.ReactNode;
+  masterItems?: PrimaryItem[];
+  renderDetail?: (item: PrimaryItem) => React.ReactNode;
   title?: string;
   emptyStateMessage?: string;
   detailTitle?: string;
@@ -67,8 +68,8 @@ export interface PrimaryDetailViewProps {
 }
 
 export function PrimaryDetailView({
-  masterItems,
-  renderDetail,
+  masterItems: providedMasterItems,
+  renderDetail: providedRenderDetail,
   title = "Primary Detail",
   emptyStateMessage = "Select an item to view details",
   detailTitle = "Details",
@@ -76,6 +77,46 @@ export function PrimaryDetailView({
   enableFilters = false,
   filterOptions = {},
 }: PrimaryDetailViewProps) {
+  // Use provided props or fall back to seed data
+  const masterItems = useMemo(
+    () => providedMasterItems ?? demoData.primaryDetail?.primaryItems ?? [],
+    [providedMasterItems]
+  );
+
+  // Default renderDetail function if not provided
+  const renderDetail =
+    providedRenderDetail ??
+    ((item: PrimaryItem) => {
+      return (
+        <DescriptionList>
+          <DescriptionListGroup>
+            <DescriptionListTerm>Title</DescriptionListTerm>
+            <DescriptionListDescription>
+              {item.title}
+            </DescriptionListDescription>
+          </DescriptionListGroup>
+          {item.description && (
+            <DescriptionListGroup>
+              <DescriptionListTerm>Description</DescriptionListTerm>
+              <DescriptionListDescription>
+                {item.description}
+              </DescriptionListDescription>
+            </DescriptionListGroup>
+          )}
+          {item.meta &&
+            Object.entries(item.meta).map(([key, value]) => (
+              <DescriptionListGroup key={key}>
+                <DescriptionListTerm>
+                  {key.charAt(0).toUpperCase() + key.slice(1)}
+                </DescriptionListTerm>
+                <DescriptionListDescription>
+                  {String(value)}
+                </DescriptionListDescription>
+              </DescriptionListGroup>
+            ))}
+        </DescriptionList>
+      );
+    });
   const [isDrawerExpanded, setIsDrawerExpanded] = useState(false);
   const [selectedDataListItemId, setSelectedDataListItemId] = useState<
     string | number | ""

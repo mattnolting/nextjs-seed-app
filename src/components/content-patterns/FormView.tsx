@@ -26,23 +26,34 @@ import {
 } from "@patternfly/react-core";
 import type { FormField } from "@/lib/data/types";
 
+import { demoData } from "@/lib/data/seed";
+
 export interface FormViewProps {
-  formSchema: FormField[];
+  formSchema?: FormField[];
   initialData?: Record<string, unknown>;
-  onSubmit: (data: Record<string, unknown>) => void;
+  onSubmit?: (data: Record<string, unknown>) => void;
   onCancel?: () => void;
   title?: string;
   description?: string;
 }
 
 export function FormView({
-  formSchema,
+  formSchema: providedFormSchema,
   initialData = {},
-  onSubmit,
+  onSubmit: providedOnSubmit,
   onCancel,
   title = "Form",
   description,
 }: FormViewProps) {
+  // Use provided props or fall back to seed data
+  const formSchema = providedFormSchema ?? demoData.formView?.fields ?? [];
+  const onSubmit =
+    providedOnSubmit ??
+    ((formData: Record<string, unknown>) => {
+      if (typeof window !== "undefined") {
+        localStorage.setItem("userSettings", JSON.stringify(formData));
+      }
+    });
   const [formData, setFormData] = useState<Record<string, unknown>>(initialData);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);

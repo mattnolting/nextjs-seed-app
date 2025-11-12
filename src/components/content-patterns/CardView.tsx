@@ -52,6 +52,7 @@ import DatabaseIcon from "@patternfly/react-icons/dist/esm/icons/database-icon";
 import EnvelopeIcon from "@patternfly/react-icons/dist/esm/icons/envelope-icon";
 import TruckIcon from "@patternfly/react-icons/dist/esm/icons/truck-icon";
 import { Icon } from "@patternfly/react-core";
+import { demoData } from "@/lib/data/seed";
 
 // Icon mapping object
 const icons: Record<string, React.ComponentType<SVGIconProps>> = {
@@ -82,7 +83,7 @@ export interface CardItem {
 }
 
 export interface CardViewProps {
-  items: CardItem[];
+  items?: CardItem[];
   title?: string;
   description?: string;
   showEmptyState?: boolean;
@@ -202,7 +203,7 @@ function CardViewToolbar({
 }
 
 export function CardView({
-  items,
+  items: providedItems,
   title = "Projects",
   description = "This is a demo that showcases PatternFly cards.",
   showEmptyState = true,
@@ -212,7 +213,14 @@ export function CardView({
   enableSelection = true,
   enablePagination = true,
   defaultPerPage = 10,
+  filterCategories: providedFilterCategories,
 }: CardViewProps) {
+  // Use provided items or fall back to seed data
+  const items = providedItems ?? (demoData.cardView?.items as CardItem[]) ?? [];
+  // filterCategories is available for future filtering functionality
+  // const filterCategories =
+  //   providedFilterCategories ?? demoData.cardView?.filters?.categories;
+
   const [cardData, setCardData] = useState(items);
   const totalItemCount = cardData.length;
   const [selectedItems, setSelectedItems] = useState<string[]>([]);

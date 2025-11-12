@@ -21,6 +21,7 @@ import {
   Title,
 } from "@patternfly/react-core";
 import { Table, Thead, Tbody, Tr, Th, Td } from "@patternfly/react-table";
+import { demoData } from "@/lib/data/seed";
 
 export interface TableRow {
   id: string | number;
@@ -28,18 +29,21 @@ export interface TableRow {
 }
 
 export function TableView({
-  columns,
-  rows,
+  columns: providedColumns,
+  rows: providedRows,
   title,
   isLoading = false,
   onSelectionChange,
 }: {
-  columns: string[];
-  rows: TableRow[];
+  columns?: string[];
+  rows?: TableRow[];
   title?: string;
   isLoading?: boolean;
   onSelectionChange?: (selected: (string | number)[]) => void;
 }) {
+  // Use provided props or fall back to seed data
+  const columns = providedColumns ?? demoData.tableView?.columns ?? [];
+  const rows = providedRows ?? (demoData.tableView?.rows as TableRow[]) ?? [];
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [filter, setFilter] = useState("");
