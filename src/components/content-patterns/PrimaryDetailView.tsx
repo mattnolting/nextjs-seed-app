@@ -408,30 +408,11 @@ export function PrimaryDetailView({
 
   return (
     <>
-      {title && (
-        <PageSection aria-labelledby="primary-detail-title">
-          <Content>
-            <Title headingLevel="h1" id="primary-detail-title">
-              {title}
-            </Title>
-            <p>
-              Select an item from the list to view its details in the drawer
-              panel.
-            </p>
-          </Content>
-        </PageSection>
-      )}
-      <Divider component="div" />
-      <PageSection
-        padding={{ default: "noPadding" }}
-        aria-label="Primary detail with drawer"
-      >
-        <Drawer isExpanded={isDrawerExpanded}>
-          <DrawerContent panelContent={panelContent}>
-            <DrawerContentBody>{drawerContent}</DrawerContentBody>
-          </DrawerContent>
-        </Drawer>
-      </PageSection>
+      <Drawer isExpanded={isDrawerExpanded}>
+        <DrawerContent panelContent={panelContent}>
+          <DrawerContentBody>{drawerContent}</DrawerContentBody>
+        </DrawerContent>
+      </Drawer>
     </>
   );
 }

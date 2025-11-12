@@ -401,108 +401,99 @@ export function CardView({
 
   return (
     <Fragment>
-      <PageSection aria-labelledby="card-view-title">
-        <Content>
-          <h1 id="card-view-title">{title}</h1>
-          <p>{description}</p>
-        </Content>
-      </PageSection>
-
-      <PageSection isFilled aria-label="Selectable card gallery">
-        <CardViewToolbar
-          selectedCount={selectedItems.length}
-          selectionState={selectionState}
-          enableSelection={enableSelection}
-          enablePagination={enablePagination}
-          perPage={perPage}
-          totalItemCount={totalItemCount}
-          isSelectDropdownOpen={splitButtonDropdownIsOpen}
-          onToggleSelectDropdown={() =>
-            setSplitButtonDropdownIsOpen((prev) => !prev)
-          }
-          onSelectDropdownOpenChange={(isOpen) =>
-            setSplitButtonDropdownIsOpen(isOpen)
-          }
-          onSelectToggle={selectAllToggle}
-          onSelectNone={selectNone}
-          onSelectPage={selectPage}
-          onSelectAll={selectAll}
-          onDeleteSelected={deleteSelected}
-          renderPagination={renderPagination}
-        />
-        <Gallery hasGutter aria-label="Selectable card container">
-          {paginated.length === 0 && showEmptyState ? (
-            <Card isCompact>
-              <Bullseye>
-                <EmptyState
-                  headingLevel="h2"
-                  titleText="No cards found"
-                  icon={PlusCircleIcon}
-                  variant={EmptyStateVariant.xs}
-                >
-                  <EmptyStateFooter>
-                    <EmptyStateActions>
-                      {emptyStateAction && (
-                        <Button variant="link" onClick={emptyStateAction}>
-                          Add card
-                        </Button>
-                      )}
-                    </EmptyStateActions>
-                  </EmptyStateFooter>
-                </EmptyState>
-              </Bullseye>
-            </Card>
-          ) : (
-            paginated.map((product) => (
-              <Card
-                isCompact
-                isClickable
-                isSelectable={enableSelection}
-                key={product.id}
-                id={String(product.id)}
-                isSelected={selectedItems.includes(String(product.id))}
+      <CardViewToolbar
+        selectedCount={selectedItems.length}
+        selectionState={selectionState}
+        enableSelection={enableSelection}
+        enablePagination={enablePagination}
+        perPage={perPage}
+        totalItemCount={totalItemCount}
+        isSelectDropdownOpen={splitButtonDropdownIsOpen}
+        onToggleSelectDropdown={() =>
+          setSplitButtonDropdownIsOpen((prev) => !prev)
+        }
+        onSelectDropdownOpenChange={(isOpen) =>
+          setSplitButtonDropdownIsOpen(isOpen)
+        }
+        onSelectToggle={selectAllToggle}
+        onSelectNone={selectNone}
+        onSelectPage={selectPage}
+        onSelectAll={selectAll}
+        onDeleteSelected={deleteSelected}
+        renderPagination={renderPagination}
+      />
+      <Gallery hasGutter aria-label="Selectable card container">
+        {paginated.length === 0 && showEmptyState ? (
+          <Card isCompact>
+            <Bullseye>
+              <EmptyState
+                headingLevel="h2"
+                titleText="No cards found"
+                icon={PlusCircleIcon}
+                variant={EmptyStateVariant.xs}
               >
-                <CardHeader
-                  selectableActions={
-                    enableSelection
-                      ? {
-                          variant: "multiple",
-                          isChecked: selectedItems.includes(String(product.id)),
-                          selectableActionId: `selectable-actions-item-${product.id}`,
-                          selectableActionAriaLabelledby: product.title.replace(
-                            / /g,
-                            "-"
+                <EmptyStateFooter>
+                  <EmptyStateActions>
+                    {emptyStateAction && (
+                      <Button variant="link" onClick={emptyStateAction}>
+                        Add card
+                      </Button>
+                    )}
+                  </EmptyStateActions>
+                </EmptyStateFooter>
+              </EmptyState>
+            </Bullseye>
+          </Card>
+        ) : (
+          paginated.map((product) => (
+            <Card
+              isCompact
+              isClickable
+              isSelectable={enableSelection}
+              key={product.id}
+              id={String(product.id)}
+              isSelected={selectedItems.includes(String(product.id))}
+            >
+              <CardHeader
+                selectableActions={
+                  enableSelection
+                    ? {
+                        variant: "multiple",
+                        isChecked: selectedItems.includes(String(product.id)),
+                        selectableActionId: `selectable-actions-item-${product.id}`,
+                        selectableActionAriaLabelledby: product.title.replace(
+                          / /g,
+                          "-"
+                        ),
+                        name: `check-${product.id}`,
+                        onChange: (event, checked) =>
+                          handleCardSelection(
+                            String(product.id),
+                            Boolean(checked)
                           ),
-                          name: `check-${product.id}`,
-                          onChange: (event, checked) =>
-                            handleCardSelection(
-                              String(product.id),
-                              Boolean(checked)
-                            ),
-                        }
-                      : undefined
-                  }
-                >
-                  {product.icon && icons[product.icon] && (
-                    <Icon>{React.createElement(icons[product.icon])}</Icon>
-                  )}
-                  {!product.icon && product.image && (
-                    <Image
-                      src={product.image}
-                      alt={`${product.title} icon`}
-                      width={60}
-                      height={60}
-                      style={{ maxWidth: "60px", height: "auto" }}
-                    />
-                  )}
-                </CardHeader>
-                <CardTitle>{product.title}</CardTitle>
-                <CardBody>{product.description || product.content}</CardBody>
-              </Card>
-            ))
-          )}
-        </Gallery>
-      </PageSection>
+                      }
+                    : undefined
+                }
+              >
+                {product.icon && icons[product.icon] && (
+                  <Icon>{React.createElement(icons[product.icon])}</Icon>
+                )}
+                {!product.icon && product.image && (
+                  <Image
+                    src={product.image}
+                    alt={`${product.title} icon`}
+                    width={60}
+                    height={60}
+                    style={{ maxWidth: "60px", height: "auto" }}
+                  />
+                )}
+              </CardHeader>
+              <CardTitle>{product.title}</CardTitle>
+              <CardBody>{product.description || product.content}</CardBody>
+            </Card>
+          ))
+        )}
+      </Gallery>
 
       {enablePagination && filtered.length > perPage && (
         <PageSection

@@ -54,7 +54,8 @@ export function FormView({
         localStorage.setItem("userSettings", JSON.stringify(formData));
       }
     });
-  const [formData, setFormData] = useState<Record<string, unknown>>(initialData);
+  const [formData, setFormData] =
+    useState<Record<string, unknown>>(initialData);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -138,9 +139,7 @@ export function FormView({
     checked: boolean
   ) => {
     setFormData((prev) => {
-      const current = Array.isArray(prev[name])
-        ? (prev[name] as string[])
-        : [];
+      const current = Array.isArray(prev[name]) ? (prev[name] as string[]) : [];
       const nextValues: string[] = checked
         ? [...current, value]
         : current.filter((v) => v !== value);
@@ -170,9 +169,7 @@ export function FormView({
   const renderField = (field: FormField) => {
     const rawValue = formData[field.name];
     const stringValue = typeof rawValue === "string" ? rawValue : "";
-    const arrayValue = Array.isArray(rawValue)
-      ? (rawValue as string[])
-      : [];
+    const arrayValue = Array.isArray(rawValue) ? (rawValue as string[]) : [];
     const error = errors[field.name];
 
     switch (field.type) {
@@ -264,61 +261,49 @@ export function FormView({
 
   return (
     <>
-      <PageSection>
-        <Title headingLevel="h1" size="2xl">
-          {title}
-        </Title>
-        {description && <p>{description}</p>}
-      </PageSection>
-      <PageSection>
-        {isSubmitted && (
-          <Alert
-            variant="success"
-            title="Form submitted successfully"
-            isInline
-          />
-        )}
-        <Form
-          isHorizontal
-          isWidthLimited
-          maxWidth="600px"
-          onSubmit={handleSubmit}
-        >
-          {formSchema.map((field) => {
-            const error = errors[field.name];
-            return (
-              <FormGroup
-                key={field.name}
-                label={field.label}
-                fieldId={field.name}
-                isRequired={field.required || field.validation?.required}
-              >
-                {renderField(field)}
-                {error && (
-                  <div
-                    style={{
-                      color: "var(--pf-global--danger-color--100)",
-                      fontSize: "var(--pf-global--FontSize--sm)",
-                      marginTop: "var(--pf-global--spacer--xs)",
-                    }}
-                  >
-                    {error}
-                  </div>
-                )}
-              </FormGroup>
-            );
-          })}
+      {isSubmitted && (
+        <Alert variant="success" title="Form submitted successfully" isInline />
+      )}
+      <Form
+        isHorizontal
+        isWidthLimited
+        maxWidth="600px"
+        onSubmit={handleSubmit}
+      >
+        {formSchema.map((field) => {
+          const error = errors[field.name];
+          return (
+            <FormGroup
+              key={field.name}
+              label={field.label}
+              fieldId={field.name}
+              isRequired={field.required || field.validation?.required}
+            >
+              {renderField(field)}
+              {error && (
+                <div
+                  style={{
+                    color: "var(--pf-global--danger-color--100)",
+                    fontSize: "var(--pf-global--FontSize--sm)",
+                    marginTop: "var(--pf-global--spacer--xs)",
+                  }}
+                >
+                  {error}
+                </div>
+              )}
+            </FormGroup>
+          );
+        })}
 
-          <ActionGroup>
-            <Button type="submit" variant="primary">
-              Submit
-            </Button>
-            <Button type="button" variant="link" onClick={handleCancel}>
-              Cancel
-            </Button>
-          </ActionGroup>
-        </Form>
-      </PageSection>
+        <ActionGroup>
+          <Button type="submit" variant="primary">
+            Submit
+          </Button>
+          <Button type="button" variant="link" onClick={handleCancel}>
+            Cancel
+          </Button>
+        </ActionGroup>
+      </Form>
     </>
   );
 }

@@ -923,69 +923,56 @@ export function DashboardView({
 
   return (
     <>
-      {title && (
-        <PageSection isWidthLimited>
-          <Content>
-            <h1 id="dashboard-page-title">{title}</h1>
-            <p>
-              This is a PatternFly-based dashboard built with React components.
-            </p>
-          </Content>
-        </PageSection>
-      )}
+      <Grid hasGutter>
+        <GridItem>
+          <KPICardHorizontalGrid kpi={HORIZONTAL_GRID_CARD} />
+        </GridItem>
 
-      <PageSection isWidthLimited>
-        <Grid hasGutter>
-          <GridItem>
-            <KPICardHorizontalGrid kpi={HORIZONTAL_GRID_CARD} />
-          </GridItem>
+        <GridItem md={4}>
+          <Card isFullHeight>
+            <CardTitle>{UTILIZATION_CARD.title}</CardTitle>
+            <CardBody>
+              <KPIUtilizationChart kpi={UTILIZATION_CARD} />
+            </CardBody>
+          </Card>
+        </GridItem>
 
-          <GridItem md={4}>
-            <Card isFullHeight>
-              <CardTitle>{UTILIZATION_CARD.title}</CardTitle>
-              <CardBody>
-                <KPIUtilizationChart kpi={UTILIZATION_CARD} />
-              </CardBody>
-            </Card>
-          </GridItem>
+        <GridItem md={4}>
+          <Card isFullHeight>
+            <CardTitle>CPU utilization by node</CardTitle>
+            <CardBody>
+              <CpuUsageByNodeChart />
+            </CardBody>
+          </Card>
+        </GridItem>
 
-          <GridItem md={4}>
-            <Card isFullHeight>
-              <CardTitle>CPU utilization by node</CardTitle>
-              <CardBody>
-                <CpuUsageByNodeChart />
-              </CardBody>
-            </Card>
-          </GridItem>
+        <GridItem md={4}>
+          <Card isFullHeight>
+            <CardTitle>Cluster CPU trend</CardTitle>
+            <CardBody>
+              <ClusterCpuTrendChart />
+            </CardBody>
+          </Card>
+        </GridItem>
 
-          <GridItem md={4}>
-            <Card isFullHeight>
-              <CardTitle>Cluster CPU trend</CardTitle>
-              <CardBody>
-                <ClusterCpuTrendChart />
-              </CardBody>
-            </Card>
-          </GridItem>
+        <GridItem md={6}>
+          <KPICardRecommendations kpi={RECOMMENDATION_CARD} />
+        </GridItem>
 
-          <GridItem md={6}>
-            <KPICardRecommendations kpi={RECOMMENDATION_CARD} />
-          </GridItem>
+        <GridItem md={6}>
+          <KPICardDetails kpi={DETAILS_CARD} />
+        </GridItem>
 
-          <GridItem md={6}>
-            <KPICardDetails kpi={DETAILS_CARD} />
-          </GridItem>
-
-          <GridItem md={4}>
-            <KPICardSummary kpi={SUMMARY_CARD_ONE} />
-          </GridItem>
-          <GridItem md={4}>
-            <KPICardSummary kpi={SUMMARY_CARD_TWO} />
-          </GridItem>
-          <GridItem md={4}>
-            <KPICardSummary kpi={SUMMARY_CARD_THREE} />
-          </GridItem>
-        </Grid>
-      </PageSection>
+        <GridItem md={4}>
+          <KPICardSummary kpi={SUMMARY_CARD_ONE} />
+        </GridItem>
+        <GridItem md={4}>
+          <KPICardSummary kpi={SUMMARY_CARD_TWO} />
+        </GridItem>
+        <GridItem md={4}>
+          <KPICardSummary kpi={SUMMARY_CARD_THREE} />
+        </GridItem>
+      </Grid>
     </>
   );
 }
