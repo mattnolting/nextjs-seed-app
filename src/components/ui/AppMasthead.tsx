@@ -12,9 +12,6 @@ import {
   ToolbarGroup,
   ToolbarItem,
   Button,
-  Nav,
-  NavList,
-  NavItem as PFNavItem,
   PageToggleButton,
   Brand,
 } from "@patternfly/react-core";
@@ -23,8 +20,7 @@ import BellIcon from "@patternfly/react-icons/dist/esm/icons/bell-icon";
 import CogIcon from "@patternfly/react-icons/dist/esm/icons/cog-icon";
 import MoonIcon from "@patternfly/react-icons/dist/esm/icons/moon-icon";
 import SunIcon from "@patternfly/react-icons/dist/esm/icons/sun-icon";
-import { usePathname, useRouter } from "next/navigation";
-import type { NavItem } from "@/components/ui/AppShell";
+import { useRouter } from "next/navigation";
 
 const DEFAULT_LOGO_LIGHT = "/PF-HorizontalLogo-Color.svg";
 const DEFAULT_LOGO_DARK = "/PF-HorizontalLogo-Color-reverse.svg";
@@ -36,10 +32,7 @@ export function AppMasthead({
   toolbarItems = ["notifications", "settings"],
   theme,
   onThemeToggle,
-  navMode = "sidebar",
   showToolbar = true,
-  showHorizontalNav = false,
-  navItems,
 }: {
   isSidebarOpen: boolean;
   onSidebarToggle: () => void;
@@ -47,102 +40,61 @@ export function AppMasthead({
   toolbarItems?: string[];
   theme?: "light" | "dark";
   onThemeToggle?: () => void;
-  navMode?: "sidebar" | "masthead";
   showToolbar?: boolean;
-  showHorizontalNav?: boolean;
-  navItems?: NavItem[];
 }) {
-  const pathname = usePathname();
   const router = useRouter();
-  const routes =
-    navItems && navItems.length > 0
-      ? navItems
-      : [
-          {
-            path: "/",
-            title: "Home",
-          },
-        ];
 
   const effectiveToolbarItems = toolbarItems ?? [];
   const shouldRenderToolbar = showToolbar && effectiveToolbarItems.length > 0;
 
-  const shouldRenderHorizontalNav =
-    (showHorizontalNav || navMode === "masthead") && routes.length > 0;
-  const hasToolbarContent = shouldRenderHorizontalNav || shouldRenderToolbar;
-
-  const mastheadToolbar = hasToolbarContent && (
+  const mastheadToolbar = shouldRenderToolbar && (
     <Toolbar
+      suppressHydrationWarning
       id="vertical-toolbar"
-      className={shouldRenderHorizontalNav ? "pf-m-static" : undefined}
       ouiaId="app-masthead-toolbar"
     >
       <ToolbarContent>
-        {shouldRenderHorizontalNav && (
-          <ToolbarItem isOverflowContainer>
-            <Nav aria-label="Global" variant="horizontal">
-              <NavList>
-                {routes.map((item) => (
-                  <PFNavItem
-                    key={item.path}
-                    isActive={
-                      pathname === item.path ||
-                      pathname.startsWith(item.path + "/")
-                    }
-                    preventDefault
-                    onClick={(e) => {
-                      e.preventDefault();
-                      router.push(item.path);
-                    }}
-                  >
-                    {item.title}
-                  </PFNavItem>
-                ))}
-              </NavList>
-            </Nav>
-          </ToolbarItem>
-        )}
-
-        {shouldRenderToolbar && (
-          <ToolbarGroup
-            align={{ default: "alignEnd" }}
-            variant="action-group-plain"
-          >
-            {effectiveToolbarItems.includes("notifications") && (
-              <ToolbarItem>
-                <Button
-                  variant="plain"
-                  aria-label="Notifications"
-                  icon={<BellIcon />}
-                />
-              </ToolbarItem>
-            )}
-            {effectiveToolbarItems.includes("settings") && (
-              <ToolbarItem>
-                <Button
-                  variant="plain"
-                  aria-label="Settings"
-                  icon={<CogIcon />}
-                  onClick={() => router.push("/settings")}
-                />
-              </ToolbarItem>
-            )}
-            {effectiveToolbarItems.includes("theme") && (
-              <ToolbarItem>
-                <Button
-                  variant="plain"
-                  aria-label={
-                    theme === "dark"
-                      ? "Switch to light theme"
-                      : "Switch to dark theme"
-                  }
-                  icon={theme === "dark" ? <SunIcon /> : <MoonIcon />}
-                  onClick={onThemeToggle}
-                />
-              </ToolbarItem>
-            )}
-          </ToolbarGroup>
-        )}
+        <ToolbarGroup
+          align={{ default: "alignEnd" }}
+          variant="action-group-plain"
+        >
+          {effectiveToolbarItems.includes("notifications") && (
+            <ToolbarItem>
+              <Button
+                variant="plain"
+                aria-label="Notifications"
+                icon={<BellIcon />}
+                ouiaId="masthead-notifications-button"
+              />
+            </ToolbarItem>
+          )}
+          {effectiveToolbarItems.includes("settings") && (
+            <ToolbarItem>
+              <Button
+                variant="plain"
+                aria-label="Settings"
+                icon={<CogIcon />}
+                onClick={() => router.push("/settings")}
+                ouiaId="masthead-settings-button"
+              />
+            </ToolbarItem>
+          )}
+          {effectiveToolbarItems.includes("theme") && (
+            <ToolbarItem>
+              <Button
+                variant="plain"
+                aria-label={
+                  theme === "dark"
+                    ? "Switch to light theme"
+                    : "Switch to dark theme"
+                }
+                icon={theme === "dark" ? <SunIcon /> : <MoonIcon />}
+                onClick={onThemeToggle}
+                ouiaId="masthead-theme-toggle-button"
+              />
+            </ToolbarItem>
+          )}
+        </ToolbarGroup>
       </ToolbarContent>
     </Toolbar>
   );
@@ -150,19 +102,18 @@ export function AppMasthead({
   return (
     <Masthead>
       <MastheadMain>
-        {navMode === "sidebar" && (
-          <MastheadToggle>
-            <PageToggleButton
-              variant="plain"
-              aria-label="Global navigation"
-              isSidebarOpen={isSidebarOpen}
-              onSidebarToggle={onSidebarToggle}
-              id="vertical-nav-toggle"
-            >
-              <BarsIcon />
-            </PageToggleButton>
-          </MastheadToggle>
-        )}
+        <MastheadToggle>
+          <PageToggleButton
+            variant="plain"
+            aria-label="Global navigation"
+            isSidebarOpen={isSidebarOpen}
+            onSidebarToggle={onSidebarToggle}
+            id="vertical-nav-toggle"
+            ouiaId="masthead-toggle-button"
+          >
+            <BarsIcon />
+          </PageToggleButton>
+        </MastheadToggle>
         <MastheadBrand>
           <MastheadLogo component="a" href="/">
             <div className="show-light">

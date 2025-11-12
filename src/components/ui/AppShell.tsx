@@ -126,9 +126,6 @@ export function AppShell({ children, config }: AppShellProps) {
     toolbarItems = [...toolbarItems, "theme"];
   }
 
-  const showHorizontalNav =
-    resolvedConfig.horizontalNav?.enabled ?? navMode === "masthead";
-
   const navItems = resolvedConfig.navItems ?? defaultConfig.navItems ?? [];
 
   const effectiveSidebarOpen = hasSidebar ? isSidebarOpen : false;
@@ -143,10 +140,7 @@ export function AppShell({ children, config }: AppShellProps) {
           toolbarItems={toolbarItems}
           theme={themeMode}
           onThemeToggle={onThemeToggle}
-          navMode={navMode}
           showToolbar={showToolbar}
-          showHorizontalNav={showHorizontalNav}
-          navItems={navItems}
         />
       }
       sidebar={

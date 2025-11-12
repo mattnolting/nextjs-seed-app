@@ -4,23 +4,23 @@
     "title": "Home"
   },
   {
-    "path": "/dashboard",
-    "title": "Dashboard"
-  },
-  {
     "path": "/analytics",
     "title": "Analytics"
   },
   {
-    "path": "/users",
-    "title": "Users"
+    "path": "/dashboard",
+    "title": "Dashboard"
+  },
+  {
+    "path": "/gallery",
+    "title": "Gallery"
   },
   {
     "path": "/settings",
     "title": "Settings"
   },
   {
-    "path": "/gallery",
-    "title": "Gallery"
+    "path": "/users",
+    "title": "Users"
   }
 ]

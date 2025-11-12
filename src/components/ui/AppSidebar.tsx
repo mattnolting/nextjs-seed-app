@@ -39,33 +39,36 @@ export function AppSidebar({
   return (
     <PageSidebar isSidebarOpen={isOpen} id="vertical-sidebar">
       <PageSidebarBody>
-        <Nav
-          onSelect={(_event, result) => {
-            const targetPath = String(result.itemId);
-            if (targetPath) {
-              router.push(targetPath);
-            }
-          }}
-          aria-label="Default global"
-          ouiaId="app-sidebar-nav"
-        >
-          <NavList>
-            {navItems.map((item) => (
-              <NavItem
-                key={item.path}
-                preventDefault
-                itemId={item.path}
-                isActive={isActive(item.path)}
-                onClick={(event) => {
-                  event.preventDefault();
-                  router.push(item.path);
-                }}
-              >
-                {item.title}
-              </NavItem>
-            ))}
-          </NavList>
-        </Nav>
+        <div suppressHydrationWarning>
+          <Nav
+            onSelect={(_event, result) => {
+              const targetPath = String(result.itemId);
+              if (targetPath) {
+                router.push(targetPath);
+              }
+            }}
+            aria-label="Default global"
+            ouiaId="app-sidebar-nav"
+          >
+            <NavList>
+              {navItems.map((item) => (
+                <NavItem
+                  key={item.path}
+                  preventDefault
+                  itemId={item.path}
+                  isActive={isActive(item.path)}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    router.push(item.path);
+                  }}
+                  ouiaId={`nav-item-${item.path.replace(/\//g, "-") || "home"}`}
+                >
+                  {item.title}
+                </NavItem>
+              ))}
+            </NavList>
+          </Nav>
+        </div>
       </PageSidebarBody>
     </PageSidebar>
   );

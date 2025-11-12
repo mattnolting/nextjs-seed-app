@@ -10,10 +10,7 @@
 
 import { useState, useEffect, useMemo, Fragment } from "react";
 import {
-  PageSection,
   Title,
-  Content,
-  Divider,
   DataList,
   DataListCell,
   DataListItem,
@@ -211,6 +208,7 @@ export function PrimaryDetailView({
                 variant={ButtonVariant.control}
                 aria-label="search button"
                 icon={<SearchIcon />}
+                ouiaId="primary-detail-search-button"
               />
             </InputGroupItem>
           </InputGroup>
@@ -337,9 +335,11 @@ export function PrimaryDetailView({
   const drawerContent = (
     <Fragment>
       {(enableSearch || enableFilters) && (
-        <Toolbar id="primary-detail-toolbar">
-          <ToolbarContent>{toolbarItems}</ToolbarContent>
-        </Toolbar>
+        <div suppressHydrationWarning>
+          <Toolbar id="primary-detail-toolbar" ouiaId="primary-detail-toolbar">
+            <ToolbarContent>{toolbarItems}</ToolbarContent>
+          </Toolbar>
+        </div>
       )}
       {filteredItems.length === 0 ? (
         <Bullseye>
@@ -407,12 +407,12 @@ export function PrimaryDetailView({
   );
 
   return (
-    <>
+    <div suppressHydrationWarning>
       <Drawer isExpanded={isDrawerExpanded}>
         <DrawerContent panelContent={panelContent}>
           <DrawerContentBody>{drawerContent}</DrawerContentBody>
         </DrawerContent>
       </Drawer>
-    </>
+    </div>
   );
 }

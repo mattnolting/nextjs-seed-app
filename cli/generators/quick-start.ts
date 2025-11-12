@@ -33,19 +33,9 @@ export async function runQuickStart(
     const hasAppShell = await checkAppShell(layoutPath);
     const existingPages = await checkExistingPages(appDir);
     const includeDemoContent = config?.includeDemoContent ?? true;
-    const navItems = includeDemoContent
-      ? [
-          { path: "/", title: "Home" },
-          { path: "/dashboard", title: "Dashboard" },
-          { path: "/analytics", title: "Analytics" },
-          { path: "/users", title: "Users" },
-          { path: "/settings", title: "Settings" },
-          { path: "/gallery", title: "Gallery" },
-        ]
-      : [{ path: "/", title: "Home" }];
     const hasDemoPages = existingPages.some((route) => route !== "/");
 
-    // 3. Ensure AppShell exists (THE OUTER WRAPPER - rebuilds if missing or config provided)
+    // 2. Ensure AppShell exists (THE OUTER WRAPPER - rebuilds if missing or config provided)
     if (!hasAppShell || config) {
       console.log(chalk.cyan("Building application scaffold (AppShell)..."));
       await ensureAppShell(layoutPath, projectRoot, config);
@@ -56,9 +46,7 @@ export async function runQuickStart(
       );
     }
 
-    await writeRoutesManifest(appDir, navItems);
-
-    // 4. Generate or tidy pages
+    // 3. Generate or tidy pages FIRST
     await fs.mkdir(appDir, { recursive: true });
     await generateBaseHomePage(appDir);
     await writeErrorBoundary(appDir);
@@ -80,6 +68,32 @@ export async function runQuickStart(
       console.log(chalk.cyan("Removing previously generated demo pages..."));
       await removeDemoRoutes(appDir);
     }
+
+    // 4. NOW check what pages actually exist and write routes.json to match
+    const actualPages = await checkExistingPages(appDir);
+    const routeTitles: Record<string, string> = {
+      "/": "Home",
+      "/dashboard": "Dashboard",
+      "/analytics": "Analytics",
+      "/users": "Users",
+      "/settings": "Settings",
+      "/gallery": "Gallery",
+    };
+    const navItems = actualPages
+      .map((route) => ({
+        path: route,
+        title:
+          routeTitles[route] ||
+          route.slice(1).charAt(0).toUpperCase() + route.slice(2),
+      }))
+      .sort((a, b) => {
+        // Ensure Home is first, then alphabetical order
+        if (a.path === "/") return -1;
+        if (b.path === "/") return 1;
+        return a.path.localeCompare(b.path);
+      });
+
+    await writeRoutesManifest(appDir, navItems);
 
     // Success!
     console.log(chalk.green.bold("✅ Quick Start Complete!\n"));
@@ -361,13 +375,15 @@ import { ${componentName} } from "@/components/content-patterns/${componentName}
 export default function ${config.title}() {
   return (
     <>
-      <PageSection isWidthLimited aria-labelledby="${titleId}">
-        <Content>
-          <Title id="${titleId}" headingLevel="h1">
-            ${config.title}
-          </Title>
-        </Content>
-      </PageSection>
+      <div suppressHydrationWarning>
+        <PageSection isWidthLimited aria-labelledby="${titleId}">
+          <Content>
+            <Title id="${titleId}" headingLevel="h1">
+              ${config.title}
+            </Title>
+          </Content>
+        </PageSection>
+      </div>
       <PageSection isWidthLimited>
         {/* ${componentName} demo, you can replace this with your own implementation. */}
         ${componentUsage}
@@ -450,11 +466,11 @@ export default function RootLayout({
 
 import routes from "@/app/routes.json";
 import { AppShell } from "@/components/ui/AppShell";
-import type { AppNavItem } from "@/components/ui/AppShell";
+import type { NavItem } from "@/components/ui/AppShell";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 export function AppWrapper({ children }: { children: React.ReactNode }) {
-  const navItems = routes as AppNavItem[];
+  const navItems = routes as NavItem[];
 
   return (
     <ErrorBoundary>
